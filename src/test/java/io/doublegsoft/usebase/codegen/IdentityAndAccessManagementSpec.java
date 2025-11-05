@@ -3,7 +3,9 @@ package io.doublegsoft.usebase.codegen;
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
+import com.doublegsoft.jcommons.metamodel.AssignmentDefinition;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
+import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
@@ -120,6 +122,10 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("user", obj.getAttributes()[0].getLabelledOptions("original").get("object"));
 
     Assert.assertEquals(5, usecase.getStatements().size());
+    StatementDefinition stmt = usecase.getStatements().get(0);
+    AssignmentDefinition assign = (AssignmentDefinition) stmt;
+    Assert.assertEquals("encrypted_password", assign.getAssignee());
+
   }
 
   /**
