@@ -1,0 +1,83 @@
+@module(name='aam')
+@persistence(name='tn_aam_autprcs')
+@name(label='流程定义', singular='automated_process', plural='automated_processes')
+automated_process<
+  @persistence(name='autprcsid')
+  @name(label='流程编号')
+  id!!: id,
+
+  @persistence(name='autprcscd')
+  @name(label='流程编码')
+  code: string,
+
+  @persistence(name='autprcsnm')
+  @name(label='流程名称')
+  name: string(100),
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: string(400),
+
+  @persistence(name='status')
+  @name(label='流程状态')
+  status: enum[01:active, 02:inactive],
+
+  @persistence(name='triggertype')
+  @name(label='触发类型')
+  trigger_type: enum[MN:manual, EV:event, SC:schedule],
+
+  @persistence(name='actiontype')
+  type: enum[01:api, 02:sql, 03:script, 04:call_process],
+
+  @persistence(name='content')
+  content: text,
+
+  @persistence(name='retrypolicy')
+  retry_policy: string,
+
+  @persistence(name='createdat')
+  @name(label='创建时间')
+  created_at: datetime
+>
+
+@persistence(name='bpm_instance')
+@name(label='流程实例', singular='automated_process_instance', plural='automated_process_instances')
+automated_process_instance<
+
+  @persistence(name='instid')
+  id!!: id,
+
+  @persistence(name='procid')
+  automated_process: &automated_process(id),
+
+  @persistence(name='status')
+  status: enum[01:pending, 02:running, 03:completed, 04:failed, 05:cancelled],
+
+  @persistence(name='startedby')
+  started_by: string,  // 用户名或系统标识
+
+  @persistence(name='startedat')
+  started_at: datetime,
+
+  @persistence(name='endedat')
+  ended_at: datetime
+>
+
+@persistence(name='bpm_variable')
+@name(label='流程变量', singular='automated_process_variable', plural='automated_process_variables')
+automated_process_variable<
+  @persistence(name='varid')
+  id!!: id,
+
+  @persistence(name='instid')
+  automated_process_instance: &automated_process_instance(id),
+
+  @persistence(name='key')
+  key: string,
+
+  @persistence(name='value')
+  value: string,
+
+  @persistence(name='type')
+  type: enum[ST:字符串, NR:数字, BL:布尔, JS:JSON, DT:日期]
+>

@@ -1,0 +1,207 @@
+@module(name='iam')
+@persistence(name='tn_iam_user')
+@name(label='用户', singular='user', plural='users')
+user<
+
+  @persistence(name='userid')
+  @name(label='用户标识')
+  id!!: id,
+
+  @persistence(name='username')
+  @name(label='用户名')
+  username: string(100),
+
+  @persistence(name='passwd')
+  @name(label='密码')
+  password: string(255),
+
+  @persistence(name='email')
+  @name(label='邮箱')
+  email: string(255),
+
+  @persistence(name='sts')
+  @name(label='状态')
+  status: enum[AC:激活, LK:锁定, DS:禁用],
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now,
+
+  @name(label='用户角色', singular='user_role')
+  user_roles: &user_role(user)[]
+>
+
+@persistence(name='tn_iam_role')
+@name(label='角色', singular='role', plural='roles')
+role<
+
+  @persistence(name='roleid')
+  @name(label='角色标识')
+  id!!: id,
+
+  @persistence(name='rolenm')
+  @name(label='角色名称')
+  name: string(100),
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: text,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now,
+
+  @name(label='角色权限', singular='role_permission')
+  role_permissions: &role_permission(role)[]
+>
+
+@persistence(name='tn_iam_permission')
+@name(label='权限', singular='permission', plural='permissions')
+permission<
+
+  @persistence(name='permid')
+  @name(label='权限标识')
+  id!!: id,
+
+  @persistence(name='res')
+  @name(label='资源')
+  resource: string(255),
+
+  @persistence(name='act')
+  @name(label='操作')
+  action: enum[RD:读取, WR:写入, UP:更新, DL:删除],
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: text,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime
+>
+
+@persistence(name='tn_iam_user_role')
+@name(label='用户角色', singular='user_role', plural='user_roles')
+user_role<
+
+  @persistence(name='userid')
+  @name(label='用户')
+  user: &user(id),
+
+  @persistence(name='roleid')
+  @name(label='角色')
+  role: &role(id),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime
+>
+
+@persistence(name='tn_iam_role_permission')
+@name(label='角色权限', singular='role_permission', plural='role_permissions')
+role_permission<
+
+  @persistence(name='roleid')
+  @name(label='角色')
+  role: &role(id),
+
+  @persistence(name='permid')
+  @name(label='权限')
+  permission: &permission(id),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime
+>
+
+@persistence(name='tn_iam_policy')
+@name(label='策略', singular='policy', plural='policies')
+policy<
+
+  @persistence(name='policyid')
+  @name(label='策略标识')
+  id!!: id,
+
+  @persistence(name='policynm')
+  @name(label='策略名称')
+  name: string(100),
+
+  @persistence(name='effect')
+  @name(label='效果')
+  effect: enum[AL:允许, DN:拒绝],
+
+  @persistence(name='res')
+  @name(label='资源')
+  resource: string(255),
+
+  @persistence(name='act')
+  @name(label='操作')
+  action: string(64),
+
+  @persistence(name='cond')
+  @name(label='条件表达式')
+  condition: json,
+
+  @persistence(name='prio')
+  @name(label='优先级')
+  priority: int,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime
+>
+
+@persistence(name='tn_iam_policy_user')
+@name(label='策略用户', singular='policy_user', plural='policy_users')
+@value
+policy_user<
+
+  @persistence(name='policyid')
+  @name(label='策略')
+  policy!!: &policy(id),
+
+  @persistence(name='userid')
+  @name(label='用户')
+  user!!: &user(id),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime
+>
+
+@persistence(name='tn_iam_policy_role')
+@name(label='策略角色', singular='policy_role', plural='policy_roles')
+policy_role<
+
+  @persistence(name='policyid')
+  @name(label='策略')
+  policy: &policy(id),
+
+  @persistence(name='roleid')
+  @name(label='角色')
+  role: &role(id),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime
+>

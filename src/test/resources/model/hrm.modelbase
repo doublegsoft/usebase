@@ -1,0 +1,328 @@
+@module(name='hrm')
+@persistence(name='tn_sms_pers')
+@name(label='人员', singular='person', plural='persons')
+person<
+
+  @persistence(name='persid')
+  @name(label='人员标识')
+  id!!: id,
+
+  @persistence(name='persnm')
+  @name(label='姓名')
+  name: string(128),
+
+  @persistence(name='natid')
+  @name(label='身份证号码')
+  national_id: string(128),
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='crttm')
+  @name(label='入职时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+@module(name='hrm')
+@persistence(name='tn_hrm_emp')
+@name(label='员工', singular='employee', plural='employees')
+employee<
+
+  @persistence(name='empid')
+  @name(label='员工标识')
+  id!!: &person(id),
+
+  @persistence(name='empnm')
+  @name(label='姓名')
+  name: string(128),
+
+  @persistence(name='natid')
+  @name(label='身份证号码')
+  national_id: string(128),
+
+  @persistence(name='empno')
+  @name(label='工号')
+  employee_no: string(64),
+
+  @persistence(name='gendr')
+  @name(label='性别')
+  gender: enum[male:男性, female:女性, other:其他],
+
+  @persistence(name='birthdt')
+  @name(label='出生日期')
+  birth_date: date,
+
+  @persistence(name='deptid')
+  @name(label='所属部门')
+  department: &department(id),
+
+  @persistence(name='posid')
+  @name(label='当前职位')
+  position: &position(id),
+
+  @persistence(name='phoneno')
+  @name(label='联系电话')
+  phone_number: string(32),
+
+  @persistence(name='email')
+  @name(label='电子邮件')
+  email: string(128),
+
+  @persistence(name='addr')
+  @name(label='地址')
+  address: text,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='crttm')
+  @name(label='入职时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+@module(name='hrm')
+@persistence(name='tn_hrm_dept')
+@name(label='部门')
+@treelike
+department<
+
+  @persistence(name='deptid')
+  @name(label='部门标识')
+  id!!: id,
+
+  @persistence(name='deptnm')
+  @name(label='部门名称')
+  name: string(128),
+
+  @persistence(name='pardepid')
+  @name(label='上级部门')
+  parent: &department(id),
+
+  @persistence(name='fullpath')
+  @name(label='完整路径')
+  fullpath: &department(id),
+
+  @persistence(name='mgr')
+  @name(label='部门负责人')
+  manager: &employee(id),
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: text,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='ordpos')
+  @name(label='顺序位置')
+  ordinal_position: integer,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+@module(name='hrm')
+@persistence(name='tn_hrm_pos')
+@name(label='职位', singular='position', plural='positions')
+position<
+
+  @persistence(name='posid')
+  @name(label='职位标识')
+  id!!: id,
+
+  @persistence(name='posnm')
+  @name(label='职位名称')
+  name: string(128),
+
+  @persistence(name='deptid')
+  @name(label='所属部门')
+  department: &department(id),
+
+  @persistence(name='descr')
+  @name(label='职位描述')
+  description: text,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+@module(name='hrm')
+@persistence(name='tn_hrm_emp_job')
+@name(label='任职记录', singular='employment', plural='employments')
+employment<
+
+  @persistence(name='empjobid')
+  @name(label='任职记录标识')
+  id!!: id,
+
+  @persistence(name='empid')
+  @name(label='员工')
+  employee: &employee(id),
+
+  @persistence(name='posid')
+  @name(label='职位')
+  position: &position(id),
+
+  @persistence(name='deptid')
+  @name(label='部门')
+  department: &department(id),
+
+  @persistence(name='stt')
+  @name(label='开始日期')
+  start_date: date,
+
+  @persistence(name='enddt')
+  @name(label='结束日期')
+  end_date: date,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='descr')
+  @name(label='备注')
+  description: text
+>
+
+@module(name='hrm')
+@persistence(name='tn_hrm_att')
+@name(label='考勤记录', singular='attendance', plural='attendances')
+attendance<
+
+  @persistence(name='attid')
+  @name(label='考勤标识')
+  id!!: id,
+
+  @persistence(name='empid')
+  @name(label='员工')
+  employee: &employee(id),
+
+  @persistence(name='workdt')
+  @name(label='日期')
+  work_date: date,
+
+  @persistence(name='checkin')
+  @name(label='签到时间')
+  check_in_time: datetime,
+
+  @persistence(name='checkout')
+  @name(label='签退时间')
+  check_out_time: datetime,
+
+  @persistence(name='stat')
+  @name(label='出勤状态')
+  attendance_status: enum[present:出勤, absent:缺勤, late:迟到, on_leave:早退],
+
+  @persistence(name='descr')
+  @name(label='备注')
+  description: text
+>
+
+@module(name='hrm')
+@persistence(name='tn_hrm_salary')
+@name(label='薪资记录', singular='salary', plural='salaries')
+salary<
+
+  @persistence(name='salid')
+  @name(label='薪资标识')
+  id!!: id,
+
+  @persistence(name='empid')
+  @name(label='员工')
+  employee: &employee(id),
+
+  @persistence(name='month')
+  @name(label='薪资月份')
+  salary_month: string(7),
+
+  @persistence(name='baseamt')
+  @name(label='基本工资')
+  base_amount: number(10,2),
+
+  @persistence(name='bonus')
+  @name(label='奖金')
+  bonus: number(10,2),
+
+  @persistence(name='deduction')
+  @name(label='扣款')
+  deduction: number(10,2),
+
+  @persistence(name='netamt')
+  @name(label='实发工资')
+  net_amount: number(10,2),
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime
+>
+
+@module(name='hrm')
+@persistence(name='tn_hrm_salary')
+@name(label='薪资记录', singular='salary', plural='salaries')
+salary<
+
+  @persistence(name='salid')
+  @name(label='薪资标识')
+  id!!: id,
+
+  @persistence(name='empid')
+  @name(label='员工')
+  employee: &employee(id),
+
+  @persistence(name='month')
+  @name(label='薪资月份')
+  salary_month: string(7),
+
+  @persistence(name='baseamt')
+  @name(label='基本工资')
+  base_amount: number(10,2),
+
+  @persistence(name='bonus')
+  @name(label='奖金')
+  bonus: number(10,2),
+
+  @persistence(name='deduction')
+  @name(label='扣款')
+  deduction: number(10,2),
+
+  @persistence(name='netamt')
+  @name(label='实发工资')
+  net_amount: number(10,2),
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime
+>

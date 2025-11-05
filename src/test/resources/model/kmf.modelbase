@@ -1,0 +1,394 @@
+@module(name='kmf')
+@persistence(name='tn_kmf_kwnl')
+@name(label='知识', singular='knowledge', plural='knowledges')
+knowledge<
+
+  @persistence(name='kwnlid')
+  @name(label='标识')
+  id!!: id,
+
+  @persistence(name='kwnlnm')
+  @name(label='名称')
+  name: string,
+
+  @persistence(name='kwnltyp')
+  @name(label='实体类型')
+  type: string,
+
+  @persistence(name='kwnlcatid')
+  @name(label='知识类别')
+  knowledge_category: &knowledge_category(id),
+
+  @persistence(name='descr')
+  @name(label='实体描述')
+  description: text,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='modid')
+  @name(label='修改者标识')
+  @reference(value='id', name='modifier')
+  modifier_id: string(64),
+
+  @persistence(name='modtyp')
+  @name(label='修改者类型')
+  @reference(value='type', name='modifier')
+  modifier_type: string(64),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now,
+
+  @name(label='知识标签', singular='knowledge_tag')
+  knowledge_tags: &knowledge_tag(knowledge)[]
+>
+
+@module(name='kmf')
+@persistence(name='tn_kmf_kwnlcat')
+@name(label='知识类别')
+@treelike
+knowledge_category<
+
+  @persistence(name='kwnlcatid')
+  @name(label='知识类别标识')
+  id!!: id,
+
+  @persistence(name='kwnlcatnm')
+  @name(label='知识类别名称')
+  name: string,
+
+  @persistence(name='parkwnlcatid')
+  @name(label='上级类型')
+  parent: &knowledge_category(id),
+
+  @persistence(name='parkwnlcatid')
+  @name(label='完整路径', note='从根节点开始，以分号分隔的上级节点标识的完整路径')
+  fullpath: &knowledge_category(id),
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: text,
+
+  @persistence(name='ordpos')
+  @name(label='顺序位置')
+  ordinal_position: integer,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='modid')
+  @name(label='修改者标识')
+  @reference(value='id', name='modifier')
+  modifier_id: string(64),
+
+  @persistence(name='modtyp')
+  @name(label='修改者类型')
+  @reference(value='type', name='modifier')
+  modifier_type: string(64),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+@module(name='kmf')
+@persistence(name='tn_kmf_kwnltg')
+@name(label='知识标签')
+@treelike
+knowledge_tag<
+
+  @persistence(name='kwnltgid')
+  @name(label='知识标签标识')
+  id!!: id,
+
+  @persistence(name='kwnltgnm')
+  @name(label='知识标签名称')
+  name: string,
+
+  @persistence(name='kwnlid')
+  @name(label='知识')
+  knowledge: &knowledge(id),
+
+  @persistence(name='ordpos')
+  @name(label='顺序位置')
+  ordinal_position: integer,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='modid')
+  @name(label='修改者标识')
+  @reference(value='id', name='modifier')
+  modifier_id: string(64),
+
+  @persistence(name='modtyp')
+  @name(label='修改者类型')
+  @reference(value='type', name='modifier')
+  modifier_type: string(64),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+
+@module(name='kmf')
+@persistence(name='tn_kmf_knwlent')
+@name(label='知识条目', singular='knowledge_entry', plural='knowledge_entries')
+knowledge_entry<
+
+  @persistence(name='knwlentid')
+  @name(label='知识ID')
+  id!!: id,
+
+  @persistence(name='knwlid')
+  @name(label='知识')
+  knowledge: &knowledge(id),
+
+  @persistence(name='knwlenttypid')
+  @name(label='类型', description='如文档、问答、术语')
+  knowledge_entry_type: &knowledge_entry_type(id),
+
+  @persistence(name='tit')
+  @name(label='标题')
+  title: string,
+
+  @persistence(name='cntnt')
+  @name(label='内容', description='支持Markdown或HTML')
+  content: text,
+
+  @persistence(name='aut')
+  @name(label='创作者')
+  author: string(200),
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='modid')
+  @name(label='修改者标识')
+  @reference(value='id', name='modifier')
+  modifier_id: string(64),
+
+  @persistence(name='modtyp')
+  @name(label='修改者类型')
+  @reference(value='type', name='modifier')
+  modifier_type: string(64),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+@module(name='kmf')
+@persistence(name='tn_kmf_knwlent')
+@name(label='知识条目', singular='knowledge_entry_meta', plural='knowledge_entry_metas')
+@value
+knowledge_entry_meta<
+
+  @persistence(name='knwlentid')
+  @name(label='类型')
+  knowledge_entry!!: &knowledge_entry(id),
+
+  @persistence(name='propcd')
+  @name(label='属性编码')
+  property_code!!: string,
+
+  @persistence(name='propnm')
+  @name(label='属性名称')
+  property_name: string,
+
+  @persistence(name='propval')
+  @name(label='属性值')
+  property_value: string(1000),
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='modid')
+  @name(label='修改者标识')
+  @reference(value='id', name='modifier')
+  modifier_id: string(64),
+
+  @persistence(name='modtyp')
+  @name(label='修改者类型')
+  @reference(value='type', name='modifier')
+  modifier_type: string(64),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+@module(name='kmf')
+@persistence(name='tn_kmf_knwlenttyp')
+@name(label='知识条目类型', singular='knowledge_entry_type', plural='knowledge_entry_types')
+knowledge_entry_type<
+  @persistence(name='knwlenttypid')
+  @name(label='标识')
+  id!!: id,
+
+  @persistence(name='knwlenttypnm')
+  @name(label='名称')
+  name!+: string,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='modid')
+  @name(label='修改者标识')
+  @reference(value='id', name='modifier')
+  modifier_id: string(64),
+
+  @persistence(name='modtyp')
+  @name(label='修改者类型')
+  @reference(value='type', name='modifier')
+  modifier_type: string(64),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+@persistence(name='tn_kmf_knwltg')
+@name(label='标签')
+knowledge_tag<
+  @persistence(name='knwltgid')
+  @name(label='标识')
+  id!!: id,
+
+  @persistence(name='knwltgnm')
+  @name(label='名称')
+  name!+: string(40),
+
+  @persistence(name='descr')
+  @name(label='说明')
+  description: string(400),
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='modid')
+  @name(label='修改者标识')
+  @reference(value='id', name='modifier')
+  modifier_id: string(64),
+
+  @persistence(name='modtyp')
+  @name(label='修改者类型')
+  @reference(value='type', name='modifier')
+  modifier_type: string(64),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+@persistence(name='tn_kmf_entry_tag')
+@name(label='知识标签关联')
+@value
+kwnowledge_entry_tag<
+  @persistence(name='entryid')
+  @name(label='知识')
+  entry!!: &knowledge_entry(id),
+
+  @persistence(name='tagid')
+  @name(label='标签')
+  tag!!: &knowledge_tag(id),
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='modid')
+  @name(label='修改者标识')
+  @reference(value='id', name='modifier')
+  modifier_id: string(64),
+
+  @persistence(name='modtyp')
+  @name(label='修改者类型')
+  @reference(value='type', name='modifier')
+  modifier_type: string(64),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+@persistence(name='tv_kmf_knwlrel')
+@name(label='知识关系')
+@value
+knowledge_relation<
+
+  @persistence(name='srcid')
+  @name(label='主语实体')
+  source!!: &knowledge(id),
+
+  @persistence(name='tgtid')
+  @name(label='宾语实体')
+  target!!: &knowledge(id),
+
+  @persistence(name='pred')
+  @name(label='关系谓词', description='如 uses、related_to、is_part_of')
+  predicate: string,
+
+  @persistence(name='sta')
+  @name(label='状态')
+  state: state,
+
+  @persistence(name='modid')
+  @name(label='修改者标识')
+  @reference(value='id', name='modifier')
+  modifier_id: string(64),
+
+  @persistence(name='modtyp')
+  @name(label='修改者类型')
+  @reference(value='type', name='modifier')
+  modifier_type: string(64),
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
