@@ -9,8 +9,11 @@ import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
+import io.doublegsoft.usebase.modelbase.ModelbaseWriter;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.StringWriter;
 
 public class IdentityAndAccessManagementSpec extends SpecBase {
 
@@ -98,9 +101,9 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@login({user: username!, password!}, captcha!):{user} \n" +
-        "|=| encrypted_password = @md5(password) \n" +
+        "|=| encrypted_password = @bcrypt(password) \n" +
         "|&| user = {user}#(username, encrypted_password)!'用户名与密码错误！'\n" +
-        "|?| captcha != @get_captcha_from_session(captcha) !'验证码错误' \n" +
+        "|?| captcha != @get_captcha_from_session('captcha') !'验证码错误' \n" +
         "|@| @put_user_into_session(#session, user) \n" +
         "|.| user";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
@@ -126,6 +129,11 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     AssignmentDefinition assign = (AssignmentDefinition) stmt;
     Assert.assertEquals("encrypted_password", assign.getAssignee());
 
+    StringWriter sw = new StringWriter();
+    ModelbaseWriter writer = new ModelbaseWriter(sw);
+    writer.write(usecase.getParameterizedObject());
+    writer.write(usecase.getReturnedObject());
+    System.out.println(sw);
   }
 
   /**
