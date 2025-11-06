@@ -338,9 +338,14 @@ public class Usebase {
     } else {
       objName += container.getName();
     }
-    ObjectDefinition argsObj = new ObjectDefinition(objName, usecase.getContextModel());
-    assembleObjectFromArguments(ctx, argsObj, statement, usecase);
-    return argsObj;
+    if (container != null && container.getName().startsWith("$")) {
+      assembleObjectFromArguments(ctx, container, statement, usecase);
+      return container;
+    } else {
+      ObjectDefinition argsObj = new ObjectDefinition(objName, usecase.getContextModel());
+      assembleObjectFromArguments(ctx, argsObj, statement, usecase);
+      return argsObj;
+    }
   }
 
   /**

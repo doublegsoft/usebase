@@ -2,10 +2,14 @@ package io.doublegsoft.usebase;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
+import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.modelbase.Modelbase;
+import io.doublegsoft.usebase.modelbase.ModelbaseWriter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.List;
 
 public class SpecBase {
@@ -33,6 +37,14 @@ public class SpecBase {
       System.out.println(stmt.getOperator());
       printStatements(stmt.getStatements());
     }
+  }
+
+  protected void printUsecaseForModelbase(UsecaseDefinition usecase) throws IOException {
+    StringWriter sw = new StringWriter();
+    ModelbaseWriter writer = new ModelbaseWriter(sw);
+    writer.write(usecase.getParameterizedObject());
+    writer.write(usecase.getReturnedObject());
+    System.out.println(sw);
   }
 
 }

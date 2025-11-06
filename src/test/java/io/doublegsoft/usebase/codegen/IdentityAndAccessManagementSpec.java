@@ -83,6 +83,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("status", obj.getAttributes()[0].getName());
+    printUsecaseForModelbase(usecase);
   }
 
   /**
@@ -129,11 +130,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     AssignmentDefinition assign = (AssignmentDefinition) stmt;
     Assert.assertEquals("encrypted_password", assign.getAssignee());
 
-    StringWriter sw = new StringWriter();
-    ModelbaseWriter writer = new ModelbaseWriter(sw);
-    writer.write(usecase.getParameterizedObject());
-    writer.write(usecase.getReturnedObject());
-    System.out.println(sw);
+    printUsecaseForModelbase(usecase);
   }
 
   /**
@@ -151,6 +148,8 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("id", obj.getAttributes()[0].getName());
     obj = usecase.getReturnedObject();
     Assert.assertNull("没有返回值才是正确的", obj);
+
+    printUsecaseForModelbase(usecase);
   }
 
   /**

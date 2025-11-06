@@ -5,7 +5,7 @@ user<
 
   @persistence(name='userid')
   @name(label='用户标识')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='username')
   @name(label='用户名')

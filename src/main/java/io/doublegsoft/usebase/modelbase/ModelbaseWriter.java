@@ -33,24 +33,7 @@ private final Writer writer;
     int index = 0;
     int size = obj.getAttributes().length;
     for (AttributeDefinition attr : obj.getAttributes()) {
-      if (attr.getLabelledOptions("original") != null &&
-          attr.getLabelledOptions("original").get("attribute") != null) {
-        writer.write("  ");
-        writer.write("@original(");
-        writer.write("object='");
-        writer.write(attr.getLabelledOptions("original").get("object"));
-        writer.write("', attribute='");
-        writer.write(attr.getLabelledOptions("original").get("attribute"));
-        writer.write("')\n");
-      }
-      writer.write("  ");
-      writer.write(attr.getName());
-      writer.write(": ");
-      if (attr.getType() == null) {
-        writer.write("string");
-      } else {
-        writer.write(attr.getType().getName());
-      }
+      writeAttribute(attr);
       if (index != size - 1) {
         writer.write(",");
       }
@@ -62,7 +45,7 @@ private final Writer writer;
   }
 
   public ModelbaseWriter write(ReturnedObjectDefinition obj) throws IOException {
-    if (obj.isArray()) {
+    if (obj == null) {
       return this;
     }
     Map<String, String> original = obj.getLabelledOptions("original");
@@ -77,18 +60,7 @@ private final Writer writer;
     int index = 0;
     int size = obj.getAttributes().length;
     for (AttributeDefinition attr : obj.getAttributes()) {
-      writer.write("  ");
-      if ("id".equals(attr.getName())) {
-        writer.write(original.get("object") + "_" + attr.getName());
-      } else {
-        writer.write(attr.getName());
-      }
-      writer.write(": ");
-      if (attr.getType() == null) {
-        writer.write("string");
-      } else {
-        writer.write(attr.getType().getName());
-      }
+      writeAttribute(attr);
       if (index != size - 1) {
         writer.write(",");
       }
@@ -107,6 +79,31 @@ private final Writer writer;
   public ModelbaseWriter close() throws IOException {
     writer.close();
     return this;
+  }
+
+  private void writeAttribute(AttributeDefinition attr) throws IOException {
+    if (attr.getLabelledOptions("original") != null &&
+        attr.getLabelledOptions("original").get("attribute") != null) {
+      writer.write("  ");
+      writer.write("@original(");
+      writer.write("object='");
+      writer.write(attr.getLabelledOptions("original").get("object"));
+      writer.write("', attribute='");
+      writer.write(attr.getLabelledOptions("original").get("attribute"));
+      writer.write("')\n");
+    }
+    writer.write("  ");
+    if ("id".equals(attr.getName())) {
+      writer.write(attr.getLabelledOptions("original").get("object") + "_" + attr.getName());
+    } else {
+      writer.write(attr.getName());
+    }
+    writer.write(": ");
+    if (attr.getType() == null) {
+      writer.write("string");
+    } else {
+      writer.write(attr.getType().getName());
+    }
   }
 
 }
