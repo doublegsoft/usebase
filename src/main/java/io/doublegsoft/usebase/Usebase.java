@@ -10,6 +10,7 @@ import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
+import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.*;
 import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 import org.antlr.v4.runtime.CharStream;
@@ -60,7 +61,7 @@ public class Usebase {
       for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext arg : ctx.usebase_arguments().usebase_argument()) {
         if (arg.usebase_aggregate() != null) {
           assembleAggregate(arg.usebase_aggregate(), paramObj, null, retVal);
-        } else if (arg != null) {
+        } else {
           AttributeDefinition attr = new AttributeDefinition(arg.anybase_identifier().getText(), paramObj);
           if (arg.usebase_validation() != null) {
             attr.getConstraint().setNullable(false);
@@ -92,7 +93,7 @@ public class Usebase {
             stmts = stack.peek();
             times--;
           }
-        } else if (prev.isConditional()){
+        } else if (prev.isConditional() && stmt.getLevel() == prev.getLevel()){
           stack.pop();
           stmts = stack.peek();
         }
@@ -338,7 +339,7 @@ public class Usebase {
     } else {
       objName += container.getName();
     }
-    if (container != null && container.getName().startsWith("$")) {
+    if (container.getName().startsWith("$")) {
       assembleObjectFromArguments(ctx, container, statement, usecase);
       return container;
     } else {
@@ -467,8 +468,16 @@ public class Usebase {
         assembleArray(ctxData.usebase_array(), obj, statement, usecase);
       } else if (ctxData.usebase_derivative() != null) {
         AttributeDefinition attrDeri = new AttributeDefinition(ctxData.usebase_derivative().name.getText(), obj);
-        if (ctxData.usebase_derivative().usebase_calculate() != null) {
-          // TODO: CALCULATE RULE
+        io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctxData.usebase_derivative().usebase_calculate();
+        if (ctxCalc != null) {
+          if ("count".equals(ctxCalc.name.getText())) {
+            attrDeri.setType(new PrimitiveType("long"));
+          } else if ("sum".equals(ctxCalc.name.getText())) {
+            PrimitiveType pt = new PrimitiveType("number");
+            pt.setPrecision(12);
+            pt.setScale(4);
+            attrDeri.setType(pt);
+          }
         }
       }
     }

@@ -9,6 +9,7 @@
 package io.doublegsoft.usebase.modelbase;
 
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
+import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 
@@ -49,7 +50,7 @@ private final Writer writer;
       return this;
     }
     Map<String, String> original = obj.getLabelledOptions("original");
-    if (original != null && original.get("object") != null) {
+    if (original != null && isOnlyIncludingOriginalAttributes(obj)) {
       return this;
     }
     writer.write("@response\n");
@@ -82,19 +83,40 @@ private final Writer writer;
   }
 
   private void writeAttribute(AttributeDefinition attr) throws IOException {
+    String origObj4Attr = null;
+    String origAttr4Attr = null;
+    String origObj4Obj = null;
     if (attr.getLabelledOptions("original") != null &&
         attr.getLabelledOptions("original").get("attribute") != null) {
+      origObj4Attr = attr.getLabelledOptions("original").get("object");
+      origAttr4Attr = attr.getLabelledOptions("original").get("attribute");
       writer.write("  ");
       writer.write("@original(");
       writer.write("object='");
-      writer.write(attr.getLabelledOptions("original").get("object"));
+      writer.write(origObj4Attr);
       writer.write("', attribute='");
-      writer.write(attr.getLabelledOptions("original").get("attribute"));
+      writer.write(origAttr4Attr);
       writer.write("')\n");
+    }
+    if (origObj4Attr == null && attr.getParent().isLabelled("original")) {
+      origObj4Obj = attr.getParent().getLabelledOptions("original").get("object");
     }
     writer.write("  ");
     if ("id".equals(attr.getName())) {
-      writer.write(attr.getLabelledOptions("original").get("object") + "_" + attr.getName());
+      if (origObj4Attr != null) {
+        writer.write(origObj4Attr + "_" + attr.getName());
+      } else if (origObj4Obj != null) {
+        writer.write("@original(");
+        writer.write("object='");
+        writer.write(origObj4Obj);
+        writer.write("', attribute='");
+        writer.write(attr.getName());
+        writer.write("')\n");
+        writer.write("  ");
+        writer.write(origObj4Obj + "_" + attr.getName());
+      } else {
+        writer.write(attr.getName());
+      }
     } else {
       writer.write(attr.getName());
     }
@@ -104,6 +126,24 @@ private final Writer writer;
     } else {
       writer.write(attr.getType().getName());
     }
+  }
+
+  private boolean isOnlyIncludingOriginalAttributes(ObjectDefinition obj) {
+    if (!obj.isLabelled("original")) {
+      return false;
+    }
+    Map<String,String> original = obj.getLabelledOptions("original");
+    String origObjName = original.get("object");
+    for (AttributeDefinition attr : obj.getAttributes()) {
+      if (!attr.isLabelled("original")) {
+        return false;
+      }
+      String origObjNameInAttr = attr.getLabelledOptions("original").get("object");
+      if (!origObjNameInAttr.equals(origObjName)) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }

@@ -35,6 +35,8 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ObjectDefinition ret = usecase.getReturnedObject();
     Assert.assertEquals("username", ret.getAttributes()[0].getName());
     Assert.assertEquals("email", ret.getAttributes()[1].getName());
+
+    printUsecaseForModelbase(usecase);
   }
 
   @Test
@@ -69,6 +71,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("status", obj.getAttributes()[0].getName());
+    printUsecaseForModelbase(usecase);
   }
 
   /**
@@ -147,7 +150,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("id", obj.getAttributes()[0].getName());
     obj = usecase.getReturnedObject();
-    Assert.assertNull("没有返回值才是正确的", obj);
+    Assert.assertNull("没有返回值的定义才是正确的", obj);
 
     printUsecaseForModelbase(usecase);
   }
@@ -165,7 +168,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("iam");
     String expr =
         "@save({person}#(national_id, person_name) <person_id=user_id> {user} <user_role> [role])" +
-            "  |+| {audit_log: name = person_name, audit_time = now, modifier_id = 'SYS'}";
+        "|+| {audit_log: name = person_name, audit_time = now, modifier_id = 'SYS'}";
 //    Usebase usebase = new Usebase(dataModel);
 //    UsecaseDefinition usecase = usebase.parse(expr).get(0);
 //
