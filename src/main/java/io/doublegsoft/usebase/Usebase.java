@@ -62,6 +62,9 @@ public class Usebase {
         if (arg.usebase_aggregate() != null) {
           assembleAggregate(arg.usebase_aggregate(), paramObj, null, retVal);
         } else {
+          if (ModelbaseHelper.isSystemOrExistingInObject(arg.anybase_identifier().getText(), paramObj)) {
+            continue;
+          }
           AttributeDefinition attr = new AttributeDefinition(arg.anybase_identifier().getText(), paramObj);
           if (arg.usebase_validation() != null) {
             attr.getConstraint().setNullable(false);
@@ -233,12 +236,16 @@ public class Usebase {
           throw new RuntimeException("\"" + getOriginalText(ctx) + "\" has an attribute named \"" +
               ctxAttr.name.getText() + "\" not defined in data model.");
         }
-        ModelbaseHelper.cloneAttribute(attrDef, obj);
+        if (!ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), obj)) {
+          ModelbaseHelper.cloneAttribute(attrDef, obj);
+        }
       }
     } else {
       ObjectDefinition originalObj = dataModel.findObjectByName(ctx.name.getText());
       for (AttributeDefinition attrDef : originalObj.getAttributes()) {
-        ModelbaseHelper.cloneAttribute(attrDef, obj);
+        if (!ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), obj)) {
+          ModelbaseHelper.cloneAttribute(attrDef, obj);
+        }
       }
     }
     if (ctx.usebase_source() != null) {
@@ -372,6 +379,9 @@ public class Usebase {
       if (ctxArg.usebase_aggregate() != null) {
         assembleAggregate(ctxArg.usebase_aggregate(), obj, statement, usecase);
       } else if (ctxArg.anybase_identifier() != null) {
+        if (ModelbaseHelper.isSystemOrExistingInObject(ctxArg.anybase_identifier().getText(), obj)) {
+          continue;
+        }
         AttributeDefinition propagatingAttrDef = new AttributeDefinition(ctxArg.anybase_identifier().getText(), obj);
         if (ctxArg.value != null) {
           propagatingAttrDef.getConstraint().setDefaultValue(ctxArg.value.getText());
@@ -444,6 +454,9 @@ public class Usebase {
           // 显示指定（选择）了对象的属性
           for (io.doublegsoft.usebase.UsebaseParser.Usebase_attributeContext ctxAttr : ctxObj.usebase_attributes().usebase_attribute()) {
             AttributeDefinition attrDef = dataModel.findAttributeByNames(ctxObj.name.getText(), ctxAttr.name.getText());
+            if (ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), obj)) {
+              continue;
+            }
             AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, obj);
             if (ctxAttr.usebase_validation() != null) {
               attrInObj.getConstraint().setNullable(false);
@@ -453,7 +466,9 @@ public class Usebase {
           // 只有对象，为指定（选择）任何对象中的属性
           ObjectDefinition objInDataModel = dataModel.findObjectByName(ctxObj.name.getText());
           for (AttributeDefinition attrDef : objInDataModel.getAttributes()) {
-            ModelbaseHelper.cloneAttribute(attrDef, obj);
+            if (!ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), obj)) {
+              ModelbaseHelper.cloneAttribute(attrDef, obj);
+            }
           }
         }
         if (ctxData.usebase_object().usebase_source() != null) {
@@ -530,10 +545,14 @@ public class Usebase {
             if (ctxObj.usebase_attributes() != null) {
               for (io.doublegsoft.usebase.UsebaseParser.Usebase_attributeContext ctxAttr : ctxObj.usebase_attributes().usebase_attribute()) {
                 AttributeDefinition originalAttrDef = dataModel.findAttributeByNames(aggObjName, ctxAttr.name.getText());
-                ModelbaseHelper.cloneAttribute(originalAttrDef, propagatedObjDef);
+                if (!ModelbaseHelper.isSystemOrExistingInObject(originalObjDef.getName(), propagatedObjDef)) {
+                  ModelbaseHelper.cloneAttribute(originalAttrDef, propagatedObjDef);
+                }
               }
             } else {
-              ModelbaseHelper.cloneAttributes(Arrays.asList(originalObjDef.getAttributes()), propagatedObjDef);
+              if (!ModelbaseHelper.isSystemOrExistingInObject(originalObjDef.getName(), propagatedObjDef)) {
+                ModelbaseHelper.cloneAttributes(Arrays.asList(originalObjDef.getAttributes()), propagatedObjDef);
+              }
             }
             if (ctx.usebase_source() != null) {
               ModelbaseHelper.addOptions(owner, "original", "source",
@@ -562,7 +581,9 @@ public class Usebase {
       }
       if (owner instanceof ReturnedObjectDefinition) {
         for (AttributeDefinition attrDef : objInDataModel.getAttributes()) {
-          ModelbaseHelper.cloneAttribute(attrDef, owner);
+          if (!ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), owner)) {
+            ModelbaseHelper.cloneAttribute(attrDef, owner);
+          }
         }
       }
       attrType.setComponentType(objInDataModel);

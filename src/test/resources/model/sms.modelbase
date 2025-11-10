@@ -1,0 +1,29 @@
+@module(name='sms')
+@persistence(name='tn_sms_pers')
+@name(label='人员', singular='person', plural='persons')
+person<
+
+  @persistence(name='persid')
+  @name(label='人员标识')
+  id!!: long,
+
+  @persistence(name='natid')
+  @name(label='身份证号')
+  national_id: string(100),
+
+  @persistence(name='persnm')
+  @name(label='姓名')
+  name: string(255),
+
+  @persistence(name='sts')
+  @name(label='状态')
+  status: enum[AC:激活, LK:锁定, DS:禁用],
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>

@@ -10,16 +10,21 @@ package io.doublegsoft.usebase.modelbase;
 
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
+import com.doublegsoft.jcommons.metabean.type.CollectionType;
+import com.doublegsoft.jcommons.metabean.type.ObjectType;
+import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class ModelbaseWriter {
 
-private final Writer writer;
+  private final Writer writer;
 
   public ModelbaseWriter(Writer writer) {
     this.writer = writer;
@@ -102,7 +107,7 @@ private final Writer writer;
       origObj4Obj = attr.getParent().getLabelledOptions("original").get("object");
     }
     writer.write("  ");
-    if ("id".equals(attr.getName())) {
+    if ("id".equals(attr.getName()) || "name".equals(attr.getName())) {
       if (origObj4Attr != null) {
         writer.write(origObj4Attr + "_" + attr.getName());
       } else if (origObj4Obj != null) {
@@ -121,10 +126,16 @@ private final Writer writer;
       writer.write(attr.getName());
     }
     writer.write(": ");
-    if (attr.getType() == null) {
+    writeObjectType(attr.getType());
+  }
+
+  private void writeObjectType(ObjectType type) throws IOException {
+    if (type == null) {
       writer.write("string");
-    } else {
-      writer.write(attr.getType().getName());
+    } else if (type instanceof PrimitiveType) {
+      writer.write(type.getName());
+    } else if (type instanceof CollectionType) {
+      writer.write("&" + ((CollectionType) type).getComponentType().getName() + "[]");
     }
   }
 

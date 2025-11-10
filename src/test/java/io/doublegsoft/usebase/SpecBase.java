@@ -5,6 +5,7 @@ import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.modelbase.Modelbase;
 import io.doublegsoft.usebase.modelbase.ModelbaseWriter;
+import io.doublegsoft.usebase.output.TemplateOutputWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -44,6 +45,14 @@ public class SpecBase {
     ModelbaseWriter writer = new ModelbaseWriter(sw);
     writer.write(usecase.getParameterizedObject());
     writer.write(usecase.getReturnedObject());
+    System.out.println(sw);
+  }
+
+  protected void printJavaModelForUsecase(String templateName, UsecaseDefinition usecase) throws IOException {
+    StringWriter sw = new StringWriter();
+    TemplateOutputWriter writer = new TemplateOutputWriter(sw,
+        "src/test/resources/template/java-model");
+    writer.write(templateName, usecase);
     System.out.println(sw);
   }
 

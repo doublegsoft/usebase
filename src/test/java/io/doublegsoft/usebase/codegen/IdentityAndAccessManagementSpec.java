@@ -165,12 +165,13 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    */
   @Test
   public void test_iam_save_person_user_roles() throws Exception {
-    ModelDefinition dataModel = loadModel("iam");
+    ModelDefinition dataModel = loadModel("sms", "iam");
     String expr =
-        "@save({person}#(national_id, person_name) <person_id=user_id> {user} <user_role> [role])" +
-        "|+| {audit_log: name = person_name, audit_time = now, modifier_id = 'SYS'}";
-//    Usebase usebase = new Usebase(dataModel);
-//    UsecaseDefinition usecase = usebase.parse(expr).get(0);
+        "@save({person}#(national_id, person_name) <person_id=user_id> {user} <user_role> [role])";
+//        "|+| {audit_log: name = person_name, audit_time = now, modifier_id = 'SYS'}";
+    Usebase usebase = new Usebase(dataModel);
+    UsecaseDefinition usecase = usebase.parse(expr).get(0);
+    printUsecaseForModelbase(usecase);
 //
 //    UsebaseAggregate agg = (UsebaseAggregate) usecase.getArguments().get(0).getValue();
 //    Assert.assertEquals("person", agg.getPrimaryObject().getName());
@@ -203,12 +204,16 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    */
   @Test
   public void test_iam_save_person_user_roles_and_remote_log() throws Exception {
+    ModelDefinition dataModel = loadModel("sms", "iam");
     String expr =
-        "@save({person}#(national_id, person_name) <person_id=user_id> {user} <user_role> [role])" +
-            "  |+| {audit_log: name = person_name, audit_time = now, modifier_id = 'SYS'} " +
-            "      @http://log.storage.com/audit";
-//    Usebase usebase = new Usebase();
-//    UsebaseUsecase usecase = usebase.parse(expr).get(0);
+        "@save_user_with_roles({person}#(national_id, person_name) <person_id=user_id> {user} <user_role> [role])";
+//            "  |+| {audit_log: name = person_name, audit_time = now, modifier_id = 'SYS'} " +
+//            "      @http://log.storage.com/audit";
+    Usebase usebase = new Usebase(dataModel);
+    UsecaseDefinition usecase = usebase.parse(expr).get(0);
+
+    printUsecaseForModelbase(usecase);
+    printJavaModelForUsecase("Service.java.ftl", usecase);
 //    UsebaseSave stmt0 = (UsebaseSave) usecase.getStatements().get(0);
 //    UsebaseRemote remote = stmt0.getRemote();
 //    Assert.assertEquals("http", remote.getScheme());

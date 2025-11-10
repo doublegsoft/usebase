@@ -13,8 +13,6 @@ import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metabean.type.CustomType;
-import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
-import io.doublegsoft.usebase.*;
 
 import java.util.*;
 
@@ -214,6 +212,29 @@ public final class ModelbaseHelper {
 
   public static boolean isCollectionAttribute(AttributeDefinition attrDef) {
     return attrDef.getType() instanceof CollectionType;
+  }
+
+  public static boolean isSystemOrExistingInObject(String attrname, ObjectDefinition owner) {
+    String objname = owner.getName();
+    if (owner.isLabelled("original")) {
+      Map<String,String> original = owner.getLabelledOptions("original");
+      if (original.containsKey("object")) {
+        objname = original.get("object");
+      }
+    }
+    for (AttributeDefinition attr : owner.getAttributes()) {
+      if (attr.getName().equals(attrname) || (objname + "_" + attr.getName()).equals(attrname)) {
+        return true;
+      }
+    }
+    if ("created_time".equals(attrname) ||
+        "modified_time".equals(attrname) ||
+        "state".equals(attrname) ||
+        "modifier_id".equals(attrname) ||
+        "last_modified_time".equals(attrname)) {
+      return true;
+    }
+    return false;
   }
 
   private ModelbaseHelper() {
