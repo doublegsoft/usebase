@@ -1,6 +1,7 @@
 package io.doublegsoft.usebase.output;
 
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
+import com.doublegsoft.jcommons.programming.java.JavaNamingConvention;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
@@ -40,6 +41,7 @@ public class TemplateOutputWriter {
 
     Map<String, Object> data = new HashMap<>();
     data.put("usecase", usecase);
+    data.put("java", new JavaNamingConvention());
     Template tpl = FREEMARKER.getTemplate(templateName);
     try {
       tpl.process(data, writer);

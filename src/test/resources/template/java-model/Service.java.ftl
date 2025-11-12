@@ -1,8 +1,8 @@
 
-
+<#assign paramObj = usecase.parameterizedObject>
 class Service {
 
-  void ${usecase.getName()}() {
+  ${java.nameVariable(usecase.getName())}(${java.nameType(paramObj.name?substring(1))}Request request) throws ServiceException {
 
   }
 

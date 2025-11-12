@@ -103,6 +103,11 @@
   <dependencies>
     <dependency>
       <groupId>com.doublegsoft.jcommons</groupId>
+      <artifactId>jcommons-programming</artifactId>
+      <version>2.5</version>
+    </dependency>
+    <dependency>
+      <groupId>com.doublegsoft.jcommons</groupId>
       <artifactId>jcommons-metabean</artifactId>
       <version>6.0</version>
     </dependency>
