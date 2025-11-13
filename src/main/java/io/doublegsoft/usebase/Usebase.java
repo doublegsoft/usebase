@@ -20,10 +20,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class Usebase {
 
@@ -445,7 +442,12 @@ public class Usebase {
         throw new RuntimeException("multi-objects aggregate defined in search or assignment statement not allowed");
       }
     }
+
     for (int i = 0; i < ctx.usebase_data().size(); i++) {
+      io.doublegsoft.usebase.UsebaseParser.Usebase_conditionsContext ctxConds = null;
+      if (i > 0) {
+        ctxConds = ctx.usebase_conditions(i - 1);
+      }
       io.doublegsoft.usebase.UsebaseParser.Usebase_dataContext ctxData = ctx.usebase_data(i);
       if (ctxData.usebase_object() != null) {
         io.doublegsoft.usebase.UsebaseParser.Usebase_objectContext ctxObj = ctxData.usebase_object();
@@ -461,13 +463,17 @@ public class Usebase {
             if (ctxAttr.usebase_validation() != null) {
               attrInObj.getConstraint().setNullable(false);
             }
+            // 处理关联关系
+            decorateAttributeByConnection(attrInObj, ctxConds);
           }
         } else {
           // 只有对象，为指定（选择）任何对象中的属性
           ObjectDefinition objInDataModel = dataModel.findObjectByName(ctxObj.name.getText());
           for (AttributeDefinition attrDef : objInDataModel.getAttributes()) {
             if (!ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), obj)) {
-              ModelbaseHelper.cloneAttribute(attrDef, obj);
+              AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, obj);
+              // 处理关联关系
+              decorateAttributeByConnection(attrInObj, ctxConds);
             }
           }
         }
@@ -481,6 +487,7 @@ public class Usebase {
       } else if (ctxData.usebase_array() != null) {
         // 数组会额外产生内联对象
         assembleArray(ctxData.usebase_array(), obj, statement, usecase);
+        // TODO: 处理关联关系
       } else if (ctxData.usebase_derivative() != null) {
         AttributeDefinition attrDeri = new AttributeDefinition(ctxData.usebase_derivative().name.getText(), obj);
         io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctxData.usebase_derivative().usebase_calculate();
@@ -494,6 +501,8 @@ public class Usebase {
             attrDeri.setType(pt);
           }
         }
+        // 处理关联关系
+        decorateAttributeByConnection(attrDeri, ctxConds);
       }
     }
   }
@@ -642,5 +651,46 @@ public class Usebase {
   private String getOriginalText(ParserRuleContext ctx) {
     Interval intv = new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
     return ctx.start.getInputStream().getText(intv);
+  }
+
+  private void decorateAttributeByConnection(AttributeDefinition attr,
+                                             io.doublegsoft.usebase.UsebaseParser.Usebase_conditionsContext ctxConds) {
+    if (ctxConds == null) {
+      return;
+    }
+    Map<String, String> options = attr.getLabelledOptions("original");
+    if (options == null) {
+      options = new HashMap<>();
+      attr.setLabelledOptions("original", options);
+    }
+    if (ctxConds.isEmpty()) {
+      // TODO
+    } else {
+      for (io.doublegsoft.usebase.UsebaseParser.Usebase_conditionContext ctxCond : ctxConds.usebase_condition()) {
+        String leftSide = ctxCond.anybase_identifier().getText();
+        String rightSide = null;
+        if (ctxCond.anybase_value().anybase_identifier() != null) {
+          rightSide = ctxCond.anybase_value().anybase_identifier().getText();
+        } else {
+          rightSide = ctxCond.anybase_value().getText();
+        }
+        AttributeDefinition leftSideAttr = findAttributeInDataModel(leftSide);
+        AttributeDefinition rightSideAttr = findAttributeInDataModel(rightSide);
+        if (leftSideAttr != null && rightSideAttr != null) {
+          options.put("sourceObject", leftSideAttr.getParent().getName());
+          options.put("sourceAttribute", leftSideAttr.getName());
+          options.put("targetObject", rightSideAttr.getParent().getName());
+          options.put("targetAttribute", rightSideAttr.getName());
+        }
+      }
+    }
+  }
+
+  private AttributeDefinition findAttributeInDataModel(String expr) {
+    String[] names = expr.split("\\.");
+    if (names.length == 1) {
+      return null;
+    }
+    return dataModel.findAttributeByNames(names[0], names[1]);
   }
 }
