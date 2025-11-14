@@ -456,25 +456,23 @@ public class Usebase {
           // 显示指定（选择）了对象的属性
           for (io.doublegsoft.usebase.UsebaseParser.Usebase_attributeContext ctxAttr : ctxObj.usebase_attributes().usebase_attribute()) {
             AttributeDefinition attrDef = dataModel.findAttributeByNames(ctxObj.name.getText(), ctxAttr.name.getText());
-            if (ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), obj)) {
-              continue;
-            }
             AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, obj);
             if (ctxAttr.usebase_validation() != null) {
               attrInObj.getConstraint().setNullable(false);
             }
             // 处理关联关系
-            decorateAttributeByConnection(attrInObj, ctxConds);
+            decorateConjunctionForAttribute(attrInObj, ctxConds);
           }
         } else {
           // 只有对象，为指定（选择）任何对象中的属性
           ObjectDefinition objInDataModel = dataModel.findObjectByName(ctxObj.name.getText());
           for (AttributeDefinition attrDef : objInDataModel.getAttributes()) {
-            if (!ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), obj)) {
-              AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, obj);
-              // 处理关联关系
-              decorateAttributeByConnection(attrInObj, ctxConds);
+            if (ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), obj) || attrDef.getType().isCollection()) {
+              continue;
             }
+            AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, obj);
+            // 处理关联关系
+            decorateConjunctionForAttribute(attrInObj, ctxConds);
           }
         }
         if (ctxData.usebase_object().usebase_source() != null) {
@@ -487,6 +485,8 @@ public class Usebase {
       } else if (ctxData.usebase_array() != null) {
         // 数组会额外产生内联对象
         assembleArray(ctxData.usebase_array(), obj, statement, usecase);
+        AttributeDefinition attrArray = obj.getAttributes()[obj.getAttributes().length - 1];
+        decorateConjunctionForAttribute(attrArray, ctxConds);
         // TODO: 处理关联关系
       } else if (ctxData.usebase_derivative() != null) {
         AttributeDefinition attrDeri = new AttributeDefinition(ctxData.usebase_derivative().name.getText(), obj);
@@ -502,7 +502,7 @@ public class Usebase {
           }
         }
         // 处理关联关系
-        decorateAttributeByConnection(attrDeri, ctxConds);
+        decorateConjunctionForAttribute(attrDeri, ctxConds);
       }
     }
   }
@@ -653,35 +653,53 @@ public class Usebase {
     return ctx.start.getInputStream().getText(intv);
   }
 
-  private void decorateAttributeByConnection(AttributeDefinition attr,
-                                             io.doublegsoft.usebase.UsebaseParser.Usebase_conditionsContext ctxConds) {
+  private void decorateConjunctionForAttribute(AttributeDefinition attr,
+                                               io.doublegsoft.usebase.UsebaseParser.Usebase_conditionsContext ctxConds) {
     if (ctxConds == null) {
       return;
     }
-    Map<String, String> options = attr.getLabelledOptions("original");
-    if (options == null) {
-      options = new HashMap<>();
-      attr.setLabelledOptions("original", options);
-    }
-    if (ctxConds.isEmpty()) {
-      // TODO
-    } else {
-      for (io.doublegsoft.usebase.UsebaseParser.Usebase_conditionContext ctxCond : ctxConds.usebase_condition()) {
-        String leftSide = ctxCond.anybase_identifier().getText();
-        String rightSide = null;
+
+    Map<String, String> original = attr.getLabelledOptions("original");
+    int index = 0;
+    for (io.doublegsoft.usebase.UsebaseParser.Usebase_conditionContext ctxCond : ctxConds.usebase_condition()) {
+      Map<String, String> conjunction = new HashMap<>();
+      if (index == 0) {
+        attr.setLabelledOptions("conjunction", conjunction);
+      } else {
+        attr.setLabelledOptions("conjunction_" + index, conjunction);
+      }
+      index++;
+      String leftSide = ctxCond.anybase_identifier().getText();
+      String rightSide = null;
+      if (ctxCond.anybase_value() != null) {
         if (ctxCond.anybase_value().anybase_identifier() != null) {
           rightSide = ctxCond.anybase_value().anybase_identifier().getText();
         } else {
           rightSide = ctxCond.anybase_value().getText();
         }
-        AttributeDefinition leftSideAttr = findAttributeInDataModel(leftSide);
-        AttributeDefinition rightSideAttr = findAttributeInDataModel(rightSide);
-        if (leftSideAttr != null && rightSideAttr != null) {
-          options.put("sourceObject", leftSideAttr.getParent().getName());
-          options.put("sourceAttribute", leftSideAttr.getName());
-          options.put("targetObject", rightSideAttr.getParent().getName());
-          options.put("targetAttribute", rightSideAttr.getName());
+      }
+      AttributeDefinition leftSideAttr = findAttributeInDataModel(leftSide);
+      AttributeDefinition rightSideAttr = null;
+      // TODO: rightSide是常量的情况
+      if (rightSide != null) {
+        rightSideAttr = findAttributeInDataModel(rightSide);
+      }
+      if (leftSideAttr != null && rightSideAttr != null) {
+        if (original.get("object").equals(leftSideAttr.getParent().getName())) {
+          conjunction.put("source_object", leftSideAttr.getParent().getName());
+          conjunction.put("source_attribute", leftSideAttr.getName());
+          conjunction.put("target_object", rightSideAttr.getParent().getName());
+          conjunction.put("target_attribute", rightSideAttr.getName());
+        } else if (original.get("object").equals(rightSideAttr.getParent().getName())) {
+          conjunction.put("source_object", rightSideAttr.getParent().getName());
+          conjunction.put("source_attribute", rightSideAttr.getName());
+          conjunction.put("target_object", leftSideAttr.getParent().getName());
+          conjunction.put("target_attribute", leftSideAttr.getName());
+        } else {
+          throw new IllegalArgumentException("not found attribute's object in conjunction expression");
         }
+      } else if (leftSide != null) {
+        conjunction.put("name", leftSide);
       }
     }
   }

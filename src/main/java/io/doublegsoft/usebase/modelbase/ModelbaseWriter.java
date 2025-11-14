@@ -93,8 +93,9 @@ public class ModelbaseWriter {
     String origObj4Obj = null;
     if (attr.getLabelledOptions("original") != null &&
         attr.getLabelledOptions("original").get("attribute") != null) {
-      origObj4Attr = attr.getLabelledOptions("original").get("object");
-      origAttr4Attr = attr.getLabelledOptions("original").get("attribute");
+      Map<String, String> original = attr.getLabelledOptions("original");
+      origObj4Attr = original.get("object");
+      origAttr4Attr = original.get("attribute");
       writer.write("  ");
       writer.write("@original(");
       writer.write("object='");
@@ -103,6 +104,7 @@ public class ModelbaseWriter {
       writer.write(origAttr4Attr);
       writer.write("')\n");
     }
+    annotateConjunctionForAttribute(attr);
     if (origObj4Attr == null && attr.getParent().isLabelled("original")) {
       origObj4Obj = attr.getParent().getLabelledOptions("original").get("object");
     }
@@ -157,4 +159,67 @@ public class ModelbaseWriter {
     return true;
   }
 
+  private void annotateConjunctionForAttribute(AttributeDefinition attr) throws IOException {
+    annotateConjunctionForAttribute(attr, 0);
+    for (int i = 1; i <= 9; i++) {
+      annotateConjunctionForAttribute(attr, i);
+    }
+  }
+
+  private void annotateConjunctionForAttribute(AttributeDefinition attr, int index) throws IOException {
+    Map<String, String> conjunction = null;
+    boolean appendedAttribute = false;
+    if (index <= 0) {
+      conjunction = attr.getLabelledOptions("conjunction");
+    } else {
+      conjunction = attr.getLabelledOptions("conjunction_" + index);
+    }
+    if (conjunction != null && !conjunction.isEmpty()) {
+      writer.write("  ");
+      writer.write("@conjunction(");
+      if (conjunction.containsKey("name")) {
+        writer.write("name='");
+        writer.write(conjunction.get("name"));
+        writer.write("'");
+        appendedAttribute = true;
+      }
+      if (conjunction.containsKey("source_object")) {
+        if (appendedAttribute) {
+          writer.write(", ");
+        }
+        writer.write("source_object='");
+        writer.write(conjunction.get("source_object"));
+        writer.write("'");
+        appendedAttribute = true;
+      }
+      if (conjunction.containsKey("source_attribute")) {
+        if (appendedAttribute) {
+          writer.write(", ");
+        }
+        writer.write("source_attribute='");
+        writer.write(conjunction.get("source_attribute"));
+        writer.write("'");
+        appendedAttribute = true;
+      }
+      if (conjunction.containsKey("target_object")) {
+        if (appendedAttribute) {
+          writer.write(", ");
+        }
+        writer.write("target_object='");
+        writer.write(conjunction.get("target_object"));
+        writer.write("'");
+        appendedAttribute = true;
+      }
+      if (conjunction.containsKey("target_attribute")) {
+        if (appendedAttribute) {
+          writer.write(", ");
+        }
+        writer.write("target_attribute='");
+        writer.write(conjunction.get("target_attribute"));
+        writer.write("'");
+        appendedAttribute = true;
+      }
+      writer.write(")\n");
+    }
+  }
 }
