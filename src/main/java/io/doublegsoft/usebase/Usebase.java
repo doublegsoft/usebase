@@ -12,6 +12,7 @@ import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.*;
+import com.doublegsoft.jcommons.utils.Inflector;
 import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -487,7 +488,6 @@ public class Usebase {
         assembleArray(ctxData.usebase_array(), obj, statement, usecase);
         AttributeDefinition attrArray = obj.getAttributes()[obj.getAttributes().length - 1];
         decorateConjunctionForAttribute(attrArray, ctxConds);
-        // TODO: 处理关联关系
       } else if (ctxData.usebase_derivative() != null) {
         AttributeDefinition attrDeri = new AttributeDefinition(ctxData.usebase_derivative().name.getText(), obj);
         io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctxData.usebase_derivative().usebase_calculate();
@@ -586,7 +586,7 @@ public class Usebase {
         throw new RuntimeException("object named \"" +ctx.name.getText() +"\" not found in data model");
       }
       if (attrName == null) {
-        attrName = objInDataModel.getName();
+        attrName = Inflector.getInstance().pluralize(objInDataModel.getName());
       }
       if (owner instanceof ReturnedObjectDefinition) {
         for (AttributeDefinition attrDef : objInDataModel.getAttributes()) {
