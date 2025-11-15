@@ -9,11 +9,8 @@ import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
-import io.doublegsoft.usebase.modelbase.ModelbaseWriter;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.io.StringWriter;
 
 public class IdentityAndAccessManagementSpec extends SpecBase {
 
@@ -213,8 +210,10 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
     ParameterizedObjectDefinition paramObj = usecase.getParameterizedObject();
 
+    String codeRoot = "java-tx@spring-1.x/src/main/java/$namespace$/$app$";
     printUsecaseForModelbase(usecase);
-    printJavaModelForUsecase("Service.java.ftl", usecase);
+    printJavaCodeForUsecase(codeRoot + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase);
+//    printJavaCodeForUsecase("Service.java.ftl", usecase);
 //    UsebaseSave stmt0 = (UsebaseSave) usecase.getStatements().get(0);
 //    UsebaseRemote remote = stmt0.getRemote();
 //    Assert.assertEquals("http", remote.getScheme());

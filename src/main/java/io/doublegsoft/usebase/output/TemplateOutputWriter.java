@@ -8,6 +8,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import io.doublegsoft.typebase.Typebase;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,12 +37,18 @@ public class TemplateOutputWriter {
   }
 
   public TemplateOutputWriter write(String templateName, UsecaseDefinition usecase) throws IOException {
+    return write(templateName, usecase, new HashMap<>());
+  }
+
+  public TemplateOutputWriter write(String templateName, UsecaseDefinition usecase, Map<String,Object> others) throws IOException {
     MultiTemplateLoader templateLoader = new MultiTemplateLoader(loaders.toArray(new TemplateLoader[0]));
     FREEMARKER.setTemplateLoader(templateLoader);
 
     Map<String, Object> data = new HashMap<>();
     data.put("usecase", usecase);
     data.put("java", new JavaNamingConvention());
+    data.put("typebase", new Typebase());
+    data.putAll(others);
     Template tpl = FREEMARKER.getTemplate(templateName);
     try {
       tpl.process(data, writer);

@@ -11,7 +11,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SpecBase {
 
@@ -48,11 +50,17 @@ public class SpecBase {
     System.out.println(sw);
   }
 
-  protected void printJavaModelForUsecase(String templateName, UsecaseDefinition usecase) throws IOException {
+  protected void printJavaCodeForUsecase(String templateName, UsecaseDefinition usecase) throws IOException {
     StringWriter sw = new StringWriter();
+    Map<String,Object> app = new HashMap<>();
+    app.put("name", "test");
+    Map<String,Object> data = new HashMap<>();
     TemplateOutputWriter writer = new TemplateOutputWriter(sw,
-        "src/test/resources/template/java-model");
-    writer.write(templateName, usecase);
+        "../usebase-data",
+        "../usebase-data/java");
+    data.put("namespace", "hello.world");
+    data.put("app", app);
+    writer.write(templateName, usecase, data);
     System.out.println(sw);
   }
 

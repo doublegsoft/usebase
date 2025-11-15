@@ -33,7 +33,7 @@ public class ModelbaseWriter {
   public ModelbaseWriter write(ParameterizedObjectDefinition obj) throws IOException {
     writer.write("@request\n");
     String name = obj.getName().substring(1);
-    name += "_request";
+    name += "_params";
     writer.write(name);
     writer.write("<\n\n");
     int index = 0;
@@ -60,7 +60,7 @@ public class ModelbaseWriter {
     }
     writer.write("@response\n");
     String name = obj.getName().substring(1);
-    name += "_response";
+    name += "_result";
     writer.write(name);
     writer.write("<\n\n");
     int index = 0;

@@ -13,6 +13,7 @@ import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metabean.type.CustomType;
+import com.doublegsoft.jcommons.metabean.type.DomainType;
 
 import java.util.*;
 
@@ -109,6 +110,8 @@ public final class ModelbaseHelper {
     retVal.setUnit(original.getUnit());
     retVal.setAlias(original.getAlias());
     retVal.setType(original.getType());
+    // FIXME: ACCURATE DOMAIN TYPE EXPRESSION
+    retVal.getConstraint().setDomainType(new DomainType(original.getName()));
     retVal.setSingular(original.getSingular());
     retVal.setPlural(original.getPlural());
     retVal.setPersistenceName(original.getPersistenceName());
