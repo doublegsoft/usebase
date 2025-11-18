@@ -203,7 +203,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
   public void test_iam_save_person_user_roles_and_remote_log() throws Exception {
     ModelDefinition dataModel = loadModel("sms", "iam");
     String expr =
-        "@save_user_with_roles({person}#(national_id, person_name) <person.id=user.id> {user} <user_role> [role])";
+        "@save_user_with_roles({person}#(national_id!, person_name!) <person.id=user.id> {user} <user_role> [role])";
 //            "  |+| {audit_log: name = person_name, audit_time = now, modifier_id = 'SYS'} " +
 //            "      @http://log.storage.com/audit";
     Usebase usebase = new Usebase(dataModel);

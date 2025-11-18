@@ -70,6 +70,9 @@ public class Usebase {
           if (arg.value != null) {
             attr.getConstraint().setDefaultValue(arg.value.getText());
           }
+          if (arg.usebase_validation() != null && arg.usebase_validation().required != null) {
+            attr.getConstraint().setNullable(false);
+          }
         }
       }
       retVal.setParameterizedObject(paramObj);
@@ -384,6 +387,9 @@ public class Usebase {
         if (ctxArg.value != null) {
           propagatingAttrDef.getConstraint().setDefaultValue(ctxArg.value.getText());
         }
+        if (ctxArg.usebase_validation() != null && ctxArg.usebase_validation().required != null) {
+          propagatingAttrDef.getConstraint().setNullable(false);
+        }
       }
     }
   }
@@ -451,8 +457,9 @@ public class Usebase {
       }
       io.doublegsoft.usebase.UsebaseParser.Usebase_dataContext ctxData = ctx.usebase_data(i);
       if (ctxData.usebase_object() != null) {
+        String originalObjName = ctxData.usebase_object().name.getText();
         io.doublegsoft.usebase.UsebaseParser.Usebase_objectContext ctxObj = ctxData.usebase_object();
-        ModelbaseHelper.addOptions(obj, "original", "object", ctxData.usebase_object().name.getText());
+        ModelbaseHelper.addOptions(obj, "original", "object", originalObjName);
         if (ctxObj.usebase_attributes() != null) {
           // 显示指定（选择）了对象的属性
           for (io.doublegsoft.usebase.UsebaseParser.Usebase_attributeContext ctxAttr : ctxObj.usebase_attributes().usebase_attribute()) {
@@ -463,6 +470,20 @@ public class Usebase {
             }
             // 处理关联关系
             decorateConjunctionForAttribute(attrInObj, ctxConds);
+          }
+        } else if (ctxObj.usebase_arguments() != null) {
+          // TODO
+          for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext ctxArg : ctxObj.usebase_arguments().usebase_argument()) {
+            AttributeDefinition attrDef = dataModel.findAttributeByNames(originalObjName, ctxArg.anybase_identifier().getText());
+            if (attrDef == null) {
+              attrDef = dataModel.findAttributeByNames(originalObjName, ctxArg.anybase_identifier().getText().replace(originalObjName + "_", ""));
+            }
+            if (attrDef != null) {
+              AttributeDefinition clonedAttr = ModelbaseHelper.cloneAttribute(ctxArg.anybase_identifier().getText(), attrDef, obj);
+              if (ctxArg.usebase_validation() != null) {
+                clonedAttr.getConstraint().setNullable(false);
+              }
+            }
           }
         } else {
           // 只有对象，为指定（选择）任何对象中的属性

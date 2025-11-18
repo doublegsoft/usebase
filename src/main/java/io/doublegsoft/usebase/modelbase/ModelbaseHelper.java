@@ -102,11 +102,28 @@ public final class ModelbaseHelper {
    * @return the cloned attribute
    */
   public static AttributeDefinition cloneAttribute(AttributeDefinition original, ObjectDefinition owner) {
+    return cloneAttribute(original.getName(), original, owner);
+  }
+
+  public static AttributeDefinition cloneAttribute(String compoundName, ObjectDefinition owner, ModelDefinition dataModel) {
+    String[] strs = compoundName.split("\\.");
+    if (strs.length == 1) {
+      throw new IllegalArgumentException("there is no object name defined in name: " + compoundName);
+    }
+    if (strs.length > 2) {
+      throw new IllegalArgumentException("there is more hierarchical names defined in name: " + compoundName);
+    }
+    AttributeDefinition attrDef = dataModel.findAttributeByNames(strs[0], strs[1]);
+    AttributeDefinition retVal = cloneAttribute(attrDef, owner);
+    return retVal;
+  }
+
+  public static AttributeDefinition cloneAttribute(String alias, AttributeDefinition original, ObjectDefinition owner) {
     AttributeDefinition retVal = owner.getModel().findAttributeByNames(owner.getName(), original.getName());
     if (retVal != null) {
       return retVal;
     }
-    retVal = new AttributeDefinition(original.getName(), owner);
+    retVal = new AttributeDefinition(alias, owner);
     retVal.setUnit(original.getUnit());
     retVal.setAlias(original.getAlias());
     retVal.setType(original.getType());
@@ -129,19 +146,6 @@ public final class ModelbaseHelper {
     }
     addOptions(retVal, "original", "object", original.getParent().getName());
     addOptions(retVal, "original", "attribute", original.getName());
-    return retVal;
-  }
-
-  public static AttributeDefinition cloneAttribute(String name, ObjectDefinition owner, ModelDefinition dataModel) {
-    String[] strs = name.split("\\.");
-    if (strs.length == 1) {
-      throw new IllegalArgumentException("there is no object name defined in name: " + name);
-    }
-    if (strs.length > 2) {
-      throw new IllegalArgumentException("there is more hierarchical names defined in name: " + name);
-    }
-    AttributeDefinition attrDef = dataModel.findAttributeByNames(strs[0], strs[1]);
-    AttributeDefinition retVal = cloneAttribute(attrDef, owner);
     return retVal;
   }
 

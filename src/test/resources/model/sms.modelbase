@@ -9,11 +9,11 @@ person<
 
   @persistence(name='natid')
   @name(label='身份证号')
-  national_id: string(100),
+  national_id!: string(100),
 
   @persistence(name='persnm')
   @name(label='姓名')
-  name: string(255),
+  name!: string(255),
 
   @persistence(name='sts')
   @name(label='状态')
