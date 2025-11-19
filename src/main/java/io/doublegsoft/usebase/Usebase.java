@@ -10,6 +10,7 @@ import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
+import com.doublegsoft.jcommons.metabean.type.CustomType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.*;
 import com.doublegsoft.jcommons.utils.Inflector;
@@ -604,7 +605,7 @@ public class Usebase {
     } else if (ctx.name != null) {
       ObjectDefinition objInDataModel = dataModel.findObjectByName(ctx.name.getText());
       if (objInDataModel == null) {
-        throw new RuntimeException("object named \"" +ctx.name.getText() +"\" not found in data model");
+        throw new RuntimeException("object named \"" +ctx.name.getText() + "\" not found in data model");
       }
       if (attrName == null) {
         attrName = Inflector.getInstance().pluralize(objInDataModel.getName());
@@ -616,7 +617,7 @@ public class Usebase {
           }
         }
       }
-      attrType.setComponentType(objInDataModel);
+      attrType.setComponentType(new CustomType(objInDataModel.getName(), objInDataModel));
       if (ctx.usebase_source() != null) {
         ModelbaseHelper.addOptions(owner, "original", "source",
             ctx.usebase_source().anybase_identifier().getText());

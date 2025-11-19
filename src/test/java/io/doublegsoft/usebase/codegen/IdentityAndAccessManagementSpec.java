@@ -212,7 +212,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
 
     String codeRoot = "java-tx@spring-1.x/src/main/java/$namespace$/$app$";
     printUsecaseForModelbase(usecase);
-    printJavaCodeForUsecase(codeRoot + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase);
+    printJavaCodeForUsecase(codeRoot + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
 //    printJavaCodeForUsecase("Service.java.ftl", usecase);
 //    UsebaseSave stmt0 = (UsebaseSave) usecase.getStatements().get(0);
 //    UsebaseRemote remote = stmt0.getRemote();

@@ -102,7 +102,11 @@ public final class ModelbaseHelper {
    * @return the cloned attribute
    */
   public static AttributeDefinition cloneAttribute(AttributeDefinition original, ObjectDefinition owner) {
-    return cloneAttribute(original.getName(), original, owner);
+    String attrname = original.getName();
+    if (attrname.equals("id") || attrname.equals("name")) {
+      attrname = original.getParent().getName() + "_" + attrname;
+    }
+    return cloneAttribute(attrname, original, owner);
   }
 
   public static AttributeDefinition cloneAttribute(String compoundName, ObjectDefinition owner, ModelDefinition dataModel) {
@@ -114,7 +118,11 @@ public final class ModelbaseHelper {
       throw new IllegalArgumentException("there is more hierarchical names defined in name: " + compoundName);
     }
     AttributeDefinition attrDef = dataModel.findAttributeByNames(strs[0], strs[1]);
-    AttributeDefinition retVal = cloneAttribute(attrDef, owner);
+    String attrname = attrDef.getName();
+    if (attrname.equals("id") || attrname.equals("name")) {
+      attrname = attrDef.getParent().getName() + "_" + attrname;
+    }
+    AttributeDefinition retVal = cloneAttribute(attrname, attrDef, owner);
     return retVal;
   }
 

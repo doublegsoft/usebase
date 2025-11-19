@@ -50,7 +50,7 @@ public class SpecBase {
     System.out.println(sw);
   }
 
-  protected void printJavaCodeForUsecase(String templateName, UsecaseDefinition usecase) throws IOException {
+  protected void printJavaCodeForUsecase(String templateName, UsecaseDefinition usecase, ModelDefinition dataModel) throws IOException {
     StringWriter sw = new StringWriter();
     Map<String,Object> app = new HashMap<>();
     app.put("name", "test");
@@ -60,6 +60,7 @@ public class SpecBase {
         "../usebase-data/java");
     data.put("namespace", "hello.world");
     data.put("app", app);
+    data.put("model", dataModel);
     writer.write(templateName, usecase, data);
     System.out.println(sw);
   }
