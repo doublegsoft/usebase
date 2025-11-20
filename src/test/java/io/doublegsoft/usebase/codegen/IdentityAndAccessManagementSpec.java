@@ -46,14 +46,14 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ParameterizedObjectDefinition paramObj = usecase.getParameterizedObject();
     Assert.assertEquals("$save_user", paramObj.getName());
 
-    Assert.assertEquals("id", paramObj.getAttributes()[0].getName());
+    Assert.assertEquals("user_id", paramObj.getAttributes()[0].getName());
     Assert.assertEquals("username", paramObj.getAttributes()[1].getName());
     Assert.assertEquals("password", paramObj.getAttributes()[2].getName());
     Assert.assertEquals("email", paramObj.getAttributes()[3].getName());
     Assert.assertEquals("status", paramObj.getAttributes()[4].getName());
 
     ObjectDefinition ret = usecase.getReturnedObject();
-    Assert.assertEquals("id", ret.getAttributes()[0].getName());
+    Assert.assertEquals("user_id", ret.getAttributes()[0].getName());
   }
 
   /**
@@ -145,7 +145,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
         "|@| @remove_user_from_session(#session, id) \n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     ObjectDefinition obj = usecase.getParameterizedObject();
-    Assert.assertEquals("id", obj.getAttributes()[0].getName());
+    Assert.assertEquals("user_id", obj.getAttributes()[0].getName());
     obj = usecase.getReturnedObject();
     Assert.assertNull("没有返回值的定义才是正确的", obj);
 

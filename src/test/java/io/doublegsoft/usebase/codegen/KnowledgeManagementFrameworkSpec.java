@@ -57,6 +57,6 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
 
     ObjectDefinition ret = usecase.getReturnedObject();
     Assert.assertEquals("knowledge_entry", ret.getAttributes()[0].getLabelledOptions("original").get("object"));
-    Assert.assertEquals("id", ret.getAttributes()[0].getName());
+    Assert.assertEquals("knowledge_entry_id", ret.getAttributes()[0].getName());
   }
 }

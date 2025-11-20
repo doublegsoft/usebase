@@ -86,7 +86,7 @@ public class HumanResourceManagementSpec extends SpecBase {
     ParameterizedObjectDefinition paramObj = usecase.getParameterizedObject();
     Assert.assertEquals("employee", paramObj.getLabelledOptions("original").get("object"));
     Assert.assertEquals(1, paramObj.getAttributes().length);
-    Assert.assertEquals("id", paramObj.getAttributes()[0].getName());
+    Assert.assertEquals("employee_id", paramObj.getAttributes()[0].getName());
   }
 
   @Test
@@ -100,7 +100,7 @@ public class HumanResourceManagementSpec extends SpecBase {
     ParameterizedObjectDefinition paramObj = usecase.getParameterizedObject();
     Assert.assertEquals("employee", paramObj.getLabelledOptions("original").get("object"));
     Assert.assertEquals(1, paramObj.getAttributes().length);
-    Assert.assertEquals("id", paramObj.getAttributes()[0].getName());
+    Assert.assertEquals("employee_id", paramObj.getAttributes()[0].getName());
   }
 
 }

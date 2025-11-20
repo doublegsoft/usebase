@@ -473,17 +473,29 @@ public class Usebase {
             decorateConjunctionForAttribute(attrInObj, ctxConds);
           }
         } else if (ctxObj.usebase_arguments() != null) {
-          // TODO
           for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext ctxArg : ctxObj.usebase_arguments().usebase_argument()) {
-            AttributeDefinition attrDef = dataModel.findAttributeByNames(originalObjName, ctxArg.anybase_identifier().getText());
-            if (attrDef == null) {
-              attrDef = dataModel.findAttributeByNames(originalObjName, ctxArg.anybase_identifier().getText().replace(originalObjName + "_", ""));
-            }
-            if (attrDef != null) {
-              AttributeDefinition clonedAttr = ModelbaseHelper.cloneAttribute(ctxArg.anybase_identifier().getText(), attrDef, obj);
-              if (ctxArg.usebase_validation() != null) {
-                clonedAttr.getConstraint().setNullable(false);
+            AttributeDefinition attrDef = null;
+            if (ctxArg.anybase_identifier() != null) {
+              // (employee_name, national_id)
+              attrDef = dataModel.findAttributeByNames(originalObjName, ctxArg.anybase_identifier().getText());
+              if (attrDef == null) {
+                attrDef = dataModel.findAttributeByNames(originalObjName, ctxArg.anybase_identifier().getText().replace(originalObjName + "_", ""));
               }
+              if (attrDef != null) {
+                AttributeDefinition clonedAttr = ModelbaseHelper.cloneAttribute(ctxArg.anybase_identifier().getText(), attrDef, obj);
+                if (ctxArg.usebase_validation() != null) {
+                  clonedAttr.getConstraint().setNullable(false);
+                }
+                if (ctxObj.usebase_operator_hash() != null) {
+                  // 说明需要用来作为唯一性判断条件
+                  obj.setLabelledOption("unique", "object", ctxObj.name.getText());
+                  obj.addLabelledOption("unique", "attribute", clonedAttr.getName());
+                }
+              }
+            } else if (ctxArg.usebase_aggregate() != null) {
+              // TODO: 其他情况
+            } else if (ctxArg.value != null) {
+              // TODO: 其他情况
             }
           }
         } else {

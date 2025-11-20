@@ -38,7 +38,7 @@ public class WorkflowManagementSpec extends SpecBase {
 
     ObjectDefinition ret = usecase.getReturnedObject();
     Assert.assertEquals("workflow_instance", ret.getAttributes()[0].getLabelledOptions("original").get("object"));
-    Assert.assertEquals("id", ret.getAttributes()[0].getName());
+    Assert.assertEquals("workflow_instance_id", ret.getAttributes()[0].getName());
 
     Assert.assertEquals(10, usecase.getStatements().size());
 
@@ -81,19 +81,19 @@ public class WorkflowManagementSpec extends SpecBase {
 
     ObjectDefinition wfdefArgsObj = usecase.getContextModel().findObjectByName("$wfdef");
     Assert.assertNotNull(wfdefArgsObj);
-    Assert.assertEquals("id", wfdefArgsObj.getAttributes()[0].getName());
+    Assert.assertEquals("workflow_definition_id", wfdefArgsObj.getAttributes()[0].getName());
     Assert.assertEquals("workflow_definition", wfdefArgsObj.getAttributes()[0]
         .getLabelledOptions("original").get("object"));
 
     ObjectDefinition wfactconnsObj = usecase.getContextModel().findObjectByName("#wfactconns");
     Assert.assertNotNull(wfactconnsObj);
-    Assert.assertEquals("workflow_action_connection", wfactconnsObj.getAttributes()[0].getName());
+    Assert.assertEquals("workflow_action_connections", wfactconnsObj.getAttributes()[0].getName());
     Assert.assertEquals("workflow_action_connection", ((CollectionType) wfactconnsObj.getAttributes()[0].getType())
         .getComponentType().getName());
 
     ObjectDefinition wfactconnsArgsObj = usecase.getContextModel().findObjectByName("$wfactconns");
     Assert.assertNotNull(wfactconnsArgsObj);
-    Assert.assertEquals("id", wfactconnsArgsObj.getAttributes()[0].getName());
+    Assert.assertEquals("workflow_definition_id", wfactconnsArgsObj.getAttributes()[0].getName());
     Assert.assertEquals("workflow_definition", wfactconnsArgsObj.getAttributes()[0]
         .getLabelledOptions("original").get("object"));
 
@@ -132,7 +132,7 @@ public class WorkflowManagementSpec extends SpecBase {
 
     ObjectDefinition ret = usecase.getReturnedObject();
     Assert.assertEquals("workflow_instance", ret.getAttributes()[0].getLabelledOptions("original").get("object"));
-    Assert.assertEquals("id", ret.getAttributes()[0].getName());
+    Assert.assertEquals("workflow_instance_id", ret.getAttributes()[0].getName());
 
     // 打印代码结构
     // printStatements(usecase.getStatements());
