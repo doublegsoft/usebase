@@ -330,6 +330,29 @@ public class Usebase {
         }
       }
       return retVal;
+    } else if (ctxExpr.usebase_invoke() != null) {
+      io.doublegsoft.usebase.UsebaseParser.Usebase_invokeContext ctxInvoke = ctxExpr.usebase_invoke();
+      StatementDefinition retVal = new StatementDefinition();
+      retVal.setOperator(ctx.usebase_operator().getText());
+      InvocationDefinition invocation = new InvocationDefinition();
+      String method = ctxInvoke.anybase_identifier().getText();
+      invocation.setMethod(method);
+      // 方法调用的参数，简单封装
+      if (ctxInvoke.usebase_arguments() != null) {
+        for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext ctxArg : ctxInvoke.usebase_arguments().usebase_argument()) {
+          if (ctxArg.anybase_identifier() != null) {
+            invocation.getArguments().add(ctxArg.anybase_identifier().getText());
+          }
+        }
+      }
+      if (ctxInvoke.msg != null) {
+        String msg = ctxInvoke.msg.getText();
+        msg = msg.substring(1, msg.length() - 1);
+        invocation.setError(msg);
+      }
+      retVal.setInvocation(invocation);
+      retVal.setOriginalText(getOriginalText(ctxExpr));
+      return retVal;
     } else {
       StatementDefinition retVal = new StatementDefinition();
       retVal.setOperator(ctx.usebase_operator().getText());
