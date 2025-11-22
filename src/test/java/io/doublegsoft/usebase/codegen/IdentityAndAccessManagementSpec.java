@@ -203,8 +203,11 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
   public void test_iam_save_person_user_roles_and_remote_log() throws Exception {
     ModelDefinition dataModel = loadModel("sms", "iam");
     String expr =
-        "@save_user_with_roles({person}#(national_id!, person_name!) <person.id=user.id> {user} <user_role> [role])" +
-        "|?| @validate_national_id_and_name(national_id, person_name)!'身份证号和姓名不匹配'";
+        "@save_user_with_roles({person}#(national_id!, person_name!) <person.id=user.id> {user} <user_role> [role]) \n" +
+        "|?| @validate_national_id_and_name(national_id, person_name)!'身份证号和姓名不匹配' \n" +
+        "|+| {person} \n" +
+        "|+| {user} \n" +
+        "|+| [user_role] \n";
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
     ParameterizedObjectDefinition paramObj = usecase.getParameterizedObject();

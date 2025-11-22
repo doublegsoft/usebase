@@ -328,6 +328,15 @@ public class Usebase {
         if (ctxObj.alias != null) {
           retVal.setVariable(ctxObj.alias.getText());
         }
+        retVal.setSaveObject(saveObj);
+      } else if (ctxExpr.var != null) {
+        String var = ctxExpr.var.getText();
+        retVal.setVariable(var);
+        // TODO: 在上下文环境中去找到var的object definition
+      } else if (ctxExpr.usebase_array() != null) {
+        io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctxArr = ctxExpr.usebase_array();
+        ObjectDefinition saveObj = new ObjectDefinition("#[]" + ctxArr.name.getText(), usecase.getContextModel());
+        retVal.setSaveObject(saveObj);
       }
       return retVal;
     } else if (ctxExpr.usebase_invoke() != null) {
@@ -500,9 +509,11 @@ public class Usebase {
             AttributeDefinition attrDef = null;
             if (ctxArg.anybase_identifier() != null) {
               // (employee_name, national_id)
-              attrDef = dataModel.findAttributeByNames(originalObjName, ctxArg.anybase_identifier().getText());
+              String attrname = ctxArg.anybase_identifier().getText();
+              attrDef = dataModel.findAttributeByNames(originalObjName, attrname);
               if (attrDef == null) {
-                attrDef = dataModel.findAttributeByNames(originalObjName, ctxArg.anybase_identifier().getText().replace(originalObjName + "_", ""));
+                attrDef = dataModel.findAttributeByNames(originalObjName,
+                    attrname.replace(originalObjName + "_", ""));
               }
               if (attrDef != null) {
                 AttributeDefinition clonedAttr = ModelbaseHelper.cloneAttribute(ctxArg.anybase_identifier().getText(), attrDef, obj);
@@ -516,9 +527,9 @@ public class Usebase {
                 }
               }
             } else if (ctxArg.usebase_aggregate() != null) {
-              // TODO: 其他情况
+              // TODO: 聚合
             } else if (ctxArg.value != null) {
-              // TODO: 其他情况
+              // TODO: 值
             }
           }
         } else {
