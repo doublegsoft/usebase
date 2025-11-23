@@ -332,7 +332,7 @@ public class Usebase {
       } else if (ctxExpr.var != null) {
         String var = ctxExpr.var.getText();
         retVal.setVariable(var);
-        // TODO: 在上下文环境中去找到var的object definition
+        // TODO: 在上下文环境中去找到var的ObjectDefinition
       } else if (ctxExpr.usebase_array() != null) {
         io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctxArr = ctxExpr.usebase_array();
         ObjectDefinition saveObj = new ObjectDefinition("#[]" + ctxArr.name.getText(), usecase.getContextModel());
@@ -370,6 +370,15 @@ public class Usebase {
     }
   }
 
+  /**
+   * Creates an {@link ObjectDefinition} instance from arguments context. TODO: ADD DESCRIPTION
+   *
+   * @param ctx
+   * @param container
+   * @param statement
+   * @param usecase
+   * @return
+   */
   private ObjectDefinition createObjectFromArguments(io.doublegsoft.usebase.UsebaseParser.Usebase_argumentsContext ctx,
                                                      ObjectDefinition container,
                                                      StatementDefinition statement,
