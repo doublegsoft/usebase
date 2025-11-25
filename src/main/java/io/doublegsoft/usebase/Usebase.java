@@ -74,6 +74,8 @@ public class Usebase {
           if (arg.usebase_validation() != null && arg.usebase_validation().required != null) {
             attr.getConstraint().setNullable(false);
           }
+          // always string type
+          attr.setType(new PrimitiveType("string"));
         }
       }
       retVal.setParameterizedObject(paramObj);

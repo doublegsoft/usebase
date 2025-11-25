@@ -14,6 +14,8 @@ import org.junit.Test;
 
 public class IdentityAndAccessManagementSpec extends SpecBase {
 
+  String TEMPLATE_ROOT = "java-tx@spring-1.x/src/main/java/$namespace$/$app$";
+
   /**
    * 查询用户。
    */
@@ -102,8 +104,8 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@login({user: username!, password!}, captcha!):{user} \n" +
-        "|=| encrypted_password = @bcrypt(password) \n" +
-        "|&| user = {user}#(username, encrypted_password)!'用户名与密码错误！'\n" +
+        "|:| encrypted_password = @bcrypt(password) \n" +
+        "|:| user = {user}#(username, encrypted_password)!'用户名与密码错误！'\n" +
         "|?| captcha != @get_captcha_from_session('captcha') !'验证码错误' \n" +
         "|@| @put_user_into_session(#session, user) \n" +
         "|.| user";
@@ -131,6 +133,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("encrypted_password", assign.getAssignee());
 
     printUsecaseForModelbase(usecase);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   /**
@@ -212,9 +215,8 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
     ParameterizedObjectDefinition paramObj = usecase.getParameterizedObject();
 
-    String codeRoot = "java-tx@spring-1.x/src/main/java/$namespace$/$app$";
     printUsecaseForModelbase(usecase);
-    printJavaCodeForUsecase(codeRoot + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
 //    printJavaCodeForUsecase("Service.java.ftl", usecase);
 //    UsebaseSave stmt0 = (UsebaseSave) usecase.getStatements().get(0);
 //    UsebaseRemote remote = stmt0.getRemote();
