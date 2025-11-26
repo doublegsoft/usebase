@@ -155,6 +155,14 @@ public class Usebase {
       }
     } else if (ctx.anybase_value() != null) {
       return createValue(ctx.anybase_value());
+    } else if (ctx.usebase_invoke() != null) {
+      io.doublegsoft.usebase.UsebaseParser.Usebase_invokeContext ctxInv = ctx.usebase_invoke();
+      InvocationDefinition inv = new InvocationDefinition();
+      retVal.setInvocation(inv);
+      inv.setMethod(ctxInv.anybase_identifier().getText());
+      if (ctxInv.msg != null) {
+        inv.setError(ctxInv.msg.getText());
+      }
     }
     retVal.setOriginalText(getOriginalText(ctx));
     return retVal;
