@@ -47,6 +47,7 @@ public class TemplateOutputWriter {
 
     Map<String, Object> data = new HashMap<>();
     data.put("usecase", usecase);
+    data.put("apiModel", usecase.getContextModel());
     data.put("java", new JavaNamingConvention());
     data.put("inflector", Inflector.getInstance());
     data.put("typebase", new Typebase());

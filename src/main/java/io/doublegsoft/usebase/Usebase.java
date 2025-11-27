@@ -442,6 +442,9 @@ public class Usebase {
         if (ctxArg.usebase_validation() != null && ctxArg.usebase_validation().required != null) {
           propagatingAttrDef.getConstraint().setNullable(false);
         }
+        if (ctxArg.anybase_id() != null) {
+          propagatingAttrDef.setAlias(ctxArg.anybase_id().getText());
+        }
       }
     }
   }
@@ -527,12 +530,16 @@ public class Usebase {
           for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext ctxArg : ctxObj.usebase_arguments().usebase_argument()) {
             AttributeDefinition attrDef = null;
             if (ctxArg.anybase_identifier() != null) {
-              // (employee_name, national_id)
               String attrname = ctxArg.anybase_identifier().getText();
               attrDef = dataModel.findAttributeByNames(originalObjName, attrname);
               if (attrDef == null) {
                 attrDef = dataModel.findAttributeByNames(originalObjName,
                     attrname.replace(originalObjName + "_", ""));
+              }
+              if (attrDef == null && ctxArg.anybase_id() != null) {
+                String alias = ctxArg.anybase_id().getText();
+                attrDef = dataModel.findAttributeByNames(originalObjName, alias);
+                attrDef.setAlias(alias);
               }
               if (attrDef != null) {
                 AttributeDefinition clonedAttr = ModelbaseHelper.cloneAttribute(ctxArg.anybase_identifier().getText(), attrDef, obj);
@@ -569,6 +576,11 @@ public class Usebase {
         }
         if (ctxData.usebase_object().usebase_arguments() != null) {
           createObjectFromArguments(ctxData.usebase_object().usebase_arguments(), obj, statement, usecase);
+        }
+        if (ctxData.usebase_object().msg != null) {
+          String msg = ctxData.usebase_object().msg.getText();
+          msg = msg.substring(1, msg.length() - 1);
+          obj.setLabelledOption("required", "message", msg);
         }
       } else if (ctxData.usebase_array() != null) {
         // 数组会额外产生内联对象
