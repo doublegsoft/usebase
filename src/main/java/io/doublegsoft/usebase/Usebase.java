@@ -161,7 +161,7 @@ public class Usebase {
       retVal.setInvocation(inv);
       inv.setMethod(ctxInv.anybase_identifier().getText());
       if (ctxInv.msg != null) {
-        inv.setError(ctxInv.msg.getText());
+        inv.setError(ctxInv.msg.getText().substring(1, ctxInv.msg.getText().length() - 1));
       }
     }
     retVal.setOriginalText(getOriginalText(ctx));

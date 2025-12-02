@@ -103,11 +103,11 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
-        "@login({user: username!, password!}, captcha!):{user} \n" +
+        "@login({user: username!, password!}, captcha!):{user} <> :token \n" +
         "|:| encrypted_password = @bcrypt(password) \n" +
         "|:| user = {user}#(username, encrypted_password as password)!'用户名与密码错误！'\n" +
         "|?| captcha != @get_captcha_from_session('captcha') !'验证码错误' \n" +
-        "|@| @put_user_into_session(#session, user) \n" +
+        "|@| @put_user_into_session(user) \n" +
         "|.| user";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     ObjectDefinition obj = usecase.getParameterizedObject();
