@@ -69,7 +69,11 @@ public class Usebase {
             attr.getConstraint().setNullable(false);
           }
           if (arg.value != null) {
-            attr.getConstraint().setDefaultValue(arg.value.getText());
+            String text = arg.value.getText();
+            if (text.startsWith("'")) {
+              text = text.substring(1, text.length() - 1);
+            }
+            attr.getConstraint().setDefaultValue(text);
           }
           if (arg.usebase_validation() != null && arg.usebase_validation().required != null) {
             attr.getConstraint().setNullable(false);
@@ -156,12 +160,18 @@ public class Usebase {
     } else if (ctx.anybase_value() != null) {
       return createValue(ctx.anybase_value());
     } else if (ctx.usebase_invoke() != null) {
+      // 作为【值】的函数调用
       io.doublegsoft.usebase.UsebaseParser.Usebase_invokeContext ctxInv = ctx.usebase_invoke();
       InvocationDefinition inv = new InvocationDefinition();
       retVal.setInvocation(inv);
       inv.setMethod(ctxInv.anybase_identifier().getText());
       if (ctxInv.msg != null) {
         inv.setError(ctxInv.msg.getText().substring(1, ctxInv.msg.getText().length() - 1));
+      }
+      for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext ctxArg : ctxInv.usebase_arguments().usebase_argument()) {
+        if (ctxArg.anybase_identifier() != null) {
+          inv.getArguments().add(ctxArg.anybase_identifier().getText());
+        }
       }
     }
     retVal.setOriginalText(getOriginalText(ctx));
@@ -309,9 +319,9 @@ public class Usebase {
       if ("&|".equals(retVal.getOperator().substring(retVal.getOperator().length() - 2))) {
         // TODO: SEARCH
       } else if ("=|".equals(retVal.getOperator().substring(retVal.getOperator().length() - 2))) {
-        // TODO: ASSIGNMENT
-      } else if (":|".equals(retVal.getOperator().substring(retVal.getOperator().length() - 2))) {
         // TODO: UPDATE
+      } else if (":|".equals(retVal.getOperator().substring(retVal.getOperator().length() - 2))) {
+        // TODO: ASSIGNMENT
       } else {
         throw new RuntimeException("\"" + getOriginalText(ctx) + "\" not allowed to have assignment rule");
       }
@@ -328,7 +338,7 @@ public class Usebase {
       retVal.setArrayVar(ctxExpr.array.getText());
       retVal.setOriginalText(getOriginalText(ctxExpr));
       return retVal;
-    } else if (ctx.usebase_operator().getText().endsWith("+|") || ctx.usebase_operator().getText().endsWith(":|")) {
+    } else if (ctx.usebase_operator().getText().endsWith("+|") || ctx.usebase_operator().getText().endsWith("=|")) {
       // SAVE: CREATE AND UPDATE
       SaveDefinition retVal = new SaveDefinition();
       retVal.setOperator(ctx.usebase_operator().getText());
@@ -396,6 +406,8 @@ public class Usebase {
     String objName = "$";
     if (container.getName().startsWith("#")) {
       objName += container.getName().substring(1);
+    } else if (container.getName().startsWith("$")) {
+      objName += container.getName().substring(1);
     } else {
       objName += container.getName();
     }
@@ -435,9 +447,34 @@ public class Usebase {
         if (ModelbaseHelper.isSystemOrExistingInObject(ctxArg.anybase_identifier().getText(), obj)) {
           continue;
         }
-        AttributeDefinition propagatingAttrDef = new AttributeDefinition(ctxArg.anybase_identifier().getText(), obj);
+        // 首先判断这个入参是不是聚合对象中的某个对象的属性
+        String attrname = ctxArg.anybase_identifier().getText();
+        AttributeDefinition propagatingAttrDef = null;
+        for (AttributeDefinition attr : obj.getAttributes()) {
+          if (attr.isLabelled("original")) {
+            String objname = attr.getLabelledOption("original", "object");
+            ObjectDefinition origObj = dataModel.findObjectByName(objname);
+            if (origObj == null) {
+              continue;
+            }
+            for (AttributeDefinition origObjAttr : origObj.getAttributes()) {
+              if (origObjAttr.getName().equals(attrname) || attrname.equals(origObj.getName() + "_" + origObjAttr.getName())) {
+                propagatingAttrDef = ModelbaseHelper.cloneAttribute(origObjAttr, obj);
+                break;
+              }
+            }
+          }
+        }
+        if (propagatingAttrDef == null) {
+          propagatingAttrDef = new AttributeDefinition(attrname, obj);
+          propagatingAttrDef.setType(new PrimitiveType("string"));
+        }
         if (ctxArg.value != null) {
-          propagatingAttrDef.getConstraint().setDefaultValue(ctxArg.value.getText());
+          String text = ctxArg.value.getText();
+          if (text.startsWith("'")) {
+            text = text.substring(1, text.length() - 1);
+          }
+          propagatingAttrDef.getConstraint().setDefaultValue(text);
         }
         if (ctxArg.usebase_validation() != null && ctxArg.usebase_validation().required != null) {
           propagatingAttrDef.getConstraint().setNullable(false);
@@ -518,10 +555,22 @@ public class Usebase {
         if (ctxObj.usebase_attributes() != null) {
           // 显示指定（选择）了对象的属性
           for (io.doublegsoft.usebase.UsebaseParser.Usebase_attributeContext ctxAttr : ctxObj.usebase_attributes().usebase_attribute()) {
-            AttributeDefinition attrDef = dataModel.findAttributeByNames(ctxObj.name.getText(), ctxAttr.name.getText());
+            String attrname = ctxAttr.name.getText();
+            String objname = ctxObj.name.getText();
+            AttributeDefinition attrDef = dataModel.findAttributeByNames(objname, attrname);
+            if (attrDef == null) {
+              attrDef = dataModel.findAttributeByNames(objname, attrname.replace(objname + "_", ""));
+            }
             AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, obj);
             if (ctxAttr.usebase_validation() != null) {
               attrInObj.getConstraint().setNullable(false);
+            }
+            if (ctxAttr.value != null) {
+              String text = ctxAttr.value.getText();
+              if (text.startsWith("'")) {
+                text = text.substring(1, text.length() - 1);
+              }
+              attrInObj.getConstraint().setDefaultValue(text);
             }
             // 处理关联关系
             decorateConjunctionForAttribute(attrInObj, ctxConds);

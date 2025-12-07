@@ -81,11 +81,13 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
-        "@enable_user({user: status = 'D'}#(id)):{user: id}";
+        "@enable_user({user: status = 'E', user_id!}):{user: id}" +
+        "|=| {user: status = 'E'}#(user_id)\n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("status", obj.getAttributes()[0].getName());
     printUsecaseForModelbase(usecase);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   /**
@@ -108,6 +110,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
         "|:| user = {user}#(username, encrypted_password as password)!'用户名与密码错误！'\n" +
         "|?| captcha != @get_captcha_from_session('captcha') !'验证码错误' \n" +
         "|@| @put_user_into_session(user) \n" +
+        "|:| token = @generate_token(user) \n" +
         "|.| user";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     ObjectDefinition obj = usecase.getParameterizedObject();
@@ -127,7 +130,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     obj = usecase.getReturnedObject();
     Assert.assertEquals("user", obj.getAttributes()[0].getLabelledOptions("original").get("object"));
 
-    Assert.assertEquals(5, usecase.getStatements().size());
+    Assert.assertEquals(6, usecase.getStatements().size());
     StatementDefinition stmt = usecase.getStatements().get(0);
     AssignmentDefinition assign = (AssignmentDefinition) stmt;
     Assert.assertEquals("encrypted_password", assign.getAssignee());
