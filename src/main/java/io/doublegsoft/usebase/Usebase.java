@@ -641,7 +641,7 @@ public class Usebase {
         AttributeDefinition attrDeri = new AttributeDefinition(ctxData.usebase_derivative().name.getText(), obj);
         io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctxData.usebase_derivative().usebase_calculate();
         if (ctxCalc != null) {
-          if ("count".equals(ctxCalc.name.getText())) {
+          if (ctxCalc.name != null && "count".equals(ctxCalc.name.getText())) {
             attrDeri.setType(new PrimitiveType("long"));
             attrDeri.getConstraint().setDomainType(new DomainType("long"));
             attrDeri.setLabelledOption("original", "operator", "count");
@@ -650,7 +650,7 @@ public class Usebase {
               String objname = ctxCalc.usebase_array().usebase_aggregate().usebase_data(0).usebase_object().name.getText();
               attrDeri.setLabelledOption("original", "object", objname);
             }
-          } else if ("sum".equals(ctxCalc.name.getText())) {
+          } else if (ctxCalc.name != null && "sum".equals(ctxCalc.name.getText())) {
             PrimitiveType pt = new PrimitiveType("number");
             pt.setPrecision(12);
             pt.setScale(4);
@@ -697,6 +697,7 @@ public class Usebase {
     }
     if (ctx.usebase_aggregate() != null) {
       if (owner instanceof ReturnedObjectDefinition) {
+        ((ReturnedObjectDefinition)owner).setArray(true);
         assembleAggregate(ctx.usebase_aggregate(), owner, statement, usecase);
       } else {
         io.doublegsoft.usebase.UsebaseParser.Usebase_aggregateContext ctxAgg = ctx.usebase_aggregate();
