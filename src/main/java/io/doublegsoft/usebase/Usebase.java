@@ -11,6 +11,7 @@ import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metabean.type.CustomType;
+import com.doublegsoft.jcommons.metabean.type.DomainType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.*;
 import com.doublegsoft.jcommons.utils.Inflector;
@@ -642,12 +643,21 @@ public class Usebase {
         if (ctxCalc != null) {
           if ("count".equals(ctxCalc.name.getText())) {
             attrDeri.setType(new PrimitiveType("long"));
+            attrDeri.getConstraint().setDomainType(new DomainType("long"));
+            attrDeri.setLabelledOption("original", "operator", "count");
+            if (ctxCalc.usebase_array() != null) {
+              io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctxArr = ctxData.usebase_array();
+              String objname = ctxCalc.usebase_array().usebase_aggregate().usebase_data(0).usebase_object().name.getText();
+              attrDeri.setLabelledOption("original", "object", objname);
+            }
           } else if ("sum".equals(ctxCalc.name.getText())) {
             PrimitiveType pt = new PrimitiveType("number");
             pt.setPrecision(12);
             pt.setScale(4);
             attrDeri.setType(pt);
           }
+        } else {
+          attrDeri.setType(new PrimitiveType("string"));
         }
         // 处理关联关系
         decorateConjunctionForAttribute(attrDeri, ctxConds);
