@@ -765,6 +765,8 @@ public class Usebase {
     }
     if (!(owner instanceof ReturnedObjectDefinition)) {
       AttributeDefinition collAttr = new AttributeDefinition(attrName, owner);
+      collAttr.setLabelledOption("original", "object", attrType.getComponentType().getName());
+      collAttr.setLabelledOption("original", "array", "true");
       collAttr.setType(attrType);
     }
   }

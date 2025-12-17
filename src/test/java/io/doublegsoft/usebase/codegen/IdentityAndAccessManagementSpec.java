@@ -87,11 +87,13 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
-        "@disable_user({user: status = 'D'}#(id)):{user: id}";
+        "@disable_user({user: status = 'D', user_id!}):{user: id}\n" +
+        "|=| {user: status = 'D'}#(user_id)\n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("status", obj.getAttributes()[0].getName());
     printUsecaseForModelbase(usecase);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   /**
@@ -191,11 +193,12 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
   public void test_iam_save_person_user_roles() throws Exception {
     ModelDefinition dataModel = loadModel("sms", "iam");
     String expr =
-        "@save({person}#(national_id, person_name) <person_id=user_id> {user} <user_role> [role])";
+        "@save_person_and_user_with_roles({person}#(national_id, person_name) <person_id=user_id> {user} <user_role> [role])";
 //        "|+| {audit_log: name = person_name, audit_time = now, modifier_id = 'SYS'}";
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
     printUsecaseForModelbase(usecase);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
 //
 //    UsebaseAggregate agg = (UsebaseAggregate) usecase.getArguments().get(0).getValue();
 //    Assert.assertEquals("person", agg.getPrimaryObject().getName());
