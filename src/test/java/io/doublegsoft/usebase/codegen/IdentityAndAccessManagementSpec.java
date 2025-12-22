@@ -24,7 +24,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
-        "@find_users({user: username, email, status}, {role: name}):[{user: username, email} <> :role_count%count[{user_role}]%]";
+        "@find_users({user: username, email, status}, {role: name}):[{user: user_id, username, email} <> :role_count%count[{user_role}]%]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("username", obj.getAttributes()[0].getName());
@@ -32,8 +32,9 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("status", obj.getAttributes()[2].getName());
 
     ObjectDefinition ret = usecase.getReturnedObject();
-    Assert.assertEquals("username", ret.getAttributes()[0].getName());
-    Assert.assertEquals("email", ret.getAttributes()[1].getName());
+    Assert.assertEquals("user_id", ret.getAttributes()[0].getName());
+    Assert.assertEquals("username", ret.getAttributes()[1].getName());
+    Assert.assertEquals("email", ret.getAttributes()[2].getName());
 
     printUsecaseForModelbase(usecase);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
@@ -44,7 +45,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
-        "@find_users({user: username, email, status}, {role: name}):[{user: username, email} <> :role_count%count[{user_role}]%]";
+        "@get_user({user: username, email, status}, {role: name}):{user: user_id, username, email} <user_role> [role]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("username", obj.getAttributes()[0].getName());
@@ -52,8 +53,9 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("status", obj.getAttributes()[2].getName());
 
     ObjectDefinition ret = usecase.getReturnedObject();
-    Assert.assertEquals("username", ret.getAttributes()[0].getName());
-    Assert.assertEquals("email", ret.getAttributes()[1].getName());
+    Assert.assertEquals("user_id", ret.getAttributes()[0].getName());
+    Assert.assertEquals("username", ret.getAttributes()[1].getName());
+    Assert.assertEquals("email", ret.getAttributes()[2].getName());
 
     printUsecaseForModelbase(usecase);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);

@@ -127,6 +127,12 @@ public class ModelbaseWriter {
     } else {
       writer.write(attr.getName());
     }
+    if (attr.getConstraint().isIdentifiable()) {
+      writer.write("!!");
+    }
+    if (!attr.getConstraint().isNullable() && !attr.getConstraint().isIdentifiable()) {
+      writer.write("!");
+    }
     writer.write(": ");
     writeObjectType(attr.getType());
   }

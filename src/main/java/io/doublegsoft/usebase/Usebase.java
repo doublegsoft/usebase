@@ -633,10 +633,29 @@ public class Usebase {
           obj.setLabelledOption("required", "message", msg);
         }
       } else if (ctxData.usebase_array() != null) {
+        io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctxArr = ctxData.usebase_array();
         // 数组会额外产生内联对象
-        assembleArray(ctxData.usebase_array(), obj, statement, usecase);
-        AttributeDefinition attrArray = obj.getAttributes()[obj.getAttributes().length - 1];
-        decorateConjunctionForAttribute(attrArray, ctxConds);
+        String attrname = "";
+        if (ctxArr.alias != null) {
+          attrname = ctxArr.alias.getText();
+        } else if (ctxArr.name != null){
+          attrname = Inflector.getInstance().pluralize(ctxArr.name.getText());
+        }
+        if (ctxArr.name != null) {
+          String objname = ctxData.usebase_array().name.getText();
+          ObjectDefinition dummyArrayOwner = new ObjectDefinition("~" + objname, new ModelDefinition());
+          assembleArray(ctxData.usebase_array(), dummyArrayOwner, statement, usecase);
+          AttributeDefinition attrArray = new AttributeDefinition(attrname, obj); // obj.getAttributes()[obj.getAttributes().length - 1];
+          ObjectDefinition objInDataModel = dataModel.findObjectByName(objname);
+          CollectionType colltype = new CollectionType("");
+          colltype.setComponentType(objInDataModel);
+          attrArray.setType(colltype);
+          decorateConjunctionForAttribute(attrArray, ctxConds);
+        } else {
+          assembleArray(ctxData.usebase_array(), obj, statement, usecase);
+          AttributeDefinition attrArray = obj.getAttributes()[obj.getAttributes().length - 1];
+          decorateConjunctionForAttribute(attrArray, ctxConds);// obj.getAttributes()[obj.getAttributes().length - 1];
+        }
       } else if (ctxData.usebase_derivative() != null) {
         AttributeDefinition attrDeri = new AttributeDefinition(ctxData.usebase_derivative().name.getText(), obj);
         io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctxData.usebase_derivative().usebase_calculate();
@@ -651,6 +670,7 @@ public class Usebase {
               attrDeri.setLabelledOption("original", "object", objname);
             }
           } else if (ctxCalc.name != null && "sum".equals(ctxCalc.name.getText())) {
+            attrDeri.getConstraint().setDomainType(new DomainType("number"));
             PrimitiveType pt = new PrimitiveType("number");
             pt.setPrecision(12);
             pt.setScale(4);
