@@ -22,6 +22,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -555,9 +556,26 @@ public class Usebase {
         ModelbaseHelper.addOptions(obj, "original", "object", originalObjName);
         if (ctxObj.usebase_attributes() != null) {
           // 显示指定（选择）了对象的属性
+          String objname = ctxObj.name.getText();
           for (io.doublegsoft.usebase.UsebaseParser.Usebase_attributeContext ctxAttr : ctxObj.usebase_attributes().usebase_attribute()) {
+            // 构成组别的属性集合
+            if (ctxAttr.usebase_attrgroup() != null) {
+              for (io.doublegsoft.usebase.UsebaseParser.Anybase_idContext ctxId : ctxAttr.usebase_attrgroup().anybase_id()) {
+                String attrname = ctxId.getText();
+                AttributeDefinition attrDef = dataModel.findAttributeByNames(objname, attrname);
+                if (attrDef == null) {
+                  attrDef = dataModel.findAttributeByNames(objname, attrname.replace(objname + "_", ""));
+                }
+                AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, obj);
+                String groupName = "";
+                for (io.doublegsoft.usebase.UsebaseParser.Anybase_idContext ctxIdInner : ctxAttr.usebase_attrgroup().anybase_id()) {
+                  groupName += "_" + ctxIdInner.getText();
+                }
+                attrInObj.addLabelledOption("group", "name", groupName);
+              }
+              continue;
+            }
             String attrname = ctxAttr.name.getText();
-            String objname = ctxObj.name.getText();
             AttributeDefinition attrDef = dataModel.findAttributeByNames(objname, attrname);
             if (attrDef == null) {
               attrDef = dataModel.findAttributeByNames(objname, attrname.replace(objname + "_", ""));
