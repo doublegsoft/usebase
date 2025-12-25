@@ -45,7 +45,8 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
-        "@get_user({user: user_id, (username, email)}):{user: user_id, username, email} <user_role> [role]";
+        "@get_user({user: user_id, (username, email)}):" +
+            "{user: user_id, username, email} <user_role> [role] <role_permission> [permission]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("username", obj.getAttributes()[1].getName());

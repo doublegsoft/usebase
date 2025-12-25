@@ -898,7 +898,7 @@ public class Usebase {
           throw new IllegalArgumentException("not found attribute's object in conjunction expression");
         }
       } else if (leftSide != null) {
-        conjunction.put("name", leftSide);
+        conjunction.put("object", leftSide);
       }
     }
   }
