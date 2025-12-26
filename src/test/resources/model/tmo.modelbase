@@ -1,0 +1,90 @@
+@persistence(name='tn_comp_team')
+@name(label='球队', singular='team', plural='teams')
+team<
+
+  @persistence(name='teamid')
+  @name(label='球队标识')
+  id!!: id,
+
+  @persistence(name='teamnm')
+  @name(label='球队名称')
+  name: string(100),
+
+  @persistence(name='shortnm')
+  @name(label='简称')
+  short_name: string(50),
+
+  @persistence(name='logo')
+  @name(label='队徽')
+  logo_url: string(255),
+
+  @persistence(name='city')
+  @name(label='所在城市')
+  city: string(100),
+
+  @persistence(name='sta')
+  @name(label='状态')
+  status: enum[AC:有效, IN:停用],
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>
+
+@persistence(name='tn_comp_match')
+@name(label='比赛', singular='match', plural='matches')
+match<
+
+  @persistence(name='matchid')
+  @name(label='比赛标识')
+  id!!: id,
+
+  @persistence(name='matchcd')
+  @name(label='比赛编号')
+  match_code: string(64),
+
+  @persistence(name='matchtm')
+  @name(label='比赛时间')
+  match_time: datetime,
+
+  @persistence(name='venue')
+  @name(label='比赛场地')
+  venue: string(255),
+
+  @persistence(name='status')
+  @name(label='比赛状态')
+  status: enum[
+    SCH:未开始,
+    ONG:进行中,
+    FIN:已结束,
+    CAN:已取消
+  ],
+
+  @persistence(name='homeid')
+  @name(label='主队')
+  home_team: &team(id),
+
+  @persistence(name='awayid')
+  @name(label='客队')
+  away_team: &team(id),
+
+  @persistence(name='home_score')
+  @name(label='主队得分')
+  home_score: int,
+
+  @persistence(name='away_score')
+  @name(label='客队得分')
+  away_score: int,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='lmt')
+  @name(label='最后更新时间')
+  last_modified_time: now
+>

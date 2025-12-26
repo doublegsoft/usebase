@@ -748,6 +748,7 @@ public class Usebase {
             String aggObjName = ctxAgg.usebase_data().get(0).usebase_object().name.getText();
             ObjectDefinition originalObjDef = dataModel.findObjectByName(aggObjName);
             ObjectDefinition propagatedObjDef = new ObjectDefinition(aggObjName, usecase.getContextModel());
+            attrType.setComponentType(propagatedObjDef);
             if (ctxObj.usebase_attributes() != null) {
               for (io.doublegsoft.usebase.UsebaseParser.Usebase_attributeContext ctxAttr : ctxObj.usebase_attributes().usebase_attribute()) {
                 AttributeDefinition originalAttrDef = dataModel.findAttributeByNames(aggObjName, ctxAttr.name.getText());

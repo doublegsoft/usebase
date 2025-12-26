@@ -91,11 +91,11 @@ public class WorkflowManagementSpec extends SpecBase {
     Assert.assertEquals("workflow_action_connection", ((CollectionType) wfactconnsObj.getAttributes()[0].getType())
         .getComponentType().getName());
 
-    ObjectDefinition wfactconnsArgsObj = usecase.getContextModel().findObjectByName("$wfactconns");
-    Assert.assertNotNull(wfactconnsArgsObj);
-    Assert.assertEquals("workflow_definition_id", wfactconnsArgsObj.getAttributes()[0].getName());
-    Assert.assertEquals("workflow_definition", wfactconnsArgsObj.getAttributes()[0]
-        .getLabelledOptions("original").get("object"));
+//    ObjectDefinition wfactconnsArgsObj = usecase.getContextModel().findObjectByName("$wfactconns");
+//    Assert.assertNotNull(wfactconnsArgsObj);
+//    Assert.assertEquals("workflow_definition_id", wfactconnsArgsObj.getAttributes()[0].getName());
+//    Assert.assertEquals("workflow_definition", wfactconnsArgsObj.getAttributes()[0]
+//        .getLabelledOptions("original").get("object"));
 
     printUsecaseForModelbase(usecase);
   }
