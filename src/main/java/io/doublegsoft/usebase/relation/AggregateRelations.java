@@ -3,7 +3,9 @@ package io.doublegsoft.usebase.relation;
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AggregateRelations {
@@ -41,5 +43,13 @@ public class AggregateRelations {
       }
     }
     return null;
+  }
+
+  public List<Relationship> getRelationships() {
+    List<Relationship> retVal = new ArrayList<>();
+    for (Relationships rels : indexedRelations.values()) {
+      retVal.addAll(rels.getRelations());
+    }
+    return retVal;
   }
 }

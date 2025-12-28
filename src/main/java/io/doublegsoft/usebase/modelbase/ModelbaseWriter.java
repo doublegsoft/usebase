@@ -11,6 +11,7 @@ package io.doublegsoft.usebase.modelbase;
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
+import com.doublegsoft.jcommons.metabean.type.CustomType;
 import com.doublegsoft.jcommons.metabean.type.ObjectType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
@@ -61,6 +62,27 @@ public class ModelbaseWriter {
     writer.write("@response\n");
     String name = obj.getName().substring(1);
     name += "_result";
+    writer.write(name);
+    writer.write("<\n\n");
+    int index = 0;
+    int size = obj.getAttributes().length;
+    for (AttributeDefinition attr : obj.getAttributes()) {
+      writeAttribute(attr);
+      if (index != size - 1) {
+        writer.write(",");
+      }
+      writer.write("\n\n");
+      index++;
+    }
+    writer.write(">\n\n");
+    return this;
+  }
+
+  public ModelbaseWriter write(ObjectDefinition obj) throws IOException {
+    if (obj == null) {
+      return this;
+    }
+    String name = obj.getName();
     writer.write(name);
     writer.write("<\n\n");
     int index = 0;
@@ -143,7 +165,9 @@ public class ModelbaseWriter {
     } else if (type instanceof PrimitiveType) {
       writer.write(type.getName());
     } else if (type instanceof CollectionType) {
-      writer.write("&" + ((CollectionType) type).getComponentType().getName() + "[]");
+      writer.write("&" + ((CollectionType) type).getComponentType().getName() + "_info[]");
+    } else if (type instanceof CustomType) {
+      writer.write("&" + type.getName() + "_info(id)");
     }
   }
 

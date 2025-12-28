@@ -1,0 +1,160 @@
+@module(name='ccb')
+@persistence(name='ci_person')
+@name(label='客户', singular='customer', plural='customers')
+customer<
+
+  @persistence(name='person_id')
+  @name(label='客户标识')
+  id!!: string(30),
+
+  @persistence(name='person_name')
+  @name(label='客户名称')
+  name: string(200),
+
+  @persistence(name='person_type_flg')
+  @name(label='客户类型')
+  type: enum[IND:个人, ORG:企业],
+
+  @persistence(name='cre_dttm')
+  @name(label='创建时间')
+  created_time = now: datetime
+>
+
+@persistence(name='ci_acct')
+@name(label='账户', singular='account', plural='accounts')
+account<
+
+  @persistence(name='acct_id')
+  @name(label='账户标识')
+  id!!: string(30),
+
+  @persistence(name='acct_nbr')
+  @name(label='账户号')
+  account_number: string(30),
+
+  @persistence(name='cis_division')
+  @name(label='事业部')
+  division: string(10),
+
+  @persistence(name='setup_dt')
+  @name(label='开户日期')
+  setup_date: date,
+
+  @persistence(name='cre_dttm')
+  created_time = now: datetime,
+
+  @name(label='客户')
+  customer: &customer(id)
+>
+
+@persistence(name='ci_sa')
+@name(label='服务协议', singular='service_agreement', plural='service_agreements')
+service_agreement<
+
+  @persistence(name='sa_id')
+  @name(label='SA标识')
+  id!!: string(30),
+
+  @persistence(name='sa_type_cd')
+  @name(label='SA类型')
+  type: string(20),
+
+  @persistence(name='sa_status_flg')
+  @name(label='状态')
+  status: enum[ACT:生效, STOP:终止, HOLD:暂停],
+
+  @persistence(name='start_dt')
+  start_date: date,
+
+  @persistence(name='end_dt')
+  end_date: date,
+
+  @name(label='账户')
+  account: &account(id)
+>
+
+@persistence(name='ci_bill')
+@name(label='账单', singular='bill', plural='bills')
+bill<
+
+  @persistence(name='bill_id')
+  @name(label='账单标识')
+  id!!: string(30),
+
+  @persistence(name='bill_dt')
+  @name(label='账单日期')
+  bill_date: date,
+
+  @persistence(name='due_dt')
+  @name(label='到期日')
+  due_date: date,
+
+  @persistence(name='bill_status_flg')
+  @name(label='账单状态')
+  status: enum[PND:待处理, CMP:完成, CAN:作废],
+
+  @persistence(name='tot_bill_amt')
+  @name(label='账单总额')
+  total_amount: number(15,2),
+
+  @name(label='账户')
+  account: &account(id),
+
+  @name(label='账单分段')
+  bill_segments: &bill_segment(bill)[]
+>
+
+@persistence(name='ci_bill_seg')
+@name(label='账单分段', singular='bill_segment', plural='bill_segments')
+bill_segment<
+
+  @persistence(name='bill_seg_id')
+  id!!: string(30),
+
+  @persistence(name='sa_id')
+  @name(label='服务协议')
+  service_agreement: &service_agreement(id),
+
+  @persistence(name='seg_status_flg')
+  @name(label='分段状态')
+  status: enum[PND:待算费, CMP:完成],
+
+  @persistence(name='start_dt')
+  start_date: date,
+
+  @persistence(name='end_dt')
+  end_date: date,
+
+  @persistence(name='bill_amt')
+  amount: number(15,2),
+
+  @name(label='账单')
+  bill: &bill(id)
+>
+
+@persistence(name='ci_ft')
+@name(label='财务交易', singular='financial_transaction', plural='financial_transactions')
+financial_transaction<
+
+  @persistence(name='ft_id')
+  id!!: string(30),
+
+  @persistence(name='ft_type_flg')
+  @name(label='交易类型')
+  type: enum[
+    BS:账单生成,
+    PM:付款,
+    ADJ:调整,
+    XFER:转账
+  ],
+
+  @persistence(name='ft_amt')
+  amount: number(15,2),
+
+  @persistence(name='ars_dt')
+  accounting_date: date,
+
+  @name(label='账单分段')
+  bill_segment: &bill_segment(id)
+>
+

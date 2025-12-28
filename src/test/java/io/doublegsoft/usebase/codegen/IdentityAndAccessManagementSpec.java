@@ -9,12 +9,12 @@ import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
+import io.doublegsoft.usebase.relation.AggregateBuilder;
+import io.doublegsoft.usebase.relation.AggregateRelations;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class IdentityAndAccessManagementSpec extends SpecBase {
-
-  String TEMPLATE_ROOT = "java-tx@spring-1.x/src/main/java/$namespace$/$app$";
 
   /**
    * 查询用户。
@@ -57,7 +57,14 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("username", ret.getAttributes()[1].getName());
     Assert.assertEquals("email", ret.getAttributes()[2].getName());
 
-    printUsecaseForModelbase(usecase);
+    AggregateBuilder builder = new AggregateBuilder(dataModel, usecase);
+    AggregateRelations rels = builder.build();
+    Assert.assertNotNull(rels.getRelation("user_role", "role"));
+    Assert.assertNotNull(rels.getRelation("role_permission", "role"));
+    Assert.assertNotNull(rels.getRelation("role_permission", "user_role"));
+    usecase.setOption("relations", rels);
+
+//    printUsecaseForModelbase(usecase);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 

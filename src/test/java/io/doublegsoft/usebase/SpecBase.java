@@ -1,6 +1,8 @@
 package io.doublegsoft.usebase;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
+import com.doublegsoft.jcommons.metabean.ObjectDefinition;
+import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.modelbase.Modelbase;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 public class SpecBase {
+
+  public static final String TEMPLATE_ROOT = "java-tx@spring-1.x/src/main/java/$namespace$/$app$";
 
   protected ModelDefinition loadModel(String... projs) throws Exception {
     String content = "";
@@ -42,11 +46,16 @@ public class SpecBase {
     }
   }
 
-  protected void printUsecaseForModelbase(UsecaseDefinition usecase) throws IOException {
+  protected void printUsecaseForModelbase(UsecaseDefinition usecase, ObjectDefinition... objs) throws IOException {
     StringWriter sw = new StringWriter();
     ModelbaseWriter writer = new ModelbaseWriter(sw);
     writer.write(usecase.getParameterizedObject());
     writer.write(usecase.getReturnedObject());
+    if (objs != null && objs.length > 0) {
+      for (ObjectDefinition obj : objs) {
+        writer.write(obj);
+      }
+    }
     System.out.println(sw);
   }
 
