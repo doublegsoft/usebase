@@ -10,9 +10,13 @@ import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
 import io.doublegsoft.usebase.relation.AggregateBuilder;
-import io.doublegsoft.usebase.relation.AggregateRelations;
+import io.doublegsoft.usebase.relation.AggregateRelationshipChain;
+import io.doublegsoft.usebase.relation.ObjectRelationships;
+import io.doublegsoft.usebase.relation.Relationship;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.List;
 
 public class IdentityAndAccessManagementSpec extends SpecBase {
 
@@ -57,13 +61,17 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("username", ret.getAttributes()[1].getName());
     Assert.assertEquals("email", ret.getAttributes()[2].getName());
 
-    AggregateBuilder builder = new AggregateBuilder(dataModel, usecase);
-    AggregateRelations rels = builder.build();
-    Assert.assertNotNull(rels.getRelation("user_role", "role"));
-    Assert.assertNotNull(rels.getRelation("role_permission", "role"));
-    Assert.assertNotNull(rels.getRelation("role_permission", "user_role"));
-    usecase.setOption("relations", rels);
+    AggregateBuilder builder = new AggregateBuilder(dataModel);
+    AggregateRelationshipChain chain = builder.build(usecase.getReturnedObject());
+    Assert.assertNotNull(chain.getRelationship("user_role", "role"));
+    Assert.assertNotNull(chain.getRelationship("role_permission", "role"));
+//    Assert.assertNotNull(chain.getRelation("role_permission", "user_role"));
+    usecase.setOption("relations", chain);
+    for (Relationship rel : chain.getRelationships()) {
+      System.out.println(rel);
+    }
 
+    List<ObjectRelationships> objRelsList = chain.build("user");
 //    printUsecaseForModelbase(usecase);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }

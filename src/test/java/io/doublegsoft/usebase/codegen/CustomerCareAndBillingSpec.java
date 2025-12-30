@@ -7,15 +7,14 @@ import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
 import io.doublegsoft.usebase.projection.ProjectionBuilder;
 import io.doublegsoft.usebase.relation.AggregateBuilder;
-import io.doublegsoft.usebase.relation.AggregateRelations;
+import io.doublegsoft.usebase.relation.AggregateRelationshipChain;
+import io.doublegsoft.usebase.relation.ObjectRelationships;
 import io.doublegsoft.usebase.relation.Relationship;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 public class CustomerCareAndBillingSpec extends SpecBase {
 
@@ -29,15 +28,17 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     ObjectDefinition obj = usecase.getParameterizedObject();
 
-    AggregateBuilder builder = new AggregateBuilder(dataModel, usecase);
-    AggregateRelations rels = builder.build();
+    AggregateBuilder builder = new AggregateBuilder(dataModel);
+    AggregateRelationshipChain chain = builder.build(usecase.getReturnedObject());
 //    Assert.assertNotNull(rels.getRelation("user_role", "role"));
 //    Assert.assertNotNull(rels.getRelation("role_permission", "role"));
 //    Assert.assertNotNull(rels.getRelation("role_permission", "user_role"));
-    for (Relationship rel : rels.getRelationships()) {
+    for (Relationship rel : chain.getRelationships()) {
       System.out.println(rel);
     }
-    usecase.setOption("relations", rels);
+    usecase.setOption("relations", chain);
+
+    List<ObjectRelationships> objRelsList = chain.build();
 
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
     ObjectDefinition bill = dataModel.findObjectByName("bill");
@@ -50,8 +51,8 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     ObjectDefinition financialTransactionInfo = projBuilder.build(financialTransaction,
         new HashSet<>(Arrays.asList("bill", "account")));
 
-    printUsecaseForModelbase(usecase, billSegmentInfo, financialTransactionInfo);
-//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printUsecaseForModelbase(usecase, billInfo, billSegmentInfo, financialTransactionInfo);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
 }

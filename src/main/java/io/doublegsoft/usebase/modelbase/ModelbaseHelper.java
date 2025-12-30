@@ -14,6 +14,7 @@ import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metabean.type.CustomType;
 import com.doublegsoft.jcommons.metabean.type.DomainType;
+import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 
 import java.util.*;
 
@@ -250,6 +251,16 @@ public final class ModelbaseHelper {
       return true;
     }
     return false;
+  }
+
+  public static PrimitiveType getPrimitiveType(AttributeDefinition attr) {
+    if (attr.getType().isCustom()) {
+      ObjectDefinition obj = attr.getParent();
+      return getPrimitiveType(obj.getIdentifiableAttribute());
+    } else if (attr.getType().isPrimitive()) {
+      return (PrimitiveType) attr.getType();
+    }
+    throw new IllegalArgumentException("unsupported attribute type: " + attr.getType().toString());
   }
 
   private ModelbaseHelper() {

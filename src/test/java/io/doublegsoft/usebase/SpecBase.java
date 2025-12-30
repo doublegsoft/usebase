@@ -8,6 +8,8 @@ import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.modelbase.Modelbase;
 import io.doublegsoft.usebase.modelbase.ModelbaseWriter;
 import io.doublegsoft.usebase.output.TemplateOutputWriter;
+import io.doublegsoft.usebase.projection.ProjectionBuilder;
+import io.doublegsoft.usebase.relation.AggregateBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -70,6 +72,8 @@ public class SpecBase {
     data.put("namespace", "hello.world");
     data.put("app", app);
     data.put("model", dataModel);
+    data.put("usecase", usecase);
+    data.put("aggregateBuilder", new AggregateBuilder(dataModel));
     writer.write(templateName, usecase, data);
     System.out.println(sw);
   }

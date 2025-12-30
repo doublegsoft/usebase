@@ -47,6 +47,34 @@ public class Relationship {
     this.targetObject = targetObject;
   }
 
+  public AttributeDefinition getAnotherAttribute(String objName) {
+    if (targetObject.getName().equals(objName)) {
+      return sourceAttribute;
+    }
+    return targetAttribute;
+  }
+
+  public ObjectDefinition getAnotherObject(String objName) {
+    if (targetObject.getName().equals(objName)) {
+      return sourceObject;
+    }
+    return targetObject;
+  }
+
+  public AttributeDefinition getSelfAttribute(String objName) {
+    if (targetObject.getName().equals(objName)) {
+      return targetAttribute;
+    }
+    return sourceAttribute;
+  }
+
+  public ObjectDefinition getSelfObject(String objName) {
+    if (targetObject.getName().equals(objName)) {
+      return targetObject;
+    }
+    return sourceObject;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;

@@ -94,7 +94,7 @@ public class ProjectionBuilder {
 
       if (owner.getAttribute(attrname) == null) {
         AttributeDefinition cloningAttr = ModelbaseHelper.cloneAttribute(attrname, attr, owner);
-        PrimitiveType primType = new PrimitiveType(refObj.getIdentifiableAttribute().getType().getName());
+        PrimitiveType primType = ModelbaseHelper.getPrimitiveType(attr);
         cloningAttr.setType(primType);
       }
       //

@@ -5,17 +5,17 @@ import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Relationships {
+public class AttributeRelationships {
 
   private final AttributeDefinition attribute;
 
   private final List<Relationship> relations = new ArrayList<>();
 
-  public Relationships(AttributeDefinition attribute) {
+  public AttributeRelationships(AttributeDefinition attribute) {
     this.attribute = attribute;
   }
 
-  public Relationship getRelation(String targetObjName, String targetAttrName) {
+  public Relationship getRelationship(String targetObjName, String targetAttrName) {
     for (Relationship rel : relations) {
       if (rel.getTargetAttribute().getName().equals(targetAttrName) &&
           rel.getTargetObject().getName().equals(targetObjName)) {
@@ -25,7 +25,7 @@ public class Relationships {
     return null;
   }
 
-  public Relationship getRelation(String targetAttrName) {
+  public Relationship getRelationship(String targetAttrName) {
     for (Relationship rel : relations) {
       if (rel.getTargetAttribute().getName().equals(targetAttrName)) {
         return rel;
@@ -38,7 +38,7 @@ public class Relationships {
     return attribute;
   }
 
-  public List<Relationship> getRelations() {
+  public List<Relationship> getRelationships() {
     return relations;
   }
 

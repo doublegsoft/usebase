@@ -102,11 +102,11 @@ user_role<
 
   @persistence(name='userid')
   @name(label='用户')
-  user: &user(id),
+  user!!: &user(id),
 
   @persistence(name='roleid')
   @name(label='角色')
-  role: &role(id),
+  role!!: &role(id),
 
   @persistence(name='crttm')
   @name(label='创建时间')
@@ -119,11 +119,11 @@ role_permission<
 
   @persistence(name='roleid')
   @name(label='角色')
-  role: &role(id),
+  role!!: &role(id),
 
   @persistence(name='permid')
   @name(label='权限')
-  permission: &permission(id),
+  permission!!: &permission(id),
 
   @persistence(name='crttm')
   @name(label='创建时间')
