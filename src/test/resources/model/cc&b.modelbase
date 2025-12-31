@@ -148,6 +148,10 @@ financial_transaction<
     XFER:转账
   ],
 
+  @persistence(name='ft_type_id')
+  @name(label='调整类型（标识）')
+  ft_type_id: string(30),
+
   @persistence(name='ft_amt')
   amount: number(15,2),
 
@@ -156,5 +160,46 @@ financial_transaction<
 
   @name(label='账单分段')
   bill_segment: &bill_segment(id)
+>
+
+@persistence(name='ci_adj')
+@name(label='调整', singular='adjustment', plural='adjustments')
+adjustment<
+
+  @persistence(name='adj_id')
+  @name(label='调整标识')
+  id!!: string(30),
+
+  @persistence(name='sa_id')
+  @name(label='服务协议')
+  service_agreement: &service_agreement(id),
+
+  @persistence(name='adj_type_cd')
+  @name(label='调整类型')
+  type: string(20),
+
+  @persistence(name='adj_status_flg')
+  @name(label='状态')
+  status: enum[
+    PND:待生效,
+    ACT:已生效,
+    CAN:已取消
+  ],
+
+  @persistence(name='adj_amt')
+  @name(label='调整金额')
+  amount: number(15,2),
+
+  @persistence(name='adj_reason_cd')
+  @name(label='调整原因')
+  reason_code: string(30),
+
+  @persistence(name='ars_dt')
+  @name(label='会计日期')
+  accounting_date: date,
+
+  @persistence(name='cre_dttm')
+  @name(label='创建时间')
+  created_time = now: datetime
 >
 

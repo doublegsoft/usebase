@@ -52,6 +52,7 @@ public class SpecBase {
     StringWriter sw = new StringWriter();
     ModelbaseWriter writer = new ModelbaseWriter(sw);
     writer.write(usecase.getParameterizedObject());
+    // TODO
     writer.write(usecase.getReturnedObject());
     if (objs != null && objs.length > 0) {
       for (ObjectDefinition obj : objs) {
