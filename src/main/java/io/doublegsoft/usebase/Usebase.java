@@ -571,7 +571,7 @@ public class Usebase {
                 for (io.doublegsoft.usebase.UsebaseParser.Anybase_idContext ctxIdInner : ctxAttr.usebase_attrgroup().anybase_id()) {
                   groupName += "_" + ctxIdInner.getText();
                 }
-                attrInObj.addLabelledOption("group", "name", groupName);
+                attrInObj.setLabelledOption("group", "name", groupName);
               }
               continue;
             }
@@ -622,8 +622,10 @@ public class Usebase {
               }
             } else if (ctxArg.usebase_aggregate() != null) {
               // TODO: 聚合
+              throw new UnsupportedOperationException("not support aggregate argument");
             } else if (ctxArg.value != null) {
               // TODO: 值
+              throw new UnsupportedOperationException("not support value argument");
             }
           }
         } else {

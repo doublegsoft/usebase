@@ -2,14 +2,12 @@ package io.doublegsoft.usebase;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.modelbase.Modelbase;
 import io.doublegsoft.usebase.modelbase.ModelbaseWriter;
 import io.doublegsoft.usebase.output.TemplateOutputWriter;
-import io.doublegsoft.usebase.projection.ProjectionBuilder;
-import io.doublegsoft.usebase.relation.AggregateBuilder;
+import io.doublegsoft.usebase.aggregate.AggregateBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -5,11 +5,13 @@ import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
+import io.doublegsoft.usebase.association.AssociationBuilder;
+import io.doublegsoft.usebase.association.AssociationChain;
 import io.doublegsoft.usebase.projection.ProjectionBuilder;
-import io.doublegsoft.usebase.relation.AggregateBuilder;
-import io.doublegsoft.usebase.relation.AggregateRelationshipChain;
-import io.doublegsoft.usebase.relation.ObjectRelationships;
-import io.doublegsoft.usebase.relation.Relationship;
+import io.doublegsoft.usebase.aggregate.AggregateBuilder;
+import io.doublegsoft.usebase.aggregate.AggregateRelationshipChain;
+import io.doublegsoft.usebase.aggregate.ObjectRelationships;
+import io.doublegsoft.usebase.aggregate.Relationship;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -26,7 +28,6 @@ public class CustomerCareAndBillingSpec extends SpecBase {
         "@get_bill({bill: bill_id}):" +
             "{bill} <> {account} <> [bill_segment] <> [service_agreement] <> [financial_transaction]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
-    ObjectDefinition obj = usecase.getParameterizedObject();
 
     AggregateBuilder builder = new AggregateBuilder(dataModel);
     AggregateRelationshipChain chain = builder.build(usecase.getReturnedObject());
@@ -51,6 +52,10 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     ObjectDefinition financialTransactionInfo = projBuilder.build(financialTransaction,
         new HashSet<>(Arrays.asList("bill", "account")));
 
+    AssociationBuilder assocBuilder = new AssociationBuilder(dataModel);
+    AssociationChain assocChain = assocBuilder.build(usecase.getParameterizedObject(),
+        usecase.getReturnedObject());
+
     printUsecaseForModelbase(usecase, billInfo, billSegmentInfo, financialTransactionInfo);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
@@ -74,6 +79,9 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     ObjectDefinition ft = dataModel.findObjectByName("financial_transaction");
     ObjectDefinition ftInfo = projBuilder.build(ft);
     ftInfo.setName(retObj.getName().substring(1) + "_result");
+
+    AssociationBuilder assocBuilder = new AssociationBuilder(dataModel);
+    AssociationChain assocChain = assocBuilder.build(paramObj, retObj);
 
     printUsecaseForModelbase(usecase, ftInfo);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);

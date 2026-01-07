@@ -91,13 +91,11 @@ public class ProjectionBuilder {
       } else if (attrname.startsWith(refObj.getName() + "_")) {
         attrname = attrname + "_id";
       }
-
       if (owner.getAttribute(attrname) == null) {
         AttributeDefinition cloningAttr = ModelbaseHelper.cloneAttribute(attrname, attr, owner);
         PrimitiveType primType = ModelbaseHelper.getPrimitiveType(attr);
         cloningAttr.setType(primType);
       }
-      //
       List<AttributeDefinition> attrs = build(attr, refObj, exclusions, level + 1, owner);
       retVal.addAll(attrs);
     }

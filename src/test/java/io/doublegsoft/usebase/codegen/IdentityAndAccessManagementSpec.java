@@ -9,10 +9,12 @@ import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
-import io.doublegsoft.usebase.relation.AggregateBuilder;
-import io.doublegsoft.usebase.relation.AggregateRelationshipChain;
-import io.doublegsoft.usebase.relation.ObjectRelationships;
-import io.doublegsoft.usebase.relation.Relationship;
+import io.doublegsoft.usebase.aggregate.AggregateBuilder;
+import io.doublegsoft.usebase.aggregate.AggregateRelationshipChain;
+import io.doublegsoft.usebase.aggregate.ObjectRelationships;
+import io.doublegsoft.usebase.aggregate.Relationship;
+import io.doublegsoft.usebase.association.AssociationBuilder;
+import io.doublegsoft.usebase.association.AssociationChain;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -52,20 +54,22 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
         "@get_user({user: user_id, (username, email)}):" +
             "{user: user_id, username, email} <user_role> [role] <role_permission> [permission]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
-    ObjectDefinition obj = usecase.getParameterizedObject();
-    Assert.assertEquals("username", obj.getAttributes()[1].getName());
-    Assert.assertEquals("email", obj.getAttributes()[2].getName());
+    ObjectDefinition paramObj = usecase.getParameterizedObject();
+    Assert.assertEquals("username", paramObj.getAttributes()[1].getName());
+    Assert.assertEquals("email", paramObj.getAttributes()[2].getName());
 
-    ObjectDefinition ret = usecase.getReturnedObject();
-    Assert.assertEquals("user_id", ret.getAttributes()[0].getName());
-    Assert.assertEquals("username", ret.getAttributes()[1].getName());
-    Assert.assertEquals("email", ret.getAttributes()[2].getName());
+    ObjectDefinition retObj = usecase.getReturnedObject();
+    Assert.assertEquals("user_id", retObj.getAttributes()[0].getName());
+    Assert.assertEquals("username", retObj.getAttributes()[1].getName());
+    Assert.assertEquals("email", retObj.getAttributes()[2].getName());
 
     AggregateBuilder builder = new AggregateBuilder(dataModel);
     AggregateRelationshipChain chain = builder.build(usecase.getReturnedObject());
     Assert.assertNotNull(chain.getRelationship("user_role", "role"));
     Assert.assertNotNull(chain.getRelationship("role_permission", "role"));
 //    Assert.assertNotNull(chain.getRelation("role_permission", "user_role"));
+
+    AssociationChain assoc = new AssociationBuilder(dataModel).build(paramObj, retObj);
     usecase.setOption("relations", chain);
     for (Relationship rel : chain.getRelationships()) {
       System.out.println(rel);

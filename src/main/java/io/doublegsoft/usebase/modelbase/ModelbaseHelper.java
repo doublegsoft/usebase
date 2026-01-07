@@ -15,6 +15,8 @@ import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metabean.type.CustomType;
 import com.doublegsoft.jcommons.metabean.type.DomainType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
+import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
+import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 
 import java.util.*;
 
@@ -261,6 +263,21 @@ public final class ModelbaseHelper {
       return (PrimitiveType) attr.getType();
     }
     throw new IllegalArgumentException("unsupported attribute type: " + attr.getType().toString());
+  }
+
+  public static String getAttributeCompositeName(AttributeDefinition attr) {
+    ObjectDefinition parentObj = attr.getParent();
+    String objName = parentObj.getName();
+    String attrName = attr.getName();
+    if (parentObj instanceof ParameterizedObjectDefinition) {
+      objName = attr.getLabelledOption("original", "object");
+    } else if (parentObj instanceof ReturnedObjectDefinition) {
+      objName = attr.getLabelledOption("original", "object");
+    }
+    if (attrName.equals("id") || attrName.equals("name") || attrName.equals("type")) {
+      return objName + "_" + attrName;
+    }
+    return attrName;
   }
 
   private ModelbaseHelper() {
