@@ -146,8 +146,23 @@ public class Usebase {
                                       UsecaseDefinition usecase) {
     ValueDefinition retVal = new ValueDefinition();
     if (ctx.usebase_aggregate() != null) {
-      ObjectDefinition obj = createObjectFromAggregate(ctx.usebase_aggregate(), objName, statement, usecase);
-      retVal.setObjectValue(obj);
+      ObjectDefinition aggregate = createObjectFromAggregate(ctx.usebase_aggregate(), objName, statement, usecase);
+      // 如果返回的aggregate对象只有一个属性，则把这一个属性的对象作为value对象
+      if (aggregate.getAttributes().length == 1) {
+        AttributeDefinition attr = aggregate.getAttributes()[0];
+        ObjectDefinition obj = null;
+        if (attr.getType().isCustom()) {
+          obj = (ObjectDefinition) attr.getType();
+          retVal.setObjectValue(obj);
+        } else if (attr.getType().isCollection()) {
+          obj = (ObjectDefinition) ((CollectionType)attr.getType()).getComponentType();
+          retVal.setArrayValue(obj);
+        } else {
+          retVal.setAttributeValue(attr);
+        }
+      } else {
+        retVal.setObjectValue(aggregate);
+      }
       return retVal;
     } else if (ctx.anybase_string() != null) {
       String str = ctx.anybase_string().getText();

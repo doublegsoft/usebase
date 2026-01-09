@@ -4,6 +4,7 @@ import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
+import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
 import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 
 import java.util.*;
@@ -18,8 +19,35 @@ public class AssociationBuilder {
 
   public AssociationChain build(ObjectDefinition paramObj, ObjectDefinition retObj) {
     AssociationChain retVal = new AssociationChain();
+    Set<ObjectDefinition> allowedObjs = new HashSet<>();
+    Map<ObjectDefinition, Set<ObjectDefinition>> graph = new HashMap<>();
+    for (ObjectDefinition obj : dataModel.getObjects()) {
+      Set<ObjectDefinition> refs = new HashSet<>();
+      for (AttributeDefinition attr : obj.getAttributes()) {
+        if (attr.getType().isCustom()) {
+          ObjectDefinition refObj = dataModel.findObjectByName(attr.getType().getName());
+          refs.add(refObj);
+        }
+      }
+      graph.put(obj, refs);
+      allowedObjs.add(obj);
+    }
+    for (ObjectDefinition obj : dataModel.getObjects()) {
+      Set<ObjectDefinition> refs = graph.get(obj);
+      for (ObjectDefinition innerObj : dataModel.getObjects()) {
+        for (AttributeDefinition attr : innerObj.getAttributes()) {
+          if (attr.getType().getName().equals(obj.getName())) {
+            refs.add(innerObj);
+          }
+        }
+      }
+      graph.put(obj, refs);
+    }
+
     Map<String, ObjectDefinition> paramDataObjs = new HashMap<>();
     Map<String, ObjectDefinition> retDataObjs = new HashMap<>();
+    ObjectDefinition rootObjInRet = null;
+    Set<String> visitedObjNames = new HashSet<>();
     for (AttributeDefinition paramAttr : paramObj.getAttributes()) {
       String originalObjName = paramAttr.getLabelledOption("original", "object");
       ObjectDefinition originalObj = dataModel.findObjectByName(originalObjName);
@@ -33,57 +61,64 @@ public class AssociationBuilder {
       if (originalObjName != null && !retDataObjs.containsKey(originalObjName)) {
         ObjectDefinition originalObj = dataModel.findObjectByName(originalObjName);
         retDataObjs.put(originalObjName, originalObj);
-      }
-    }
-    // 判断是否直接关联
-    for (AttributeDefinition paramAttr : paramObj.getAttributes()) {
-      String groupName = paramAttr.getLabelledOption("group", "name");
-      if (groupName != null) {
-        retVal.addGroupingAttribute(groupName, paramAttr);
-      } else {
-        groupName = ModelbaseHelper.getAttributeCompositeName(paramAttr);
-        retVal.addGroupingAttribute(groupName, paramAttr);
-      }
-    }
-    for (ObjectDefinition obj : retDataObjs.values()) {
-      retVal.addReturnedObject(obj);
-    }
-
-    ObjectDefinition assocObj = retVal.getAssociatingObject();
-    if (assocObj != null) {
-      retVal.addAssociatingObject(assocObj);
-    } else {
-      List<ObjectDefinition> assocObjs = new ArrayList<>();
-      for (ObjectDefinition retDataObj : retDataObjs.values()) {
-        if (!assocObjs.isEmpty()) {
-          break;
-        }
-        for (ObjectDefinition paramDataObj : paramDataObjs.values()) {
-          searchAssociationRecursively(retDataObj, paramDataObj, assocObjs);
+        if (rootObjInRet == null) {
+          rootObjInRet = originalObj;
         }
       }
-      retVal.addAssociatingObjects(assocObjs);
+    }
+    for (ObjectDefinition paramDataObj : paramDataObjs.values()) {
+      List<ObjectDefinition> path = findPath(graph, paramDataObj, rootObjInRet, allowedObjs);
+      retVal.addAssociatingObjects(path);
     }
     return retVal;
   }
 
-  private void searchAssociationRecursively(ObjectDefinition source, ObjectDefinition target, List<ObjectDefinition> associatingObjects) {
-    for (AttributeDefinition attr : source.getAttributes()) {
-      if (attr.getType().isCustom() && attr.getType().getName().equals(target.getName())) {
-        associatingObjects.add(source);
-        return;
-      }
+  public static List<ObjectDefinition> findPath(
+      Map<ObjectDefinition, Set<ObjectDefinition>> graph,
+      ObjectDefinition start,
+      ObjectDefinition end,
+      Set<ObjectDefinition> allowedTables   // 你“给的一张表集合”
+  ) {
+
+    List<ObjectDefinition> path = new ArrayList<>();
+    Queue<ObjectDefinition> queue = new LinkedList<>();
+    Map<ObjectDefinition, ObjectDefinition> prev = new HashMap<>();
+    Set<ObjectDefinition> visited = new HashSet<>();
+
+    if (!allowedTables.contains(start) ||
+        !allowedTables.contains(end)) {
+      return path;
     }
-    if (associatingObjects.isEmpty()) {
-      for (AttributeDefinition attr : source.getAttributes()) {
-        if (attr.getType().isCustom()) {
-          ObjectDefinition refObj = dataModel.findObjectByName(attr.getType().getName());
-          searchAssociationRecursively(refObj, target, associatingObjects);
-          if (!associatingObjects.isEmpty()) {
-            associatingObjects.add(source);
-          }
+
+    queue.offer(start);
+    visited.add(start);
+
+    while (!queue.isEmpty()) {
+      ObjectDefinition cur = queue.poll();
+
+      if (cur.equals(end)) {
+        break;
+      }
+
+      for (ObjectDefinition next : graph.getOrDefault(cur, Collections.emptySet())) {
+        if (!visited.contains(next) && allowedTables.contains(next)) {
+          visited.add(next);
+          prev.put(next, cur);
+          queue.offer(next);
         }
       }
     }
+
+    if (!visited.contains(end)) {
+      return path; // 无路径
+    }
+
+    // 回溯路径
+    for (ObjectDefinition t = end; t != null; t = prev.get(t)) {
+      path.add(t);
+    }
+
+    Collections.reverse(path);
+    return path;
   }
 }

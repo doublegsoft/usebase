@@ -2,6 +2,8 @@ package io.doublegsoft.usebase.codegen;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
+import com.doublegsoft.jcommons.metamodel.AssignmentDefinition;
+import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
@@ -12,6 +14,7 @@ import io.doublegsoft.usebase.aggregate.AggregateBuilder;
 import io.doublegsoft.usebase.aggregate.AggregateRelationshipChain;
 import io.doublegsoft.usebase.aggregate.ObjectRelationships;
 import io.doublegsoft.usebase.aggregate.Relationship;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -21,7 +24,7 @@ import java.util.List;
 public class CustomerCareAndBillingSpec extends SpecBase {
 
   @Test
-  public void test_bill_aggregate() throws Exception {
+  public void test_get_bill() throws Exception {
     ModelDefinition dataModel = loadModel("cc&b");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
@@ -55,9 +58,11 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     AssociationBuilder assocBuilder = new AssociationBuilder(dataModel);
     AssociationChain assocChain = assocBuilder.build(usecase.getParameterizedObject(),
         usecase.getReturnedObject());
-
-    printUsecaseForModelbase(usecase, billInfo, billSegmentInfo, financialTransactionInfo);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
+      System.out.println(objInChain.getName());
+    }
+//    printUsecaseForModelbase(usecase, billInfo, billSegmentInfo, financialTransactionInfo);
+//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -82,9 +87,76 @@ public class CustomerCareAndBillingSpec extends SpecBase {
 
     AssociationBuilder assocBuilder = new AssociationBuilder(dataModel);
     AssociationChain assocChain = assocBuilder.build(paramObj, retObj);
+    for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
+      System.out.println(objInChain.getName());
+    }
+//    printUsecaseForModelbase(usecase, ftInfo);
+//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+  }
 
-    printUsecaseForModelbase(usecase, ftInfo);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+  @Test
+  public void test_get_account_by_premise() throws Exception {
+    ModelDefinition dataModel = loadModel("cc&b");
+    ModelDefinition apiModel = new ModelDefinition();
+    String expr =
+        "@get_account_by_premise({premise: premise_id}):" +
+            "{account} <> [{account_attribute}]";
+    UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    ObjectDefinition paramObj = usecase.getParameterizedObject();
+    ObjectDefinition retObj = usecase.getReturnedObject();
+
+    AssociationBuilder assocBuilder = new AssociationBuilder(dataModel);
+    AssociationChain assocChain = assocBuilder.build(paramObj, retObj);
+    for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
+      System.out.println(objInChain.getName());
+    }
+//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+  }
+
+  @Test
+  public void test_get_account_by_bill_segment() throws Exception {
+    ModelDefinition dataModel = loadModel("cc&b");
+    ModelDefinition apiModel = new ModelDefinition();
+    String expr =
+        "@get_account_by_bill_segment({bill_segment: id}):" +
+            "{account} <> [{account_attribute}]";
+    UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    ObjectDefinition paramObj = usecase.getParameterizedObject();
+    ObjectDefinition retObj = usecase.getReturnedObject();
+
+    AssociationBuilder assocBuilder = new AssociationBuilder(dataModel);
+    AssociationChain assocChain = assocBuilder.build(paramObj, retObj);
+    for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
+      System.out.println(objInChain.getName());
+    }
+//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+  }
+
+  @Test
+  public void test_save_bill() throws Exception {
+    ModelDefinition dataModel = loadModel("cc&b");
+    ModelDefinition apiModel = new ModelDefinition();
+    String expr =
+        "@get_save_bill({account: account_id}):{bill}\n" +
+        "|&| account = {account}#(account_id)\n" +
+        "|&| service_agreements = [service_agreement]#(account_id)";
+    UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+
+    Assert.assertEquals(2, usecase.getStatements().size());
+    AssignmentDefinition assign = (AssignmentDefinition) usecase.getStatements().get(0);
+    System.out.println(assign.getValue().getAttributeValue());
+    assign = (AssignmentDefinition) usecase.getStatements().get(1);
+    System.out.println(assign.getValue().getArrayValue());
+
+    ObjectDefinition paramObj = usecase.getParameterizedObject();
+    ObjectDefinition retObj = usecase.getReturnedObject();
+
+    AssociationBuilder assocBuilder = new AssociationBuilder(dataModel);
+    AssociationChain assocChain = assocBuilder.build(paramObj, retObj);
+    for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
+      System.out.println(objInChain.getName());
+    }
+//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
 }

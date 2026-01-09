@@ -1,4 +1,8 @@
 @module(name='ccb')
+
+// ==========================================
+// 核心实体：客户 (Customer / Person)
+// ==========================================
 @persistence(name='ci_person')
 @name(label='客户', singular='customer', plural='customers')
 customer<
@@ -20,6 +24,9 @@ customer<
   created_time = now: datetime
 >
 
+// ==========================================
+// 核心实体：账户 (Account)
+// ==========================================
 @persistence(name='ci_acct')
 @name(label='账户', singular='account', plural='accounts')
 account<
@@ -47,6 +54,76 @@ account<
   customer: &customer(id)
 >
 
+@persistence(name='ci_acct_char')
+@name(label='账户属性', singular='account_attribute', plural='account_attributes')
+account_attribute<
+
+  // 【主键1】 + 【外键】：既是由于 account 的外键，也是本表的联合主键之一
+  @persistence(name='acct_id')
+  @name(label='账户')
+  account!!: &account(id),
+
+  // 【主键2】：属性类型
+  @persistence(name='char_type_cd')
+  @name(label='属性类型')
+  type!!: string(8),
+
+  @persistence(name='eff_dt')
+  @name(label='生效日期')
+  effective_date: date,
+
+  @persistence(name='char_val')
+  @name(label='属性值')
+  value: string(50),
+
+  @persistence(name='adhoc_char_val')
+  @name(label='自定义值')
+  adhoc_value: string(254)
+>
+
+// ==========================================
+// 新增实体：接入点 (Premise / Property)
+// ==========================================
+@persistence(name='ci_prem')
+@name(label='接入点', singular='premise', plural='premises')
+premise<
+
+  @persistence(name='prem_id')
+  @name(label='接入点标识')
+  id!!: string(10),
+
+  @persistence(name='prem_type_cd')
+  @name(label='接入点类型')
+  type: string(8),
+
+  @persistence(name='address1')
+  @name(label='地址行1')
+  address1: string(254),
+
+  @persistence(name='city')
+  @name(label='城市')
+  city: string(96),
+
+  @persistence(name='postal')
+  @name(label='邮政编码')
+  postal: string(12),
+
+  @persistence(name='geo_type_cd')
+  @name(label='地理类型')
+  geo_type: string(8),
+
+  @persistence(name='geo_val')
+  @name(label='地理坐标值')
+  geo_value: string(50),
+
+  // 反向引用：该地址下的历史服务协议
+  @name(label='服务协议')
+  service_agreements: &service_agreement(premise)[]
+>
+
+// ==========================================
+// 核心实体：服务协议 (Service Agreement)
+// ==========================================
 @persistence(name='ci_sa')
 @name(label='服务协议', singular='service_agreement', plural='service_agreements')
 service_agreement<
@@ -70,9 +147,17 @@ service_agreement<
   end_date: date,
 
   @name(label='账户')
-  account: &account(id)
+  account: &account(id),
+
+  // 新增关联：服务协议属于哪个接入点
+  @persistence(name='prem_id')
+  @name(label='接入点')
+  premise: &premise(id)
 >
 
+// ==========================================
+// 计费实体：账单 (Bill)
+// ==========================================
 @persistence(name='ci_bill')
 @name(label='账单', singular='bill', plural='bills')
 bill<
@@ -104,6 +189,33 @@ bill<
   bill_segments: &bill_segment(bill)[]
 >
 
+@persistence(name='ci_bill_char')
+@name(label='账单属性', singular='bill_attribute', plural='bill_attributes')
+bill_attribute<
+
+  // 【主键1】 + 【外键】：指向所属账单
+  @persistence(name='bill_id')
+  @name(label='账单')
+  bill!!: &bill(id),
+
+  // 【主键2】：属性类型
+  @persistence(name='char_type_cd')
+  @name(label='属性类型')
+  type!!: string(8),
+
+  // 账单属性通常是快照数据，记录生成账单时刻的值
+  @persistence(name='char_val')
+  @name(label='属性值')
+  value: string(50),
+
+  @persistence(name='adhoc_char_val')
+  @name(label='自定义值')
+  adhoc_value: string(254)
+>
+
+// ==========================================
+// 计费实体：账单分段 (Bill Segment)
+// ==========================================
 @persistence(name='ci_bill_seg')
 @name(label='账单分段', singular='bill_segment', plural='bill_segments')
 bill_segment<
@@ -132,6 +244,9 @@ bill_segment<
   bill: &bill(id)
 >
 
+// ==========================================
+// 财务实体：财务交易 (Financial Transaction)
+// ==========================================
 @persistence(name='ci_ft')
 @name(label='财务交易', singular='financial_transaction', plural='financial_transactions')
 financial_transaction<
@@ -162,6 +277,9 @@ financial_transaction<
   bill_segment: &bill_segment(id)
 >
 
+// ==========================================
+// 业务实体：调整 (Adjustment)
+// ==========================================
 @persistence(name='ci_adj')
 @name(label='调整', singular='adjustment', plural='adjustments')
 adjustment<
@@ -202,4 +320,3 @@ adjustment<
   @name(label='创建时间')
   created_time = now: datetime
 >
-

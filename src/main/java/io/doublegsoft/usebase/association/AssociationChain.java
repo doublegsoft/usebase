@@ -3,10 +3,7 @@ package io.doublegsoft.usebase.association;
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AssociationChain {
 
@@ -60,6 +57,10 @@ public class AssociationChain {
       }
     }
     return null;
+  }
+
+  public List<ObjectDefinition> getAssociatingObjects() {
+    return Collections.unmodifiableList(associatingObjects);
   }
 
   public void addAssociatingObject(ObjectDefinition associatingObj) {
