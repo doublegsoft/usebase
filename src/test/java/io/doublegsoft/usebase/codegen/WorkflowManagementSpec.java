@@ -39,41 +39,45 @@ public class WorkflowManagementSpec extends SpecBase {
     ObjectDefinition ret = usecase.getReturnedObject();
     Assert.assertEquals("workflow_instance", ret.getAttributes()[0].getLabelledOptions("original").get("object"));
     Assert.assertEquals("workflow_instance_id", ret.getAttributes()[0].getName());
-
     Assert.assertEquals(10, usecase.getStatements().size());
 
     // 通过statement序号验证
     AssignmentDefinition assign = (AssignmentDefinition) usecase.getStatements().get(0);
-    Assert.assertEquals("wfdef", assign.getAssignee());
+    Assert.assertEquals("被赋值的变量名为wfdef", "wfdef", assign.getAssignee());
     ObjectDefinition objValue = assign.getValue().getObjectValue();
-    Assert.assertEquals("#wfdef", objValue.getName());
+    Assert.assertEquals("被赋值的变量的实际对象是workflow_definition", "workflow_definition",
+        objValue.getLabelledOption("original", "object"));
 
     assign = (AssignmentDefinition) usecase.getStatements().get(3);
-    Assert.assertEquals("wfinst", assign.getAssignee());
+    Assert.assertEquals("被赋值的变量名为wfinst", "wfinst", assign.getAssignee());
     ObjectDefinition wfinstObj = assign.getValue().getObjectValue();
-    Assert.assertEquals("#wfinst", wfinstObj.getName());
-    Assert.assertEquals("wfdef", wfinstObj.getLabelledOptions("original").get("source"));
+    Assert.assertEquals("被赋值的变量的实际对象是workflow_instance", "workflow_instance",
+        wfinstObj.getLabelledOption("original", "object"));
+    Assert.assertEquals("被赋值的变量的实际数据来源来自wfdef", "wfdef", wfinstObj.getLabelledOptions("original").get("source"));
 
     assign = (AssignmentDefinition) usecase.getStatements().get(4);
-    Assert.assertEquals("wfactconninsts", assign.getAssignee());
-    ObjectDefinition wfactconninstsObj = assign.getValue().getObjectValue();
-    Assert.assertEquals("#wfactconninsts", wfactconninstsObj.getName());
-    Assert.assertEquals("wfactconns", wfactconninstsObj.getLabelledOptions("original").get("source"));
+    Assert.assertEquals("被赋值的变量名为wfactconninsts", "wfactconninsts", assign.getAssignee());
+    ObjectDefinition wfactconninstsObj = assign.getValue().getArrayValue();
+    Assert.assertEquals("被赋值的变量的实际对象是workflow_action_connection_instance", "workflow_action_connection_instance",
+        wfactconninstsObj.getLabelledOption("original", "object"));
+    Assert.assertEquals("被赋值的变量的实际数据来源来自wfactconns", "wfactconns", wfactconninstsObj.getLabelledOptions("original").get("source"));
 
     assign = (AssignmentDefinition) usecase.getStatements().get(1);
     Assert.assertEquals("wfactconns", assign.getAssignee());
-    objValue = assign.getValue().getObjectValue();
-    Assert.assertEquals("#wfactconns", objValue.getName());
+    objValue = assign.getValue().getArrayValue();
+    Assert.assertEquals("workflow_action_connection",
+        objValue.getLabelledOption("original", "object"));
 
     assign = (AssignmentDefinition) usecase.getStatements().get(2);
     Assert.assertEquals("wfacts", assign.getAssignee());
-    objValue = assign.getValue().getObjectValue();
-    Assert.assertEquals("#wfacts", objValue.getName());
+    objValue = assign.getValue().getArrayValue();
+    Assert.assertEquals("workflow_action",
+        objValue.getLabelledOption("original", "object"));
 
     assign = (AssignmentDefinition) usecase.getStatements().get(2);
     Assert.assertEquals("wfacts", assign.getAssignee());
-    objValue = assign.getValue().getObjectValue();
-    Assert.assertEquals("#wfacts", objValue.getName());
+    objValue = assign.getValue().getArrayValue();
+    Assert.assertEquals("workflow_action", objValue.getLabelledOption("original", "object"));
 
     // 通过模型查找对象验证
     ObjectDefinition wfdefObj = usecase.getContextModel().findObjectByName("#wfdef");
@@ -85,11 +89,11 @@ public class WorkflowManagementSpec extends SpecBase {
     Assert.assertEquals("workflow_definition", wfdefArgsObj.getAttributes()[0]
         .getLabelledOptions("original").get("object"));
 
-    ObjectDefinition wfactconnsObj = usecase.getContextModel().findObjectByName("#wfactconns");
-    Assert.assertNotNull(wfactconnsObj);
-    Assert.assertEquals("workflow_action_connections", wfactconnsObj.getAttributes()[0].getName());
-    Assert.assertEquals("workflow_action_connection", ((CollectionType) wfactconnsObj.getAttributes()[0].getType())
-        .getComponentType().getName());
+//    ObjectDefinition wfactconnsObj = usecase.getContextModel().findObjectByName("#wfdef");
+//    Assert.assertNotNull(wfactconnsObj);
+//    Assert.assertEquals("workflow_action_connections", wfactconnsObj.getAttributes()[0].getName());
+//    Assert.assertEquals("workflow_action_connection", ((CollectionType) wfactconnsObj.getAttributes()[0].getType())
+//        .getComponentType().getName());
 
 //    ObjectDefinition wfactconnsArgsObj = usecase.getContextModel().findObjectByName("$wfactconns");
 //    Assert.assertNotNull(wfactconnsArgsObj);

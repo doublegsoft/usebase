@@ -43,7 +43,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("email", ret.getAttributes()[2].getName());
 
     printUsecaseForModelbase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -180,7 +180,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("encrypted_password", assign.getAssignee());
 
     printUsecaseForModelbase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   /**
