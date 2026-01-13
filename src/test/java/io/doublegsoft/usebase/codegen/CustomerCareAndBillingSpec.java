@@ -35,9 +35,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
 
     AggregateBuilder builder = new AggregateBuilder(dataModel);
     AggregateRelationshipChain chain = builder.build(usecase.getReturnedObject());
-//    Assert.assertNotNull(rels.getRelation("user_role", "role"));
-//    Assert.assertNotNull(rels.getRelation("role_permission", "role"));
-//    Assert.assertNotNull(rels.getRelation("role_permission", "user_role"));
+
     for (Relationship rel : chain.getRelationships()) {
       System.out.println(rel);
     }
@@ -62,8 +60,8 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-//    printUsecaseForModelbase(usecase, billInfo, billSegmentInfo, financialTransactionInfo);
-//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printUsecaseForModelbase(usecase, billInfo, billSegmentInfo, financialTransactionInfo);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -77,10 +75,6 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     ObjectDefinition paramObj = usecase.getParameterizedObject();
     ObjectDefinition retObj = usecase.getReturnedObject();
 
-//    AggregateBuilder builder = new AggregateBuilder(dataModel);
-//    AggregateRelationshipChain chain = builder.build(usecase.getReturnedObject());
-//    List<ObjectRelationships> objRelsList = chain.build();
-
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
     ObjectDefinition ft = dataModel.findObjectByName("financial_transaction");
     ObjectDefinition ftInfo = projBuilder.build(ft);
@@ -91,8 +85,8 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-//    printUsecaseForModelbase(usecase, ftInfo);
-//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printUsecaseForModelbase(usecase, ftInfo);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -111,7 +105,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -130,7 +124,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -170,7 +164,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
 }

@@ -22,7 +22,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -713,7 +712,10 @@ public class Usebase {
         AttributeDefinition attrDeri = new AttributeDefinition(ctxData.usebase_derivative().name.getText(), owner);
         io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctxData.usebase_derivative().usebase_calculate();
         if (ctxCalc != null) {
-          if (ctxCalc.name != null && "count".equals(ctxCalc.name.getText())) {
+          if (ctxCalc.usebase_calc_expr() != null) {
+            CalcExprDefinition calcExpr = new CalcExprDefinition();
+            assembleCalcExpr(ctxCalc.usebase_calc_expr(), calcExpr, statement, usecase);
+          } else if (ctxCalc.name != null && "count".equals(ctxCalc.name.getText())) {
             attrDeri.setType(new PrimitiveType("long"));
             attrDeri.getConstraint().setDomainType(new DomainType("long"));
             attrDeri.setLabelledOption("original", "operator", "count");
@@ -842,6 +844,53 @@ public class Usebase {
       collAttr.setLabelledOption("original", "object", attrType.getComponentType().getName());
       collAttr.setLabelledOption("original", "array", "true");
       collAttr.setType(attrType);
+    }
+  }
+
+  private void assembleCalcExpr(io.doublegsoft.usebase.UsebaseParser.Usebase_calc_exprContext ctx,
+                                CalcExprDefinition calcExpr,
+                                StatementDefinition statement,
+                                UsecaseDefinition usecase) {
+    if (ctx.operator != null) {
+      CalcExprDefinition left = new CalcExprDefinition();
+      assembleCalcExpr(ctx.left, left, statement, usecase);
+      CalcExprDefinition right = new CalcExprDefinition();
+      assembleCalcExpr(ctx.right, right, statement, usecase);
+      calcExpr.setLeftOperand(left);
+      calcExpr.setRightOperand(right);
+    } else if (ctx.usebase_calc_value() != null) {
+      io.doublegsoft.usebase.UsebaseParser.Usebase_calc_valueContext ctxCalcVal = ctx.usebase_calc_value();
+      if (ctxCalcVal.usebase_object() != null) {
+        ValueDefinition val = new ValueDefinition();
+        ObjectDefinition objVal = new ObjectDefinition(getOriginalText(ctxCalcVal.usebase_object()),
+            usecase.getContextModel());
+        assembleObject(ctxCalcVal.usebase_object(), objVal, statement, usecase);
+        val.setObjectValue(objVal);
+        calcExpr.setValue(val);
+      } else if (ctxCalcVal.anybase_value() != null) {
+        io.doublegsoft.usebase.UsebaseParser.Anybase_valueContext ctxValue = ctxCalcVal.anybase_value();
+        ValueDefinition val = new ValueDefinition();
+        if (ctxValue.anybase_string() != null) {
+          String str = ctxValue.anybase_string().getText();
+          val.setString(str.substring(1, str.length() - 1));
+        } else if (ctxValue.anybase_number() != null) {
+          val.setNumber(new BigDecimal(ctxValue.anybase_number().getText()));
+        } else if (ctxValue.anybase_identifier() != null) {
+          String text = ctxCalcVal.anybase_value().getText();
+          if (text.contains(".")) {
+            String[] objAndAttr = text.split("\\.");
+            ObjectDefinition obj = dataModel.findObjectByName(objAndAttr[0].trim());
+            AttributeDefinition attr = obj.getAttribute(objAndAttr[1].trim());
+            val.setAttributeValue(attr);
+          } else {
+            throw new IllegalArgumentException("没有层级的值“" + text + "”，无法获取对象中具体的属性");
+          }
+        }
+        calcExpr.setValue(val);
+      } else if (ctx.usebase_calc_expr().size() == 1) {
+        // FIXME: IS IT CLEAR?
+        assembleCalcExpr(ctx.usebase_calc_expr(0), calcExpr, statement, usecase);
+      }
     }
   }
 
