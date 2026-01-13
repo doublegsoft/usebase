@@ -16,13 +16,25 @@ import io.doublegsoft.usebase.aggregate.AggregateRelationshipChain;
 import io.doublegsoft.usebase.aggregate.ObjectRelationships;
 import io.doublegsoft.usebase.aggregate.Relationship;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 public class CustomerCareAndBillingSpec extends SpecBase {
+
+  private static final String OUTPUT = "out/cc&b.usebase";
+
+  @BeforeClass
+  public static void initialize() throws Exception {
+    new FileOutputStream(OUTPUT).close();
+  }
 
   @Test
   public void test_get_bill() throws Exception {
@@ -60,7 +72,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-    printUsecaseForModelbase(usecase, billInfo, billSegmentInfo, financialTransactionInfo);
+    printUsecaseForModelbase(OUTPUT, usecase, billInfo, billSegmentInfo, financialTransactionInfo);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
@@ -85,7 +97,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-    printUsecaseForModelbase(usecase, ftInfo);
+    printUsecaseForModelbase(OUTPUT, usecase, ftInfo);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
@@ -105,6 +117,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
+    printUsecaseForModelbase(OUTPUT, usecase);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
@@ -124,6 +137,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
+    printUsecaseForModelbase(OUTPUT, usecase);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
@@ -141,6 +155,14 @@ public class CustomerCareAndBillingSpec extends SpecBase {
             "{cfg_rate: rate}#(service_agreement.rate_type)" +
             "%}]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+
+    ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
+    ObjectDefinition sa = dataModel.findObjectByName("service_agreement");
+    ObjectDefinition saInfo = projBuilder.build(sa);
+    ObjectDefinition account = dataModel.findObjectByName("account");
+    ObjectDefinition accountInfo = projBuilder.build(account);
+    ObjectDefinition customer = dataModel.findObjectByName("customer");
+    ObjectDefinition customerInfo = projBuilder.build(customer);
 
     AssignmentDefinition assign = (AssignmentDefinition) usecase.getStatements().get(0);
     Assert.assertEquals("第一个语句通过账户标识查找账户（对象值）",
@@ -164,6 +186,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
+    printUsecaseForModelbase(OUTPUT, usecase, saInfo, accountInfo, customerInfo);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 

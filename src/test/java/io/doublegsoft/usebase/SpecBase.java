@@ -9,10 +9,7 @@ import io.doublegsoft.usebase.modelbase.ModelbaseWriter;
 import io.doublegsoft.usebase.output.TemplateOutputWriter;
 import io.doublegsoft.usebase.aggregate.AggregateBuilder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +55,21 @@ public class SpecBase {
       }
     }
     System.out.println(sw);
+  }
+
+  protected void printUsecaseForModelbase(String filePath, UsecaseDefinition usecase, ObjectDefinition... objs) throws IOException {
+    StringWriter sw = new StringWriter();
+    ModelbaseWriter writer = new ModelbaseWriter(sw);
+    writer.write(usecase.getParameterizedObject());
+    writer.write(usecase.getReturnedObject());
+    if (objs != null && objs.length > 0) {
+      for (ObjectDefinition obj : objs) {
+        writer.write(obj);
+      }
+    }
+    try (FileWriter fw = new FileWriter(filePath, true)) {
+      fw.write(sw.toString());
+    }
   }
 
   protected void printJavaCodeForUsecase(String templateName, UsecaseDefinition usecase, ModelDefinition dataModel) throws IOException {

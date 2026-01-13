@@ -45,6 +45,41 @@ done
 
 ################################################################################
 ##                                                                            ##
+##                                 USEBASE JAVA                               ##
+##                                                                            ##
+################################################################################
+REPOS=("java-info@gfc-1.x")
+
+export MOBELBASE_MODEL=out/"$SPEC".usebase
+
+for repo in "${REPOS[@]}"
+do
+export TEMPLATE_ROOT=$MODELBASE_DATA_ROOT/java/$repo
+
+java -jar $MODELBASE_JAR \
+--model=$MOBELBASE_MODEL \
+--template-root=$TEMPLATE_ROOT \
+--output-root=$PROJECT_ROOT \
+--license=env/LICENSE \
+--globals=\
+\{\
+\"application\":\"$APPNAME\",\
+\"namespace\":\"$NAMESPACE\",\
+\"artifact\":\"$APPNAME\",\
+\"version\":\"1.0.0\",\
+\"description\":\"\",\
+\"naming\":\"com.doublegsoft.jcommons.programming.java.JavaConventions\",\
+\"globalNamingConvention\":\"com.doublegsoft.jcommons.programming.java.JavaNamingConvention\",\
+\"language\":\"java\",\
+\"imports\":\
+\[\],\
+\"dependencies\":\
+\[\]\
+\} 2>&1
+done
+
+################################################################################
+##                                                                            ##
 ##                              SPRINGBOOT (JAVA)                             ##
 ##                                                                            ##
 ################################################################################

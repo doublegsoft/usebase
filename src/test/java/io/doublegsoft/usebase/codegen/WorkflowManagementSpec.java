@@ -10,9 +10,19 @@ import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.FileOutputStream;
+
 public class WorkflowManagementSpec extends SpecBase {
+
+  private static final String OUTPUT = "out/wfm.usebase";
+
+  @BeforeClass
+  public static void initialize() throws Exception {
+    new FileOutputStream(OUTPUT).close();
+  }
 
   /**
    * 实例化一个工作流，通常用于启动工作流。
