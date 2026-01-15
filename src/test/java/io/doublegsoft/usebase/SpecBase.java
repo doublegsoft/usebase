@@ -10,6 +10,8 @@ import io.doublegsoft.usebase.output.TemplateOutputWriter;
 import io.doublegsoft.usebase.aggregate.AggregateBuilder;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,7 @@ public class SpecBase {
     writer.write(usecase.getParameterizedObject());
     // TODO
     writer.write(usecase.getReturnedObject());
-    if (objs != null && objs.length > 0) {
+    if (objs != null) {
       for (ObjectDefinition obj : objs) {
         writer.write(obj);
       }
@@ -73,20 +75,46 @@ public class SpecBase {
   }
 
   protected void printJavaCodeForUsecase(String templateName, UsecaseDefinition usecase, ModelDefinition dataModel) throws IOException {
+    printJavaCodeForUsecase(templateName, usecase, dataModel, null);
+  }
+
+  protected void printJavaCodeForUsecase(String templateName, UsecaseDefinition usecase, ModelDefinition dataModel, String outputFile) throws IOException {
     StringWriter sw = new StringWriter();
     Map<String,Object> app = new HashMap<>();
-    app.put("name", "test");
+    app.put("name", "ccnb");
     Map<String,Object> data = new HashMap<>();
     TemplateOutputWriter writer = new TemplateOutputWriter(sw,
         "../usebase-data",
         "../usebase-data/java");
-    data.put("namespace", "hello.world");
+    data.put("namespace", "biz.doublegsoft");
     data.put("app", app);
     data.put("model", dataModel);
     data.put("usecase", usecase);
     data.put("aggregateBuilder", new AggregateBuilder(dataModel));
     writer.write(templateName, usecase, data);
     System.out.println(sw);
+    if (outputFile != null) {
+      File f = new File(outputFile);
+      f.createNewFile();
+      Files.write(f.toPath(), sw.toString().getBytes(StandardCharsets.UTF_8));
+    }
+  }
+
+  public static String toPascalCase(String input) {
+    if (input == null) return null;
+
+    // 1. 用非字母数字拆分，得到“单词”
+    String[] parts = input.split("[^a-zA-Z0-9]+");
+    StringBuilder sb = new StringBuilder();
+
+    for (String part : parts) {
+      if (part.isEmpty()) continue;           // 防止出现空串
+      sb.append(Character.toUpperCase(part.charAt(0))); // 首字母大写
+      if (part.length() > 1) {
+        sb.append(part.substring(1).toLowerCase());   // 其余小写
+      }
+    }
+    return sb.toString();
   }
 
 }

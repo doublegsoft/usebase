@@ -82,6 +82,7 @@ public class ModelbaseWriter {
     if (obj == null) {
       return this;
     }
+    writer.write("@info\n");
     String name = obj.getName();
     writer.write(name);
     writer.write("<\n\n");

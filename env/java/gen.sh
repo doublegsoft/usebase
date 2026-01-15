@@ -1,8 +1,9 @@
 export MODELBASE_DATA_ROOT=/Users/christian/export/local/works/doublegsoft.io/modelbase/03.Development/modelbase-data
+export USEBAS_DATA_ROOT=/Users/christian/export/local/works/doublegsoft.io/usebase/03.Development/usebase-data
 export MODELBASE_JAR=/Users/christian/export/opt/modelbase/protosys-plugin-modelbase-6.0-shaded.jar
 export PROJBASE_DATA_ROOT=/Users/christian/export/local/works/doublegsoft.io/projbase/03.Development/projbase-data
 export PROJBASE_JAR=/Users/christian/export/opt/projbase/protosys-plugin-projbase-4.5-shaded.jar
-export OUTPUT_ROOT=out
+export OUTPUT_ROOT=out/java
 
 export SPEC="cc&b"
 export APPNAME=ccnb
@@ -48,13 +49,13 @@ done
 ##                                 USEBASE JAVA                               ##
 ##                                                                            ##
 ################################################################################
-REPOS=("java-info@gfc-1.x")
+REPOS=("java-dto@gfc-1.x")
 
 export MOBELBASE_MODEL=out/"$SPEC".usebase
 
 for repo in "${REPOS[@]}"
 do
-export TEMPLATE_ROOT=$MODELBASE_DATA_ROOT/java/$repo
+export TEMPLATE_ROOT=$USEBAS_DATA_ROOT/java/$repo
 
 java -jar $MODELBASE_JAR \
 --model=$MOBELBASE_MODEL \

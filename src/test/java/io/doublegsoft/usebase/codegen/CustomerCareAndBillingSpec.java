@@ -4,7 +4,6 @@ import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.AssignmentDefinition;
 import com.doublegsoft.jcommons.metamodel.SaveDefinition;
-import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
@@ -20,9 +19,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.FileOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +26,12 @@ import java.util.List;
 public class CustomerCareAndBillingSpec extends SpecBase {
 
   private static final String OUTPUT = "out/cc&b.usebase";
+
+  private static final String TEMPLATE_SERVICE_IMPL = TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl";
+
+  private static final String TEMPLATE_SERVICE = TEMPLATE_ROOT + "/service/$usecase$Service.java.ftl";
+
+  private static final String OUTPUT_DIR = "out/java/cc&b/src/main/java/biz/doublegsoft/ccnb/service";
 
   @BeforeClass
   public static void initialize() throws Exception {
@@ -72,8 +74,10 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-    printUsecaseForModelbase(OUTPUT, usecase, billInfo, billSegmentInfo, financialTransactionInfo);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   @Test
@@ -98,7 +102,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
       System.out.println(objInChain.getName());
     }
     printUsecaseForModelbase(OUTPUT, usecase, ftInfo);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -118,7 +122,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
       System.out.println(objInChain.getName());
     }
     printUsecaseForModelbase(OUTPUT, usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -138,7 +142,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
       System.out.println(objInChain.getName());
     }
     printUsecaseForModelbase(OUTPUT, usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -146,7 +150,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("cc&b");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
-        "@get_save_bill({account: account_id}):{bill}\n" +
+        "@save_bill({account: account_id}):{bill}\n" +
         "|&| account = {account}#(account_id)\n" +
         "|&| service_agreements = [service_agreement]#(account_id)\n" +
         "|+| {bill: id = '', status = 'E'}\n" +
@@ -187,7 +191,10 @@ public class CustomerCareAndBillingSpec extends SpecBase {
       System.out.println(objInChain.getName());
     }
     printUsecaseForModelbase(OUTPUT, usecase, saInfo, accountInfo, customerInfo);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
 }
