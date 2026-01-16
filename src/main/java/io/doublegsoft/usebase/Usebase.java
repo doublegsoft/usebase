@@ -86,8 +86,13 @@ public class Usebase {
       retVal.setParameterizedObject(paramObj);
     }
     if (ctx.usebase_return() != null) {
+      io.doublegsoft.usebase.UsebaseParser.Usebase_aggregateContext ctxAgg =
+          ctx.usebase_return().usebase_aggregate();
       ReturnedObjectDefinition returnObj = new ReturnedObjectDefinition(":" + retVal.getName(), retVal.getContextModel());
-      assembleAggregate(ctx.usebase_return().usebase_aggregate(), returnObj, null, retVal);
+      assembleAggregate(ctxAgg, returnObj, null, retVal);
+      if (ctxAgg.usebase_data().size() == 1 && ctxAgg.usebase_data(0).usebase_array() != null) {
+        returnObj.setLabelledOption("original", "array", "true");
+      }
       retVal.setReturnedObject(returnObj);
     }
 

@@ -102,7 +102,10 @@ public class CustomerCareAndBillingSpec extends SpecBase {
       System.out.println(objInChain.getName());
     }
     printUsecaseForModelbase(OUTPUT, usecase, ftInfo);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   @Test
@@ -191,10 +194,10 @@ public class CustomerCareAndBillingSpec extends SpecBase {
       System.out.println(objInChain.getName());
     }
     printUsecaseForModelbase(OUTPUT, usecase, saInfo, accountInfo, customerInfo);
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+//        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+//        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
 }
