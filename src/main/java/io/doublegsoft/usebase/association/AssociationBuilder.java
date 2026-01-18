@@ -53,6 +53,9 @@ public class AssociationBuilder {
       ObjectDefinition originalObj = dataModel.findObjectByName(originalObjName);
       paramDataObjs.put(originalObjName, originalObj);
     }
+    if (retObj == null) {
+      return retVal;
+    }
     for (AttributeDefinition retAttr : retObj.getAttributes()) {
       String originalObjName = retAttr.getLabelledOption("original", "object");
       if (retAttr.getType().isCollection()) {

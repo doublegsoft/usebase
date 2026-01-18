@@ -5,6 +5,7 @@ import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.modelbase.Modelbase;
+import io.doublegsoft.usebase.association.AssociationBuilder;
 import io.doublegsoft.usebase.modelbase.ModelbaseWriter;
 import io.doublegsoft.usebase.output.TemplateOutputWriter;
 import io.doublegsoft.usebase.aggregate.AggregateBuilder;
@@ -19,6 +20,10 @@ import java.util.Map;
 public class SpecBase {
 
   public static final String TEMPLATE_ROOT = "java-tx@spring-1.x/src/main/java/$namespace$/$app$";
+
+  public static final String TEMPLATE_SERVICE_IMPL = TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl";
+
+  public static final String TEMPLATE_SERVICE = TEMPLATE_ROOT + "/service/$usecase$Service.java.ftl";
 
   protected ModelDefinition loadModel(String... projs) throws Exception {
     String content = "";
@@ -91,6 +96,7 @@ public class SpecBase {
     data.put("model", dataModel);
     data.put("usecase", usecase);
     data.put("aggregateBuilder", new AggregateBuilder(dataModel));
+    data.put("associationBuilder", new AssociationBuilder(dataModel));
     writer.write(templateName, usecase, data);
     System.out.println(sw);
     if (outputFile != null) {

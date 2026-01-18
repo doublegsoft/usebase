@@ -27,11 +27,8 @@ public class CustomerCareAndBillingSpec extends SpecBase {
 
   private static final String OUTPUT = "out/cc&b.usebase";
 
-  private static final String TEMPLATE_SERVICE_IMPL = TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl";
+  public static final String OUTPUT_DIR = "out/java/cc&b/src/main/java/biz/doublegsoft/ccnb/service";
 
-  private static final String TEMPLATE_SERVICE = TEMPLATE_ROOT + "/service/$usecase$Service.java.ftl";
-
-  private static final String OUTPUT_DIR = "out/java/cc&b/src/main/java/biz/doublegsoft/ccnb/service";
 
   @BeforeClass
   public static void initialize() throws Exception {
@@ -194,10 +191,10 @@ public class CustomerCareAndBillingSpec extends SpecBase {
       System.out.println(objInChain.getName());
     }
     printUsecaseForModelbase(OUTPUT, usecase, saInfo, accountInfo, customerInfo);
-//    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-//        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-//    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-//        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
 }

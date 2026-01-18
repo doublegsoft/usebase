@@ -22,6 +22,10 @@ import java.util.List;
 
 public class IdentityAndAccessManagementSpec extends SpecBase {
 
+  private static final String OUTPUT = "out/iam.usebase";
+
+  public static final String OUTPUT_DIR = "out/java/cc&b/src/main/java/biz/doublegsoft/iam/service";
+
   /**
    * 查询用户。
    */
@@ -43,7 +47,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("email", ret.getAttributes()[2].getName());
 
     printUsecaseForModelbase(usecase);
-//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -77,7 +81,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
 
     List<ObjectRelationships> objRelsList = chain.build("user");
 //    printUsecaseForModelbase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -114,7 +118,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("status", obj.getAttributes()[0].getName());
     printUsecaseForModelbase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   /**
@@ -131,7 +135,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("status", obj.getAttributes()[0].getName());
     printUsecaseForModelbase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   /**
@@ -180,7 +184,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("encrypted_password", assign.getAssignee());
 
     printUsecaseForModelbase(usecase);
-//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   /**
@@ -219,7 +223,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
     printUsecaseForModelbase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
 //
 //    UsebaseAggregate agg = (UsebaseAggregate) usecase.getArguments().get(0).getValue();
 //    Assert.assertEquals("person", agg.getPrimaryObject().getName());
@@ -264,7 +268,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ParameterizedObjectDefinition paramObj = usecase.getParameterizedObject();
 
     printUsecaseForModelbase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usercase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
 //    printJavaCodeForUsecase("Service.java.ftl", usecase);
 //    UsebaseSave stmt0 = (UsebaseSave) usecase.getStatements().get(0);
 //    UsebaseRemote remote = stmt0.getRemote();

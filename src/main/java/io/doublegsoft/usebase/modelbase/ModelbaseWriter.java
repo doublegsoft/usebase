@@ -57,7 +57,7 @@ public class ModelbaseWriter {
     }
     Map<String, String> original = obj.getLabelledOptions("original");
     if (original != null && isOnlyIncludingOriginalAttributes(obj)) {
-      return this;
+//      return this;
     }
     writer.write("@response\n");
     String name = obj.getName().substring(1);

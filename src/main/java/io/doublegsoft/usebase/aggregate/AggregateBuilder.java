@@ -20,6 +20,9 @@ public class AggregateBuilder {
 
   public AggregateRelationshipChain build(ObjectDefinition aggregateObj) {
     AggregateRelationshipChain retVal = new AggregateRelationshipChain(aggregateObj);
+    if (aggregateObj == null) {
+      return retVal;
+    }
     Map<String, ObjectDefinition> objsInRet = new HashMap<>();
     // 返回对象的定义中全部的对象函数
     for (AttributeDefinition attr : aggregateObj.getAttributes()) {

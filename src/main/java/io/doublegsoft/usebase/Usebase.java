@@ -16,6 +16,9 @@ import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.*;
 import com.doublegsoft.jcommons.utils.Inflector;
 import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
+import io.doublegsoft.usebase.parser.ArgumentsParser;
+import io.doublegsoft.usebase.parser.AttributesParser;
+import io.doublegsoft.usebase.parser.ConditionsParser;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -158,11 +161,16 @@ public class Usebase {
         // TODO: 是否从数据对戏那个复制属性
         retVal.setObjectValue(aggregate);
       } else if (aggregate.getAttributes().length == 1) {
+        io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctxArr =
+            ctx.usebase_aggregate().usebase_data(0).usebase_array();
         AttributeDefinition attr = aggregate.getAttributes()[0];
         ObjectDefinition obj = null;
         if (attr.getType().isCollection()) {
           obj = (ObjectDefinition) ((CollectionType)attr.getType()).getComponentType();
           aggregate.setLabelledOption("original", "object", obj.getName());
+          if (ctxArr.usebase_arguments() != null) {
+
+          }
           retVal.setArrayValue(aggregate);
         } else {
           retVal.setAttributeValue(attr);
@@ -341,18 +349,13 @@ public class Usebase {
       io.doublegsoft.usebase.UsebaseParser.Usebase_assignmentContext ctxAssign = ctxExpr.usebase_assignment();
       AssignmentDefinition retVal = new AssignmentDefinition();
       retVal.setOperator(ctx.usebase_operator().getText());
-      if ("&|".equals(retVal.getOperator().substring(retVal.getOperator().length() - 2))) {
-        // TODO: SEARCH
-      } else if ("=|".equals(retVal.getOperator().substring(retVal.getOperator().length() - 2))) {
-        // TODO: UPDATE
-      } else if (":|".equals(retVal.getOperator().substring(retVal.getOperator().length() - 2))) {
-        // TODO: ASSIGNMENT
-      } else {
+      String op = retVal.getOperator().substring(retVal.getOperator().length() - 2);
+      if (!"&|".equals(op) && !"=|".equals(op) && !":|".equals(op)) {
         throw new RuntimeException("\"" + getOriginalText(ctx) + "\" not allowed to have assignment rule");
       }
+      retVal.setValue(createValue(ctxAssign.usebase_value(), "#" + ctxAssign.variable.getText(), retVal, usecase));
       retVal.setAssignee(ctxAssign.variable.getText());
       retVal.setAssignOp(ctxAssign.usebase_assignop().getText());
-      retVal.setValue(createValue(ctxAssign.usebase_value(), "#" + ctxAssign.variable.getText(), retVal, usecase));
       retVal.setRemote(createValueFromRemote(ctx.usebase_remote()));
       retVal.setOriginalText(getOriginalText(ctxAssign));
       return retVal;
@@ -372,6 +375,9 @@ public class Usebase {
         ObjectDefinition saveObj = createObject(ctxObj, ctxObj.name.getText(), retVal, usecase);
         if (ctxObj.alias != null) {
           retVal.setVariable(ctxObj.alias.getText());
+        }
+        if (retVal.getVariable() == null) {
+          retVal.setVariable(saveObj.getName());
         }
         retVal.setSaveObject(saveObj);
       } else if (ctxExpr.var != null) {
@@ -396,6 +402,9 @@ public class Usebase {
           assembleAggregate(ctxArr.usebase_aggregate(), saveObj, retVal, usecase);
         }
         retVal.setArray(true);
+        if (retVal.getVariable() == null) {
+          retVal.setVariable(Inflector.getInstance().pluralize(saveObj.getName()));
+        }
         retVal.setSaveObject(saveObj);
       }
       return retVal;
@@ -452,10 +461,14 @@ public class Usebase {
       objName += container.getName();
     }
     if (container.getName().startsWith("$")) {
+//      ArgumentsParser argsParser = new ArgumentsParser(dataModel);
+//      argsParser.assemble(ctx, container);
       assembleObjectFromArguments(ctx, container, statement, usecase);
       return container;
     } else {
       ObjectDefinition argsObj = new ObjectDefinition(objName, usecase.getContextModel());
+//      ArgumentsParser argsParser = new ArgumentsParser(dataModel);
+//      argsParser.assemble(ctx, argsObj);
       assembleObjectFromArguments(ctx, argsObj, statement, usecase);
       return argsObj;
     }
@@ -593,78 +606,16 @@ public class Usebase {
         io.doublegsoft.usebase.UsebaseParser.Usebase_objectContext ctxObj = ctxData.usebase_object();
         ModelbaseHelper.addOptions(owner, "original", "object", originalObjName);
         if (ctxObj.usebase_attributes() != null) {
-          // 显示指定（选择）了对象的属性
-          String objname = ctxObj.name.getText();
-          for (io.doublegsoft.usebase.UsebaseParser.Usebase_attributeContext ctxAttr : ctxObj.usebase_attributes().usebase_attribute()) {
-            // 构成组别的属性集合
-            if (ctxAttr.usebase_attrgroup() != null) {
-              for (io.doublegsoft.usebase.UsebaseParser.Anybase_idContext ctxId : ctxAttr.usebase_attrgroup().anybase_id()) {
-                String attrname = ctxId.getText();
-                AttributeDefinition attrDef = dataModel.findAttributeByNames(objname, attrname);
-                if (attrDef == null) {
-                  attrDef = dataModel.findAttributeByNames(objname, attrname.replace(objname + "_", ""));
-                }
-                AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, owner);
-                String groupName = "";
-                for (io.doublegsoft.usebase.UsebaseParser.Anybase_idContext ctxIdInner : ctxAttr.usebase_attrgroup().anybase_id()) {
-                  groupName += "_" + ctxIdInner.getText();
-                }
-                attrInObj.setLabelledOption("group", "name", groupName);
-              }
-              continue;
-            }
-            String attrname = ctxAttr.name.getText();
-            AttributeDefinition attrDef = dataModel.findAttributeByNames(objname, attrname);
-            if (attrDef == null) {
-              attrDef = dataModel.findAttributeByNames(objname, attrname.replace(objname + "_", ""));
-            }
-            AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, owner);
-            if (ctxAttr.usebase_validation() != null) {
-              attrInObj.getConstraint().setNullable(false);
-            }
-            if (ctxAttr.value != null) {
-              String text = ctxAttr.value.getText();
-              if (text.startsWith("'")) {
-                text = text.substring(1, text.length() - 1);
-              }
-              attrInObj.getConstraint().setDefaultValue(text);
-            }
-            // 处理关联关系
-            decorateConjunctionForAttribute(attrInObj, ctxConds);
-          }
+          // 对象属性
+          AttributesParser parser = new AttributesParser(dataModel);
+          parser.assemble(ctxObj.usebase_attributes(), owner);
+          AttributeDefinition lastAttr = owner.getAttributes()[owner.getAttributes().length - 1];
+          ConditionsParser condsParser = new ConditionsParser(dataModel);
+          condsParser.assemble(ctxConds, lastAttr);
         } else if (ctxObj.usebase_arguments() != null) {
-          for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext ctxArg : ctxObj.usebase_arguments().usebase_argument()) {
-            AttributeDefinition attrDef = null;
-            if (ctxArg.anybase_identifier() != null) {
-              String attrname = ctxArg.anybase_identifier().getText();
-              attrDef = dataModel.findAttributeByNames(originalObjName, attrname);
-              if (attrDef == null) {
-                attrDef = dataModel.findAttributeByNames(originalObjName,
-                    attrname.replace(originalObjName + "_", ""));
-              }
-              if (attrDef == null && ctxArg.anybase_id() != null) {
-                String alias = ctxArg.anybase_id().getText();
-                attrDef = dataModel.findAttributeByNames(originalObjName, alias);
-                attrDef.setAlias(alias);
-              }
-              if (attrDef != null) {
-                AttributeDefinition clonedAttr = ModelbaseHelper.cloneAttribute(ctxArg.anybase_identifier().getText(), attrDef, owner);
-                if (ctxArg.usebase_validation() != null) {
-                  clonedAttr.getConstraint().setNullable(false);
-                }
-                if (ctxObj.usebase_operator_hash() != null) {
-                  // 说明需要用来作为唯一性判断条件
-                  owner.setLabelledOption("unique", "object", ctxObj.name.getText());
-                  owner.addLabelledOption("unique", "attribute", clonedAttr.getName());
-                }
-              }
-            } else if (ctxArg.usebase_aggregate() != null) {
-              assembleAggregate(ctxArg.usebase_aggregate(), owner, statement, usecase);
-            } else if (ctxArg.value != null) {
-              // TODO: 值
-              throw new UnsupportedOperationException("not support value argument");
-            }
-          }
+          // 对象查询参数
+          ArgumentsParser parser = new ArgumentsParser(dataModel);
+          parser.decorate(ctxObj.usebase_arguments(), owner);
         } else {
           // 只有对象，为指定（选择）任何对象中的属性
           ObjectDefinition objInDataModel = dataModel.findObjectByName(ctxObj.name.getText());
@@ -712,6 +663,10 @@ public class Usebase {
           assembleArray(ctxData.usebase_array(), owner, statement, usecase);
           AttributeDefinition attrArray = owner.getAttributes()[owner.getAttributes().length - 1];
           decorateConjunctionForAttribute(attrArray, ctxConds);// obj.getAttributes()[obj.getAttributes().length - 1];
+        }
+        if (ctxArr.usebase_arguments() != null) {
+          ArgumentsParser parser = new ArgumentsParser(dataModel);
+          parser.decorate(ctxArr.usebase_arguments(), owner);
         }
       } else if (ctxData.usebase_derivative() != null) {
         AttributeDefinition attrDeri = new AttributeDefinition(ctxData.usebase_derivative().name.getText(), owner);
@@ -792,12 +747,8 @@ public class Usebase {
             ObjectDefinition propagatedObjDef = new ObjectDefinition(aggObjName, usecase.getContextModel());
             attrType.setComponentType(propagatedObjDef);
             if (ctxObj.usebase_attributes() != null) {
-              for (io.doublegsoft.usebase.UsebaseParser.Usebase_attributeContext ctxAttr : ctxObj.usebase_attributes().usebase_attribute()) {
-                AttributeDefinition originalAttrDef = dataModel.findAttributeByNames(aggObjName, ctxAttr.name.getText());
-                if (!ModelbaseHelper.isSystemOrExistingInObject(originalObjDef.getName(), propagatedObjDef)) {
-                  ModelbaseHelper.cloneAttribute(originalAttrDef, propagatedObjDef);
-                }
-              }
+              AttributesParser attrsParser = new AttributesParser(dataModel);
+              attrsParser.assemble(ctxObj.usebase_attributes(), owner);
             } else {
               if (!ModelbaseHelper.isSystemOrExistingInObject(originalObjDef.getName(), propagatedObjDef)) {
                 ModelbaseHelper.cloneAttributes(Arrays.asList(originalObjDef.getAttributes()), propagatedObjDef);
