@@ -1,7 +1,15 @@
 package io.doublegsoft.usebase.parser;
 
+import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
+import com.doublegsoft.jcommons.metabean.type.CollectionType;
+import com.doublegsoft.jcommons.metabean.type.DomainType;
+import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
+import com.doublegsoft.jcommons.metamodel.CalcExprDefinition;
+import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
+import com.doublegsoft.jcommons.utils.Inflector;
+import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 
 public class AggregateParser extends UsebaseParser {
 
@@ -10,7 +18,107 @@ public class AggregateParser extends UsebaseParser {
   }
 
   public void assemble(io.doublegsoft.usebase.UsebaseParser.Usebase_aggregateContext ctx,
-                       ObjectDefinition owner) {
-    // TODO
+                       ObjectDefinition owner, UsecaseDefinition usecase) {
+    for (int i = 0; i < ctx.usebase_data().size(); i++) {
+      io.doublegsoft.usebase.UsebaseParser.Usebase_conditionsContext ctxConds = null;
+      if (i > 0) {
+        ctxConds = ctx.usebase_conditions(i - 1);
+      }
+      io.doublegsoft.usebase.UsebaseParser.Usebase_dataContext ctxData = ctx.usebase_data(i);
+      if (ctxData.usebase_object() != null) {
+        String originalObjName = ctxData.usebase_object().name.getText();
+        io.doublegsoft.usebase.UsebaseParser.Usebase_objectContext ctxObj = ctxData.usebase_object();
+        ModelbaseHelper.addOptions(owner, "original", "object", originalObjName);
+        if (ctxObj.usebase_attributes() != null) {
+          // 对象属性
+          AttributesParser parser = new AttributesParser(dataModel);
+          parser.assemble(ctxObj.usebase_attributes(), owner);
+          AttributeDefinition lastAttr = owner.getAttributes()[owner.getAttributes().length - 1];
+          getConditionsParser().assemble(ctxConds, lastAttr);
+        } else if (ctxObj.usebase_arguments() != null) {
+          // 对象查询参数
+          getArgumentsParser().decorate(ctxObj.usebase_arguments(), owner);
+        } else {
+          // 只有对象，为指定（选择）任何对象中的属性
+          ObjectDefinition objInDataModel = dataModel.findObjectByName(ctxObj.name.getText());
+          for (AttributeDefinition attrDef : objInDataModel.getAttributes()) {
+            if (ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), owner) || attrDef.getType().isCollection()) {
+              continue;
+            }
+            AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, owner);
+            // 处理关联关系
+            getConditionsParser().assemble(ctxConds, attrInObj);
+          }
+        }
+        if (ctxData.usebase_object().usebase_source() != null) {
+          ModelbaseHelper.addOptions(owner, "original", "source",
+              ctxData.usebase_object().usebase_source().anybase_identifier().getText());
+        }
+        if (ctxData.usebase_object().usebase_arguments() != null) {
+          getArgumentsParser().assembleOrCreateAndThen(ctxData.usebase_object().usebase_arguments(), owner, usecase);
+        }
+        if (ctxData.usebase_object().msg != null) {
+          String msg = ctxData.usebase_object().msg.getText();
+          msg = msg.substring(1, msg.length() - 1);
+          owner.setLabelledOption("required", "message", msg);
+        }
+      } else if (ctxData.usebase_array() != null) {
+        io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctxArr = ctxData.usebase_array();
+        // 数组会额外产生内联对象
+        String attrname = "";
+        if (ctxArr.alias != null) {
+          attrname = ctxArr.alias.getText();
+        } else if (ctxArr.name != null){
+          attrname = Inflector.getInstance().pluralize(ctxArr.name.getText());
+        }
+        if (ctxArr.name != null) {
+          String objname = ctxData.usebase_array().name.getText();
+          ObjectDefinition dummyArrayOwner = new ObjectDefinition("~" + objname, new ModelDefinition());
+          getArrayParser().assemble(ctxArr, dummyArrayOwner, usecase);
+          AttributeDefinition attrArray = new AttributeDefinition(attrname, owner);
+          ObjectDefinition objInDataModel = dataModel.findObjectByName(objname);
+          CollectionType colltype = new CollectionType("");
+          colltype.setComponentType(objInDataModel);
+          attrArray.setType(colltype);
+          getConditionsParser().assemble(ctxConds, attrArray);
+        } else {
+          getArrayParser().assemble(ctxArr, owner, usecase);
+          AttributeDefinition attrArray = owner.getAttributes()[owner.getAttributes().length - 1];
+          getConditionsParser().assemble(ctxConds, attrArray);
+        }
+        if (ctxArr.usebase_arguments() != null) {
+          getArgumentsParser().decorate(ctxArr.usebase_arguments(), owner);
+        }
+      } else if (ctxData.usebase_derivative() != null) {
+        AttributeDefinition attrDeri = new AttributeDefinition(ctxData.usebase_derivative().name.getText(), owner);
+        io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctxData.usebase_derivative().usebase_calculate();
+        if (ctxCalc != null) {
+          if (ctxCalc.usebase_calc_expr() != null) {
+            CalcExprDefinition calcExpr = new CalcExprDefinition();
+            // TODO
+            getCalcExprParser().assemble(ctxCalc.usebase_calc_expr(), calcExpr, usecase);
+          } else if (ctxCalc.name != null && "count".equals(ctxCalc.name.getText())) {
+            attrDeri.setType(new PrimitiveType("long"));
+            attrDeri.getConstraint().setDomainType(new DomainType("long"));
+            attrDeri.setLabelledOption("original", "operator", "count");
+            if (ctxCalc.usebase_array() != null) {
+              io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctxArr = ctxData.usebase_array();
+              String objname = ctxCalc.usebase_array().usebase_aggregate().usebase_data(0).usebase_object().name.getText();
+              attrDeri.setLabelledOption("original", "object", objname);
+            }
+          } else if (ctxCalc.name != null && "sum".equals(ctxCalc.name.getText())) {
+            attrDeri.getConstraint().setDomainType(new DomainType("number"));
+            PrimitiveType pt = new PrimitiveType("number");
+            pt.setPrecision(12);
+            pt.setScale(4);
+            attrDeri.setType(pt);
+          }
+        } else {
+          attrDeri.setType(new PrimitiveType("string"));
+        }
+        // 处理关联关系
+        getConditionsParser().assemble(ctxConds, attrDeri);
+      }
+    }
   }
 }

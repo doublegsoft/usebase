@@ -3,12 +3,29 @@ package io.doublegsoft.usebase.parser;
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
+import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 
 public abstract class UsebaseParser {
 
   protected final ModelDefinition dataModel;
+
+  private AggregateParser aggregateParser;
+
+  private ArrayParser arrayParser;
+
+  private ConditionsParser conditionsParser;
+
+  private ArgumentsParser argumentsParser;
+
+  private AttributesParser attributesParser;
+
+  private CalcExprParser calcExprParser;
+
+  private ObjectParser objectParser;
+
+  private ValueParser valueParser;
 
   public UsebaseParser(ModelDefinition dataModel) {
     this.dataModel = dataModel;
@@ -57,4 +74,59 @@ public abstract class UsebaseParser {
     return retVal;
   }
 
+  protected AggregateParser getAggregateParser() {
+    if (aggregateParser == null) {
+      aggregateParser = new AggregateParser(dataModel);
+    }
+    return aggregateParser;
+  }
+
+  protected ArrayParser getArrayParser() {
+    if (arrayParser == null) {
+      arrayParser = new ArrayParser(dataModel);
+    }
+    return arrayParser;
+  }
+
+  protected ConditionsParser getConditionsParser() {
+    if (conditionsParser == null) {
+      conditionsParser = new ConditionsParser(dataModel);
+    }
+    return conditionsParser;
+  }
+
+  protected ArgumentsParser getArgumentsParser() {
+    if (argumentsParser == null) {
+      argumentsParser = new ArgumentsParser(dataModel);
+    }
+    return argumentsParser;
+  }
+
+  protected AttributesParser getAttributesParser() {
+    if (attributesParser == null) {
+      attributesParser = new AttributesParser(dataModel);
+    }
+    return attributesParser;
+  }
+
+  protected CalcExprParser getCalcExprParser() {
+    if (calcExprParser == null) {
+      calcExprParser = new CalcExprParser(dataModel);
+    }
+    return calcExprParser;
+  }
+
+  protected ObjectParser getObjectParser() {
+    if (objectParser == null) {
+      objectParser = new ObjectParser(dataModel);
+    }
+    return objectParser;
+  }
+
+  protected ValueParser getValueParser() {
+    if (valueParser == null) {
+      valueParser = new ValueParser(dataModel);
+    }
+    return valueParser;
+  }
 }

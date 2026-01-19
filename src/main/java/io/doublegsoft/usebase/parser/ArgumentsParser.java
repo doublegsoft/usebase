@@ -12,20 +12,19 @@ import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 
 public class ArgumentsParser extends UsebaseParser {
 
-  protected final AggregateParser aggregateParser;
-
   public ArgumentsParser(ModelDefinition dataModel) {
     super(dataModel);
-    aggregateParser = new AggregateParser(dataModel);
   }
 
-  public void assemble(io.doublegsoft.usebase.UsebaseParser.Usebase_argumentsContext ctx, ObjectDefinition owner) {
+  public void assemble(io.doublegsoft.usebase.UsebaseParser.Usebase_argumentsContext ctx,
+                       ObjectDefinition owner,
+                       UsecaseDefinition usecase) {
     if (ctx == null) {
       return;
     }
     for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext ctxArg : ctx.usebase_argument()) {
       if (ctxArg.usebase_aggregate() != null) {
-        aggregateParser.assemble(ctxArg.usebase_aggregate(), owner);
+        getAggregateParser().assemble(ctxArg.usebase_aggregate(), owner, usecase);
       } else if (ctxArg.anybase_identifier() != null) {
         if (ModelbaseHelper.isSystemOrExistingInObject(ctxArg.anybase_identifier().getText(), owner)) {
           continue;
@@ -166,4 +165,22 @@ public class ArgumentsParser extends UsebaseParser {
     }
   }
 
+  public void assembleOrCreateAndThen(
+      io.doublegsoft.usebase.UsebaseParser.Usebase_argumentsContext ctx,
+      ObjectDefinition owner, UsecaseDefinition usecase) {
+    String objName = "$";
+    if (owner.getName().startsWith("#")) {
+      objName += owner.getName().substring(1);
+    } else if (owner.getName().startsWith("$")) {
+      objName += owner.getName().substring(1);
+    } else {
+      objName += owner.getName();
+    }
+    if (owner.getName().startsWith("$")) {
+      getArgumentsParser().assemble(ctx, owner, usecase);
+    } else {
+      ObjectDefinition argsObj = new ObjectDefinition(objName, usecase.getContextModel());
+      getArgumentsParser().assemble(ctx, argsObj, usecase);
+    }
+  }
 }
