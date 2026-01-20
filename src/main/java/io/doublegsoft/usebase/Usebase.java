@@ -26,6 +26,8 @@ import org.antlr.v4.runtime.misc.Interval;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static io.doublegsoft.usebase.parser.UsebaseParser.getOriginalText;
+
 public class Usebase {
 
   private final ModelDefinition dataModel;
@@ -80,31 +82,7 @@ public class Usebase {
     UsecaseDefinition retVal = new UsecaseDefinition(ctx.name.getText());
     if (ctx.usebase_arguments() != null) {
       ParameterizedObjectDefinition paramObj = new ParameterizedObjectDefinition("$" + retVal.getName(), retVal.getContextModel());
-      for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext arg : ctx.usebase_arguments().usebase_argument()) {
-        if (arg.usebase_aggregate() != null) {
-          aggregateParser.assemble(arg.usebase_aggregate(), paramObj, retVal);
-        } else {
-          if (ModelbaseHelper.isSystemOrExistingInObject(arg.anybase_identifier().getText(), paramObj)) {
-            continue;
-          }
-          AttributeDefinition attr = new AttributeDefinition(arg.anybase_identifier().getText(), paramObj);
-          if (arg.usebase_validation() != null) {
-            attr.getConstraint().setNullable(false);
-          }
-          if (arg.value != null) {
-            String text = arg.value.getText();
-            if (text.startsWith("'")) {
-              text = text.substring(1, text.length() - 1);
-            }
-            attr.getConstraint().setDefaultValue(text);
-          }
-          if (arg.usebase_validation() != null && arg.usebase_validation().required != null) {
-            attr.getConstraint().setNullable(false);
-          }
-          // always string type
-          attr.setType(new PrimitiveType("string"));
-        }
-      }
+      argumentsParser.assemble(ctx.usebase_arguments(), paramObj, retVal);
       retVal.setParameterizedObject(paramObj);
     }
     if (ctx.usebase_return() != null) {
@@ -289,11 +267,6 @@ public class Usebase {
       retVal.setOriginalText(getOriginalText(ctxExpr));
       return retVal;
     }
-  }
-
-  private String getOriginalText(ParserRuleContext ctx) {
-    Interval intv = new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-    return ctx.start.getInputStream().getText(intv);
   }
 
 }

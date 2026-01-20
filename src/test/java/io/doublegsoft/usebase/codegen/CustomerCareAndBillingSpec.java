@@ -152,7 +152,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     String expr =
         "@save_bill({account: account_id}):{bill}\n" +
         "|&| account = {account}#(account_id)\n" +
-        "|&| service_agreements = [service_agreement]#(account_id)\n" +
+        "|&| service_agreements = [service_agreement]#(account_id, id)\n" +
         "|+| {bill: id = '', status = 'E'}\n" +
         "|+| [{bill_segment: status = 'E', bill = bill_id, amount = %" +
             "{meter_read: usage}#(service_agreement.premise, status = 'E') * " +

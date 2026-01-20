@@ -31,11 +31,6 @@ public abstract class UsebaseParser {
     this.dataModel = dataModel;
   }
 
-  protected String getOriginalText(ParserRuleContext ctx) {
-    Interval intv = new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-    return ctx.start.getInputStream().getText(intv);
-  }
-
   protected AttributeDefinition findAttributeInDataModel(String expr) {
     String[] names = expr.split("\\.");
     if (names.length == 1) {
@@ -128,5 +123,10 @@ public abstract class UsebaseParser {
       valueParser = new ValueParser(dataModel);
     }
     return valueParser;
+  }
+
+  public static String getOriginalText(ParserRuleContext ctx) {
+    Interval intv = new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+    return ctx.start.getInputStream().getText(intv);
   }
 }

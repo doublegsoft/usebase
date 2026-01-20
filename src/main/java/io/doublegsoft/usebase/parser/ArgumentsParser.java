@@ -30,7 +30,7 @@ public class ArgumentsParser extends UsebaseParser {
           continue;
         }
         String attrname = ctxArg.anybase_identifier().getText();
-        AttributeDefinition propagatingAttrDef = null;
+        AttributeDefinition attrInOwner = null;
         for (AttributeDefinition attr : owner.getAttributes()) {
           if (attr.isLabelled("original")) {
             String origObjName = attr.getLabelledOption("original", "object");
@@ -40,28 +40,28 @@ public class ArgumentsParser extends UsebaseParser {
             }
             for (AttributeDefinition origObjAttr : origObj.getAttributes()) {
               if (origObjAttr.getName().equals(attrname) || attrname.equals(origObj.getName() + "_" + origObjAttr.getName())) {
-                propagatingAttrDef = ModelbaseHelper.cloneAttribute(origObjAttr, owner);
+                attrInOwner = ModelbaseHelper.cloneAttribute(origObjAttr, owner);
                 break;
               }
             }
           }
         }
-        if (propagatingAttrDef == null) {
-          propagatingAttrDef = new AttributeDefinition(attrname, owner);
-          propagatingAttrDef.setType(new PrimitiveType("string"));
+        if (attrInOwner == null) {
+          attrInOwner = new AttributeDefinition(attrname, owner);
+          attrInOwner.setType(new PrimitiveType("string"));
         }
         if (ctxArg.value != null) {
           String text = ctxArg.value.getText();
           if (text.startsWith("'")) {
             text = text.substring(1, text.length() - 1);
           }
-          propagatingAttrDef.getConstraint().setDefaultValue(text);
+          attrInOwner.getConstraint().setDefaultValue(text);
         }
         if (ctxArg.usebase_validation() != null && ctxArg.usebase_validation().required != null) {
-          propagatingAttrDef.getConstraint().setNullable(false);
+          attrInOwner.getConstraint().setNullable(false);
         }
         if (ctxArg.anybase_id() != null) {
-          propagatingAttrDef.setAlias(ctxArg.anybase_id().getText());
+          attrInOwner.setAlias(ctxArg.anybase_id().getText());
         }
       } else if (ctxArg.usebase_sysobj() != null) {
         throw new IllegalArgumentException("'" + getOriginalText(ctxArg.anybase_value()) +
@@ -153,8 +153,8 @@ public class ArgumentsParser extends UsebaseParser {
             return;
 //             throw new IllegalArgumentException("'" + getOriginalText(ctxArg) + "' attribute is not found in data model");
           }
-          owner.setLabelledOption("unique", "object", attr.getParent().getName());
-          owner.setLabelledOption("unique", "attribute", attr.getName());
+          owner.addLabelledOption("unique", "object", attr.getParent().getName());
+          owner.addLabelledOption("unique", "attribute", attr.getName());
         } else {
           throw new IllegalArgumentException("'" + getOriginalText(ctxArg) + "' is not an attribute expression");
         }
