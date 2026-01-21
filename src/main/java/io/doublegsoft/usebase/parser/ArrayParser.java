@@ -45,11 +45,14 @@ public class ArrayParser extends UsebaseParser {
             }
             String aggObjName = ctxAgg.usebase_data().get(0).usebase_object().name.getText();
             ObjectDefinition originalObjDef = dataModel.findObjectByName(aggObjName);
+            if (originalObjDef != null) {
+              owner.setLabelledOption("original", "object", aggObjName);
+            }
             ObjectDefinition propagatedObjDef = new ObjectDefinition(aggObjName, usecase.getContextModel());
             attrType.setComponentType(propagatedObjDef);
             if (ctxObj.usebase_attributes() != null) {
               AttributesParser attrsParser = new AttributesParser(dataModel);
-              attrsParser.assemble(ctxObj.usebase_attributes(), owner);
+              attrsParser.assemble(ctxObj.usebase_attributes(), owner, usecase);
             } else {
               if (!ModelbaseHelper.isSystemOrExistingInObject(originalObjDef.getName(), propagatedObjDef)) {
                 ModelbaseHelper.cloneAttributes(Arrays.asList(originalObjDef.getAttributes()), propagatedObjDef);

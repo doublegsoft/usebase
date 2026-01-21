@@ -32,7 +32,7 @@ public class AggregateParser extends UsebaseParser {
         if (ctxObj.usebase_attributes() != null) {
           // 对象属性
           AttributesParser parser = new AttributesParser(dataModel);
-          parser.assemble(ctxObj.usebase_attributes(), owner);
+          parser.assemble(ctxObj.usebase_attributes(), owner, usecase);
           AttributeDefinition lastAttr = owner.getAttributes()[owner.getAttributes().length - 1];
           getConditionsParser().assemble(ctxConds, lastAttr);
         } else if (ctxObj.usebase_arguments() != null) {
@@ -89,6 +89,12 @@ public class AggregateParser extends UsebaseParser {
         if (ctxArr.usebase_arguments() != null) {
           getArgumentsParser().decorate(ctxArr.usebase_arguments(), owner);
         }
+        if (ctxData.usebase_array().msg != null) {
+          String msg = ctxData.usebase_array().msg.getText();
+          msg = msg.substring(1, msg.length() - 1);
+          owner.setLabelledOption("required", "message", msg);
+        }
+        owner.setLabelledOption("original", "array", "true");
       } else if (ctxData.usebase_derivative() != null) {
         AttributeDefinition attrDeri = new AttributeDefinition(ctxData.usebase_derivative().name.getText(), owner);
         io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctxData.usebase_derivative().usebase_calculate();

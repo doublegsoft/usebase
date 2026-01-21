@@ -231,6 +231,9 @@ bill_segment<
   @name(label='分段状态')
   status: enum[PND:待算费, CMP:完成],
 
+  @persistence(name='typ')
+  type: string(20),
+
   @persistence(name='start_dt')
   start_date: date,
 
@@ -318,5 +321,179 @@ adjustment<
 
   @persistence(name='cre_dttm')
   @name(label='创建时间')
+  created_time = now: datetime
+>
+
+// ==========================================
+// 资产实体：表计设备 (Meter)
+// ==========================================
+@persistence(name='ci_meter')
+@name(label='表计', singular='meter', plural='meters')
+meter<
+
+  @persistence(name='mtr_id')
+  @name(label='表计标识')
+  id!!: string(10),
+
+  @persistence(name='badge_nbr')
+  @name(label='表身号')
+  badge_number: string(30),
+
+  @persistence(name='mtr_type_cd')
+  @name(label='表计类型')
+  type: string(8),
+
+  @persistence(name='mfg_cd')
+  @name(label='厂商')
+  manufacturer: string(12),
+
+  @persistence(name='model_cd')
+  @name(label='型号')
+  model: string(8),
+
+  @persistence(name='install_dt')
+  @name(label='安装日期')
+  install_date: date,
+
+  // 表计安装在哪个接入点
+  @persistence(name='prem_id')
+  @name(label='接入点')
+  premise: &premise(id),
+
+  // 反向引用：该表计的历史读数
+  @name(label='抄表记录')
+  reads: &meter_read(meter)[]
+>
+
+// ==========================================
+// 计量实体：抄表记录 (Meter Read)
+// ==========================================
+@persistence(name='ci_mr')
+@name(label='抄表记录', singular='meter_read', plural='meter_reads')
+meter_read<
+
+  @persistence(name='mr_id')
+  @name(label='抄表标识')
+  id!!: string(15),
+
+  // ===================================
+  // 外键关联
+  // ===================================
+  @persistence(name='mtr_id')
+  @name(label='表计')
+  meter: &meter(id),
+
+  // 冗余存储 premise_id，为了优化查询性能，方便 DSL 直接关联
+  // 对应 DSL: #(service_agreement.premise)
+  @persistence(name='prem_id')
+  @name(label='接入点')
+  premise: &premise(id),
+
+  // ===================================
+  // 核心数据 (用于计费)
+  // ===================================
+
+  // 对应 DSL: {meter_read: usage}
+  @persistence(name='usage_qty')
+  @name(label='期间用量')
+  usage: number(15, 6),
+
+  @persistence(name='reg_reading')
+  @name(label='表示数')
+  register_reading: number(15, 6),
+
+  @persistence(name='uom_cd')
+  @name(label='计量单位')
+  uom: string(4), // 如: KWH, M3, GAL
+
+  // ===================================
+  // 状态与时间
+  // ===================================
+
+  // 对应 DSL: status = 'E' (E: Effective/Billable)
+  @persistence(name='mr_status_flg')
+  @name(label='状态')
+  status: enum[
+    PND:待审核,
+    E:可计费,
+    ERR:异常,
+    BILLED:已出账
+  ],
+
+  @persistence(name='read_type_flg')
+  @name(label='抄表类型')
+  type: enum[
+    REG:定期轮抄,
+    VER:核实读数,
+    EST:系统估算,
+    CUST:客户自填
+  ],
+
+  @persistence(name='read_dttm')
+  @name(label='抄表时间')
+  read_time: datetime,
+
+  @persistence(name='cre_dttm')
+  created_time = now: datetime
+>
+
+// ==========================================
+// 配置实体：费率配置 (Rate Configuration)
+// ==========================================
+@persistence(name='cfg_rate')
+@name(label='费率配置', singular='cfg_rate', plural='cfg_rates')
+cfg_rate<
+
+  // 物理主键
+  @persistence(name='rate_cfg_id')
+  @name(label='配置标识')
+  id!!: string(30),
+
+  // ===================================
+  // 查找键 (Lookup Keys)
+  // ===================================
+
+  // 对应 DSL: #(service_agreement.rate_type)
+  // 这是关联 SA 的关键字段，比如 "RES-1" (居民一档), "COM-A" (商业A类)
+  @persistence(name='rate_type_cd')
+  @name(label='费率类型')
+  rate_type: string(20),
+
+  // 关键字段：生效日期
+  // 费率是随时间变化的 (2023年是1.0元，2024年是1.2元)
+  // 系统查询时通常使用逻辑：WHERE rate_type = ? AND eff_dt <= ? ORDER BY eff_dt DESC
+  @persistence(name='eff_dt')
+  @name(label='生效日期')
+  effective_date: date,
+
+  // 辅助匹配：计量单位 (匹配 meter_read.uom)
+  // 确保不会用 "水费单价" 去乘 "电量"
+  @persistence(name='uom_cd')
+  @name(label='计量单位')
+  uom: string(4),
+
+  // ===================================
+  // 核心数值
+  // ===================================
+
+  // 对应 DSL: {cfg_rate: rate}
+  // 单价 (Price Per Unit)
+  @persistence(name='unit_rate')
+  @name(label='单价')
+  rate: number(15, 6),
+
+  // ===================================
+  // 描述信息
+  // ===================================
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: string(100),
+
+  @persistence(name='currency_cd')
+  @name(label='币种')
+  currency: string(3), // CNY, USD
+
+  @persistence(name='cre_dttm')
   created_time = now: datetime
 >

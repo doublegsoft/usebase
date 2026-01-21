@@ -150,9 +150,12 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("cc&b");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
-        "@save_bill({account: account_id}):{bill}\n" +
-        "|&| account = {account}#(account_id)\n" +
-        "|&| service_agreements = [service_agreement]#(account_id)\n" +
+        "@save_bill({account: account_id!}):{bill}\n" +
+        "|&| account = {account}#(account_id)!'账户没有找到'\n" +
+        "|&| service_agreements = [service_agreement]#(account_id)!'该账户没有任何服务协议'\n" +
+        "|:| bill_segments = [{bill_segment: service_agreement = service_agreement_id, type = 'MR', " +
+            "amount = %{meter_read: usage}#(service_agreement.premise, status = 'E') * " +
+            "{cfg_rate: rate}#(service_agreement.rate_type)%}]&service_agreements\n" +
         "|+| {bill: id = '', status = 'E'}\n" +
         "|+| [{bill_segment: status = 'E', bill = bill_id, amount = %" +
             "{meter_read: usage}#(service_agreement.premise, status = 'E') * " +
@@ -174,11 +177,17 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     assign = (AssignmentDefinition) usecase.getStatements().get(1);
     Assert.assertEquals("第二个语句通过账户标识查找服务协议（数组值）",
         "service_agreement", assign.getValue().getArrayValue().getLabelledOption("original", "object"));
-    SaveDefinition save = (SaveDefinition) usecase.getStatements().get(2);
-    Assert.assertEquals("第三个语句通过新增一个账单数据",
+    // 第三条语句，需要重点校验
+    assign = (AssignmentDefinition) usecase.getStatements().get(2);
+    Assert.assertEquals("第三个语句把所有查询出来的服务协议转换成账单项目",
+        "bill_segments", assign.getAssignee());
+    Assert.assertEquals("bill_segment", assign.getValue().getArrayValue().getLabelledOption("original", "object"));
+    // 第三条语句校验结束
+    SaveDefinition save = (SaveDefinition) usecase.getStatements().get(3);
+    Assert.assertEquals("第四个语句通过新增一个账单数据",
         "bill", save.getSaveObject().getName());
-    save = (SaveDefinition) usecase.getStatements().get(3);
-    Assert.assertEquals("第四个语句通过新增许多账单明细数据",
+    save = (SaveDefinition) usecase.getStatements().get(4);
+    Assert.assertEquals("第五个语句通过新增许多账单明细数据",
         "bill_segment", save.getSaveObject().getName());
     Assert.assertTrue("账单明细数据是个数组", save.isArray());
 

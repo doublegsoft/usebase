@@ -4,6 +4,7 @@ import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
+import com.doublegsoft.jcommons.metamodel.CalcExprDefinition;
 import com.doublegsoft.jcommons.metamodel.InvocationDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import com.doublegsoft.jcommons.metamodel.ValueDefinition;
@@ -71,7 +72,11 @@ public class ValueParser extends UsebaseParser {
         String originalObjName = aggregate.getLabelledOption("original", "object");
         ObjectDefinition dataObj = dataModel.findObjectByName(originalObjName);
         // TODO: 是否从数据对戏那个复制属性
-        value.setObjectValue(aggregate);
+        if ("true".equals(aggregate.getLabelledOption("original", "array"))) {
+          value.setArrayValue(aggregate);
+        } else {
+          value.setObjectValue(aggregate);
+        }
       } else if (aggregate.getAttributes().length == 1) {
         io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctxArr =
             ctx.usebase_aggregate().usebase_data(0).usebase_array();
@@ -116,6 +121,16 @@ public class ValueParser extends UsebaseParser {
         if (ctxArg.anybase_identifier() != null) {
           inv.getArguments().add(ctxArg.anybase_identifier().getText());
         }
+      }
+    } else if (ctx.usebase_calculate() != null) {
+      // TODO: 表达式计算
+      io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctx.usebase_calculate();
+      if (ctxCalc.name != null /* 聚合函数 */) {
+
+      } else if (ctxCalc.usebase_calc_expr() != null) {
+        CalcExprDefinition calcExpr = new CalcExprDefinition();
+        getCalcExprParser().assemble(ctxCalc.usebase_calc_expr(), calcExpr, usecase);
+        value.setCalcExpr(calcExpr);
       }
     }
     value.setOriginalText(getOriginalText(ctx));

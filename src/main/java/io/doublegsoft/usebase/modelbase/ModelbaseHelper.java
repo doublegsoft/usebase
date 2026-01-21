@@ -17,6 +17,7 @@ import com.doublegsoft.jcommons.metabean.type.DomainType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
+import com.doublegsoft.jcommons.metamodel.ValuedAttributeDefinition;
 
 import java.util.*;
 
@@ -134,7 +135,7 @@ public final class ModelbaseHelper {
     if (retVal != null) {
       return retVal;
     }
-    retVal = new AttributeDefinition(alias, owner);
+    retVal = new ValuedAttributeDefinition(alias, owner);
     retVal.setUnit(original.getUnit());
     retVal.setAlias(original.getAlias());
     retVal.setType(original.getType());

@@ -58,5 +58,8 @@ public class CalcExprParser extends UsebaseParser {
         assemble(ctx.usebase_calc_expr(0), calcExpr, usecase);
       }
     }
+    if (ctx.operator != null) {
+      calcExpr.setOperator(ctx.operator.getText());
+    }
   }
 }

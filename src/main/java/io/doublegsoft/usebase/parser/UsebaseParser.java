@@ -63,9 +63,6 @@ public abstract class UsebaseParser {
       String newAttrName = attrName.replaceAll("_id", "");
       retVal = dataModel.findAttributeByNames(objName, newAttrName);
     }
-    if (retVal == null) {
-      throw new IllegalArgumentException("not found '" + objName + "." + attrName + "'in data model");
-    }
     return retVal;
   }
 
