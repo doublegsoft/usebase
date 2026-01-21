@@ -497,3 +497,59 @@ cfg_rate<
   @persistence(name='cre_dttm')
   created_time = now: datetime
 >
+
+// ==========================================
+// 新增：阶梯费率明细 (Step Definitions)
+// ==========================================
+@persistence(name='cfg_rate_step')
+@name(label='费率阶梯', singular='rate_step', plural='rate_steps')
+cfg_rate_step<
+
+  @persistence(name='step_id')
+  @name(label='阶梯标识')
+  id!!: string(30),
+
+  // 关联回主配置 (通过主键或业务键关联)
+  // 在实际查询时，通常使用 rate_type + effective_date + uom 来定位
+  @persistence(name='rate_cfg_id')
+  @name(label='所属费率配置')
+  rate_header: &cfg_rate(id),
+
+  // ===================================
+  // 阶梯定义
+  // ===================================
+
+  // 顺序号：1, 2, 3...
+  @persistence(name='seq_no')
+  @name(label='阶梯序号')
+  sequence: integer,
+
+  // 阶梯上限 (Upper Limit)
+  // 例如：阶梯1上限100，阶梯2上限300。
+  // 超过最后一个上限的部分，通常取最后一条记录计算。
+  // 999999999 代表无穷大
+  @persistence(name='step_high_limit')
+  @name(label='阶梯上限')
+  high_limit: number(15, 2),
+
+  // ===================================
+  // 价格
+  // ===================================
+
+  @persistence(name='unit_rate')
+  @name(label='阶梯单价')
+  rate: number(15, 6),
+
+  // ===================================
+  // 高级配置 (CC&B 风格)
+  // ===================================
+
+  // 是否按比例折算 (Proration)
+  // 如果账单周期只有15天（正常是30天），上限100是否要变成50？
+  @persistence(name='prorate_flg')
+  @name(label='是否折算阈值')
+  prorate: boolean,
+
+  @persistence(name='cre_dttm')
+  created_time = now: datetime
+>

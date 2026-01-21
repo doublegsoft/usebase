@@ -127,7 +127,7 @@ public class ValueParser extends UsebaseParser {
       io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctx.usebase_calculate();
       if (ctxCalc.name != null /* 聚合函数 */) {
 
-      } else if (ctxCalc.usebase_calc_expr() != null) {
+      } else if (ctxCalc.usebase_calc_expr() != null /* 四则运算 */) {
         CalcExprDefinition calcExpr = new CalcExprDefinition();
         getCalcExprParser().assemble(ctxCalc.usebase_calc_expr(), calcExpr, usecase);
         value.setCalcExpr(calcExpr);
