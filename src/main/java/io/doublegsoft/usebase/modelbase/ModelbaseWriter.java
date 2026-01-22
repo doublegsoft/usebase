@@ -183,7 +183,7 @@ public class ModelbaseWriter {
         return false;
       }
       String origObjNameInAttr = attr.getLabelledOptions("original").get("object");
-      if (!origObjNameInAttr.equals(origObjName)) {
+      if (origObjNameInAttr == null || !origObjNameInAttr.equals(origObjName)) {
         return false;
       }
     }

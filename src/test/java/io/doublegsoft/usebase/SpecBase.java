@@ -1,5 +1,6 @@
 package io.doublegsoft.usebase;
 
+import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
@@ -123,4 +124,14 @@ public class SpecBase {
     return sb.toString();
   }
 
+  protected void checkOriginalIndexAndObject(ObjectDefinition obj) {
+    for (AttributeDefinition attr : obj.getAttributes()) {
+      if (attr.getLabelledOption("original", "index") == null) {
+        throw new IllegalArgumentException(attr.getName() + " has no original index annotation.");
+      }
+      if (attr.getLabelledOption("original", "object") == null) {
+        throw new IllegalArgumentException(attr.getName() + " has no original object annotation.");
+      }
+    }
+  }
 }

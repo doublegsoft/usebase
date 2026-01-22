@@ -21,10 +21,6 @@ public class AggregateParser extends UsebaseParser {
   public void assemble(io.doublegsoft.usebase.UsebaseParser.Usebase_aggregateContext ctx,
                        ObjectDefinition owner, UsecaseDefinition usecase) {
     for (int i = 0; i < ctx.usebase_data().size(); i++) {
-      io.doublegsoft.usebase.UsebaseParser.Usebase_conditionsContext ctxConds = null;
-      if (i > 0) {
-        ctxConds = ctx.usebase_conditions(i - 1);
-      }
       io.doublegsoft.usebase.UsebaseParser.Usebase_dataContext ctxData = ctx.usebase_data(i);
       if (ctxData.usebase_object() != null) {
         String originalObjName = ctxData.usebase_object().name.getText();
@@ -32,10 +28,12 @@ public class AggregateParser extends UsebaseParser {
         ModelbaseHelper.addOptions(owner, "original", "object", originalObjName);
         if (ctxObj.usebase_attributes() != null) {
           // 对象属性
-          AttributesParser parser = new AttributesParser(dataModel);
-          parser.assemble(ctxObj.usebase_attributes(), owner, usecase);
-          AttributeDefinition lastAttr = owner.getAttributes()[owner.getAttributes().length - 1];
-          getConditionsParser().assemble(ctxConds, lastAttr);
+          getAttributesParser().assemble(ctxObj.usebase_attributes(), owner, usecase);
+          for (AttributeDefinition attrInOwner : owner.getAttributes()) {
+            if (originalObjName.equals(attrInOwner.getLabelledOption("original", "object"))) {
+              attrInOwner.setLabelledOption("original", "index", String.valueOf(i));
+            }
+          }
         } else if (ctxObj.usebase_arguments() != null) {
           // 对象查询参数
           getArgumentsParser().decorate(ctxObj.usebase_arguments(), owner);
@@ -47,8 +45,7 @@ public class AggregateParser extends UsebaseParser {
               continue;
             }
             AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, owner);
-            // 处理关联关系
-            getConditionsParser().assemble(ctxConds, attrInObj);
+            attrInObj.setLabelledOption("original", "index", String.valueOf(i));
           }
         }
         if (ctxData.usebase_object().usebase_source() != null) {
@@ -57,6 +54,18 @@ public class AggregateParser extends UsebaseParser {
         }
         if (ctxData.usebase_object().usebase_arguments() != null) {
           getArgumentsParser().assembleOrCreateAndThen(ctxData.usebase_object().usebase_arguments(), owner, usecase);
+          for (AttributeDefinition attr : owner.getAttributes()) {
+            String strIndex = attr.getLabelledOption("original", "index");
+            if (strIndex == null) {
+              attr.setLabelledOption("original", "index", String.valueOf(i));
+            }
+            if (attr.getLabelledOption("original", "object") == null) {
+              attr.setLabelledOption("original", "object", owner.getLabelledOption("original", "object"));
+            }
+            if (attr.getLabelledOption("original", "attribute") == null) {
+              attr.setLabelledOption("original", "attribute", attr.getName());
+            }
+          }
         }
         if (ctxData.usebase_object().msg != null) {
           String msg = ctxData.usebase_object().msg.getText();
@@ -81,11 +90,17 @@ public class AggregateParser extends UsebaseParser {
           CollectionType colltype = new CollectionType("");
           colltype.setComponentType(objInDataModel);
           attrArray.setType(colltype);
-          getConditionsParser().assemble(ctxConds, attrArray);
+          attrArray.setLabelledOption("original", "index", String.valueOf(i));
+          if (attrArray.getLabelledOption("original", "object") == null) {
+            attrArray.setLabelledOption("original", "object", objInDataModel.getName());
+          }
         } else {
           getArrayParser().assemble(ctxArr, owner, usecase);
           AttributeDefinition attrArray = owner.getAttributes()[owner.getAttributes().length - 1];
-          getConditionsParser().assemble(ctxConds, attrArray);
+          attrArray.setLabelledOption("original", "index", String.valueOf(i));
+          if (attrArray.getLabelledOption("original", "object") == null) {
+            attrArray.setLabelledOption("original", "object", owner.getLabelledOption("original", "object"));
+          }
         }
         if (ctxArr.usebase_arguments() != null) {
           getArgumentsParser().decorate(ctxArr.usebase_arguments(), owner);
@@ -125,9 +140,13 @@ public class AggregateParser extends UsebaseParser {
         } else {
           attrDeri.setType(new PrimitiveType("string"));
         }
-        // 处理关联关系
-        getConditionsParser().assemble(ctxConds, attrDeri);
+        attrDeri.setLabelledOption("original", "index", String.valueOf(i));
       }
+    }
+    // 单独处理关联关系
+    for (int i = 0; i < ctx.usebase_conditions().size(); i++) {
+      io.doublegsoft.usebase.UsebaseParser.Usebase_conditionsContext ctxConds = ctx.usebase_conditions(i);
+      getConditionsParser().assemble(ctxConds, owner, i);
     }
   }
 }

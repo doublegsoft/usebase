@@ -43,6 +43,8 @@ public class WorkflowManagementSpec extends SpecBase {
             "|+| wfactInsts \n" +
             "|=| {workflow_action_instance: status = 'CP'}#(workflow_action) // TODO: 更新当前的操作实例状态（未实现）\n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    checkOriginalIndexAndObject(usecase.getReturnedObject());
+
     ObjectDefinition paramObj = usecase.getParameterizedObject();
     Assert.assertEquals("workflow_instance", paramObj.getLabelledOptions("original").get("object"));
 
@@ -141,6 +143,8 @@ public class WorkflowManagementSpec extends SpecBase {
         "    // 记录工作流日志 \n" +
         "|+| {workflow_action_journal: previous_action = workflow_action_instance, status = wf_act_curr_inst.status}&wf_act_curr_inst \n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    checkOriginalIndexAndObject(usecase.getReturnedObject());
+
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("workflow_action_instance", obj.getLabelledOptions("original").get("object"));
 
@@ -177,6 +181,7 @@ public class WorkflowManagementSpec extends SpecBase {
             "  // 记录工作流日志 \n" +
             "  |+| {workflow_action_journal: previous_action = workflow_action_instance, status=wf_act_curr_inst.status}&wf_act_curr_inst \n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    checkOriginalIndexAndObject(usecase.getReturnedObject());
     Assert.assertEquals(6, usecase.getStatements().size());
   }
 
@@ -198,6 +203,7 @@ public class WorkflowManagementSpec extends SpecBase {
             "  |:| {workflow_action_instance: status = 'PENDING'}#(wf_act_curr_inst.id) \n" +
             "  |+| {workflow_action_journal: previous_action = workflow_action_instance, status=wf_act_curr_inst.status}&wf_act_curr_inst \n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    checkOriginalIndexAndObject(usecase.getReturnedObject());
     Assert.assertEquals(6, usecase.getStatements().size());
   }
 

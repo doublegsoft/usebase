@@ -36,7 +36,25 @@ public abstract class UsebaseParser {
     if (names.length == 1) {
       return null;
     }
-    return dataModel.findAttributeByNames(names[0], names[1]);
+    ObjectDefinition obj = dataModel.findObjectByName(names[0]);
+    if (obj == null) {
+      return null;
+    }
+    String attrname = names[1];
+    for (AttributeDefinition attr : obj.getAttributes()) {
+      if (attr.getName().equals(attrname)) {
+        return attr;
+      }
+      if (attr.getType().isCustom()) {
+        ObjectDefinition refObj = dataModel.findObjectByName(attr.getType().getName());
+        AttributeDefinition idAttrRefObj = refObj.getIdentifiableAttribute();
+        if (idAttrRefObj.getName().equals(attrname) ||
+            (refObj.getName() + "_" + idAttrRefObj.getName()).equals(attrname)) {
+          return attr;
+        }
+      }
+    }
+    return null;
   }
 
   protected AttributeDefinition findAttributeInDataModel(ObjectDefinition owner, String attrName) {

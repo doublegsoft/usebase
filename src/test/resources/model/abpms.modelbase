@@ -269,7 +269,7 @@ bitem<
 
   @persistence(name='svc_id')
   @name(label='')
-  svc: &svc_dtl(svc_id),
+  svc_id: string(10),
 
   @persistence(name='bill_id')
   @name(label='')

@@ -27,7 +27,7 @@ public class AggregateBuilder {
     // 返回对象的定义中全部的对象函数
     for (AttributeDefinition attr : aggregateObj.getAttributes()) {
       String origObjName = attr.getLabelledOption("original", "object");
-      String conjObjName = attr.getLabelledOption("conjunction", "object");
+      String conjObjName = attr.getLabelledOption("conjunction", "expression");
       // TODO
       String conjSourceObjName = attr.getLabelledOption("conjunction", "source_object");
       String conjSourceAttrName = attr.getLabelledOption("conjunction", "source_attribute");
