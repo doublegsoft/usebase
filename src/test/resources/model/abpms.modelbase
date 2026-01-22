@@ -1,0 +1,2132 @@
+@persistence(name='account')
+@name(label='用户信息主表')
+@entity
+account<
+
+  @persistence(name='account_id')
+  @name(label='帐户Id')
+  account_id!!: string,
+
+  @persistence(name='bill_cyc_code')
+  @name(label='账单周期Code')
+  bill_cyc_code: string(4),
+
+  @persistence(name='setup_date')
+  @name(label='设置日期')
+  setup_date: string,
+
+  @persistence(name='allow_est_sw')
+  @name(label='是否允许估抄')
+  allow_est_sw: string,
+
+  @persistence(name='comments')
+  @name(label='备注')
+  comments: string(250),
+
+  @persistence(name='bill_after_date')
+  @name(label='开账在日期后')
+  bill_after_date: string,
+
+  @persistence(name='bill_after_date_updated_by')
+  @name(label='BILL_AFTER_DATE字段的更新人')
+  bill_after_date_updated_by: string(8),
+
+  @persistence(name='lock_bill_cyc_sw')
+  @name(label='锁定帐单周期开关')
+  lock_bill_cyc_sw: string,
+
+  @persistence(name='mail_premise_id')
+  @name(label='邮寄房屋Id')
+  mail_premise_id: string,
+
+  @persistence(name='lock_premise_id_sw')
+  @name(label='锁定房屋Id开关')
+  lock_premise_id_sw: string,
+
+  @persistence(name='cr_rev_date')
+  @name(label='信用审查日期')
+  cr_rev_date: string,
+
+  @persistence(name='postp_cr_rev_date')
+  @name(label='推迟信用审查日期')
+  postp_cr_rev_date: string,
+
+  @persistence(name='rev_active_collection_sw')
+  @name(label='查看活动收集开关')
+  rev_active_collection_sw: string,
+
+  @persistence(name='cust_cls_code')
+  @name(label='客户类别Code')
+  cust_cls_code: string(8),
+
+  @persistence(name='bill_print_intcp_by')
+  @name(label='票据打印拦截人')
+  bill_print_intcp_by: string(8),
+
+  @persistence(name='no_deposit_rev_sw')
+  @name(label='数字存款审核开关')
+  no_deposit_rev_sw: string,
+
+  @persistence(name='email_addr')
+  @name(label='电子邮件地址')
+  email_addr: string(70),
+
+  @persistence(name='bill_addr_src_ind')
+  @name(label='帐单地址来源指示器')
+  bill_addr_src_ind: string(4),
+
+  @persistence(name='person_id')
+  @name(label='人员Id')
+  person_id: string,
+
+  @persistence(name='bill_route_type_code')
+  @name(label='票据路线类型Code')
+  bill_route_type_code: string(8),
+
+  @persistence(name='name_prefx_suffx')
+  @name(label='名称前缀后缀')
+  name_prefx_suffx: string(50),
+
+  @persistence(name='prefx_suffx_ind')
+  @name(label='前缀后缀指示符')
+  prefx_suffx_ind: string,
+
+  @persistence(name='created_by')
+  @name(label='创建人')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='创建日期')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='修改人')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='修改日期')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='时间戳')
+  timestamp: string,
+
+  @persistence(name='bus_activity_desc')
+  @name(label='业务活动描述')
+  bus_activity_desc: string(250),
+
+  @persistence(name='addr_line1')
+  @name(label='地址行1')
+  addr_line1: string(64),
+
+  @persistence(name='addr_line2')
+  @name(label='地址行2')
+  addr_line2: string(64),
+
+  @persistence(name='addr_line3')
+  @name(label='地址行3')
+  addr_line3: string(64),
+
+  @persistence(name='addr_line4')
+  @name(label='地址行4')
+  addr_line4: string(64),
+
+  @persistence(name='force_deposit_rev_sw')
+  @name(label='强制存款审查开关')
+  force_deposit_rev_sw: string,
+
+  @persistence(name='used_ind')
+  @name(label='用途')
+  used_ind: string(4)
+>
+
+@persistence(name='bill')
+@name(label='账单主表')
+@entity
+bill<
+
+  @persistence(name='bill_id')
+  @name(label='主键')
+  bill_id!!: string,
+
+  @persistence(name='bill_cyc_code')
+  @name(label='账单周期')
+  bill_cyc_code: string(4),
+
+  @persistence(name='win_start_date')
+  @name(label='定时开账的开始时间')
+  win_start_date: string,
+
+  @persistence(name='account_id')
+  @name(label='账户ID，关联Account')
+  account_id: string,
+
+  @persistence(name='bill_sts_ind')
+  @name(label='账单状态')
+  bill_sts_ind: string(2),
+
+  @persistence(name='bill_date')
+  @name(label='账单日期')
+  bill_date: string,
+
+  @persistence(name='due_date')
+  @name(label='逾期日，按客户类型配置,CFG_CUST_CLS')
+  due_date: string,
+
+  @persistence(name='created_date')
+  @name(label='创建日期')
+  created_date: string,
+
+  @persistence(name='comp_date')
+  @name(label='完成日期')
+  comp_date: string,
+
+  @persistence(name='late_payment_chg_sw')
+  @name(label='附加费开关')
+  late_payment_chg_sw: string,
+
+  @persistence(name='late_payment_chg_date')
+  @name(label='附加费日期')
+  late_payment_chg_date: string,
+
+  @persistence(name='allow_reopen_sw')
+  @name(label='允许Reopen开关')
+  allow_reopen_sw: string,
+
+  @persistence(name='next_cr_rev_date')
+  @name(label='下期信用审查日期')
+  next_cr_rev_date: string,
+
+  @persistence(name='auto_pay_created_date')
+  @name(label='自动付款创建日期')
+  auto_pay_created_date: string,
+
+  @persistence(name='auto_pay_amt')
+  @name(label='自动付款金额')
+  auto_pay_amt: string,
+
+  @persistence(name='auto_pay_stop_userid')
+  @name(label='停止自动付款的人员ID')
+  auto_pay_stop_userid: string(8),
+
+  @persistence(name='auto_pay_stop_date')
+  @name(label='停止自动付款的日期')
+  auto_pay_stop_date: string,
+
+  @persistence(name='auto_pay_stop_amt')
+  @name(label='停止自动付款的金额')
+  auto_pay_stop_amt: string,
+
+  @persistence(name='auto_pay_stop_created_date')
+  @name(label='停止自动付款的创建日期')
+  auto_pay_stop_created_date: string,
+
+  @persistence(name='created_by')
+  @name(label='')
+  created_by: string(8),
+
+  @persistence(name='modified_by')
+  @name(label='')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='')
+  timestamp: string,
+
+  @persistence(name='account_days')
+  @name(label='账单天数，Total No. Of Days')
+  account_days: string(255)
+>
+
+@persistence(name='bitem')
+@name(label='账单信息明细表')
+@value
+bitem<
+
+  @persistence(name='bitem_id')
+  @name(label='主键')
+  bitem_id!!: string,
+
+  @persistence(name='bill_cyc_code')
+  @name(label='账单周期')
+  bill_cyc_code: string(4),
+
+  @persistence(name='win_start_date')
+  @name(label='账单周期的开始时间（账单周期会在开始时间后开账）')
+  win_start_date: string,
+
+  @persistence(name='canc_rsn_code')
+  @name(label='取消原因编码，Bitem被Cancel时回填')
+  canc_rsn_code: string(4),
+
+  @persistence(name='canc_bitem_id')
+  @name(label='关联Rebill时旧的、需要取消的BitemID，外键')
+  canc_bitem_id: string,
+
+  @persistence(name='svc_id')
+  @name(label='')
+  svc: &svc_dtl(svc_id),
+
+  @persistence(name='bill_id')
+  @name(label='')
+  bill: &bill(bill_id),
+
+  @persistence(name='start_date')
+  @name(label='计费开始时间')
+  start_date: string,
+
+  @persistence(name='end_date')
+  @name(label='计费结束时间')
+  end_date: string,
+
+  @persistence(name='est_sw')
+  @name(label='预估开关，取决于开账计划的日期及Account是否允许预估')
+  est_sw: string,
+
+  @persistence(name='closing_bitem_sw')
+  @name(label='当Bitem的EndDate>=SD的EndDate时为Y，代表是该SD最后一次账单')
+  closing_bitem_sw: string,
+
+  @persistence(name='bill_qty_ovrd_sw')
+  @name(label='是否需要加仑转换，生成Bill Qty 数据')
+  bill_qty_ovrd_sw: string,
+
+  @persistence(name='premise_id')
+  @name(label='关联Premise，外键ID')
+  premise_id: string,
+
+  @persistence(name='bitem_sts_ind')
+  @name(label='计费项状态')
+  bitem_sts_ind: string,
+
+  @persistence(name='created_date')
+  @name(label='创建时间')
+  created_date: string,
+
+  @persistence(name='sts_chg_date')
+  @name(label='')
+  sts_chg_date: string,
+
+  @persistence(name='rebill_bitem_id')
+  @name(label='重新计费的billing Item ID')
+  rebill_bitem_id: string,
+
+  @persistence(name='created_by')
+  @name(label='创建人')
+  created_by: string(8),
+
+  @persistence(name='modified_by')
+  @name(label='修改人')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='修改时间')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='时间戳')
+  timestamp: string,
+
+  @persistence(name='quote_id')
+  @name(label='关联表Quote，外键ID')
+  quote_id: string,
+
+  @persistence(name='quote_master_id')
+  @name(label='关联表Quote_Master，外键ID')
+  quote_master_id: string,
+
+  @persistence(name='account_days')
+  @name(label='天数(新增字段)')
+  account_days: string,
+
+  @persistence(name='seq')
+  @name(label='序号(新增字段)(不为空)')
+  seq!!: string,
+
+  @persistence(name='start_meter_read_id')
+  @name(label='起码抄表ID(新增字段)(不为空)')
+  start_meter_read_id: string,
+
+  @persistence(name='end_meter_read_id')
+  @name(label='止码抄表ID(新增字段)(不为空)')
+  end_meter_read_id: string,
+
+  @persistence(name='start_reading')
+  @name(label='本期开始读数(新增字段)(不为空)')
+  start_reading: string,
+
+  @persistence(name='end_reading')
+  @name(label='本期读数(新增字段)(不为空)')
+  end_reading: string,
+
+  @persistence(name='final_qty')
+  @name(label='最终水量(新增字段)(不为空)')
+  final_qty: string,
+
+  @persistence(name='chg_item_id')
+  @name(label='杂项费用ID(新增字段)')
+  chg_item_id: string,
+
+  @persistence(name='calc_amt')
+  @name(label='计费金额(新增字段)(不为空)')
+  calc_amt: string,
+
+  @persistence(name='rate_id')
+  @name(label='价格ID(新增字段)')
+  rate_id: string,
+
+  @persistence(name='calc_start_date')
+  @name(label='calc的开始时间(新增字段)')
+  calc_start_date: string,
+
+  @persistence(name='calc_end_date')
+  @name(label='calc的结束时间(新增字段)')
+  calc_end_date: string,
+
+  @persistence(name='rate_code')
+  @name(label='Rate Code(新增字段)')
+  rate_code: string(8),
+
+  @persistence(name='eff_date')
+  @name(label='Effective DateRate 的生效日期(新增字段)')
+  eff_date: string,
+
+  @persistence(name='desc_on_bill')
+  @name(label='Description On Bill(新增字段)')
+  desc_on_bill: string(80)
+>
+
+@persistence(name='bitem_bill_qty')
+@name(label='账单用水量')
+@value
+bitem_bill_qty<
+
+  @persistence(name='bitem_id')
+  @name(label='联合主键')
+  bitem_id!!: string,
+
+  @persistence(name='seq')
+  @name(label='联合主键')
+  seq!!: string,
+
+  @persistence(name='uom_code')
+  @name(label='单位码，加仑/立方米')
+  uom_code: string(4),
+
+  @persistence(name='bill_qty_code')
+  @name(label='特殊数量编码')
+  bill_qty_code: string(8),
+
+  @persistence(name='init_bill_qty')
+  @name(label='初始账单数量')
+  init_bill_qty: string,
+
+  @persistence(name='billable_bill_qty')
+  @name(label='可计费的账单数量')
+  billable_bill_qty: string,
+
+  @persistence(name='created_by')
+  @name(label='创建人')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='创建时间')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='修改人')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='修改时间')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='时间戳')
+  timestamp: string
+>
+
+@persistence(name='bitem_calc_bd')
+@name(label='计费分解过程表')
+@value
+bitem_calc_bd<
+
+  @persistence(name='bitem_id')
+  @name(label='联合主键')
+  bitem_id!!: string,
+
+  @persistence(name='header_seq')
+  @name(label='联合主键')
+  header_seq!!: string,
+
+  @persistence(name='seq')
+  @name(label='联合主键')
+  seq!!: string,
+
+  @persistence(name='attr_type_code')
+  @name(label='属性编码，HKSIC/MTRTYPSZ(水表口径)')
+  attr_type_code: string(8),
+
+  @persistence(name='attr_val')
+  @name(label='属性值')
+  attr_val: string(16),
+
+  @persistence(name='dist_code')
+  @name(label='收入分类')
+  dist_code: string(10),
+
+  @persistence(name='uom_code')
+  @name(label='单位码，加仑/立方米')
+  uom_code: string(4),
+
+  @persistence(name='rate_dtl_seq')
+  @name(label='价格明细序号')
+  rate_dtl_seq: string,
+
+  @persistence(name='print_sw')
+  @name(label='打印开关')
+  print_sw: string,
+
+  @persistence(name='app_in_summary_sw')
+  @name(label='摘要开关')
+  app_in_summary_sw: string,
+
+  @persistence(name='calc_amt')
+  @name(label='计费金额')
+  calc_amt: string,
+
+  @persistence(name='base_amt')
+  @name(label='基本金额')
+  base_amt: string,
+
+  @persistence(name='bill_qty_code')
+  @name(label='计费数量码')
+  bill_qty_code: string(8),
+
+  @persistence(name='billable_bill_qty')
+  @name(label='可计费水量')
+  billable_bill_qty: string,
+
+  @persistence(name='desc_on_bill')
+  @name(label='账单上的描述')
+  desc_on_bill: string(80),
+
+  @persistence(name='created_by')
+  @name(label='')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='')
+  timestamp: string
+>
+
+@persistence(name='bitem_msg')
+@name(label='存储账单项的消息模板，无Param表，代码仅根据msg_code查询直接显示信息')
+@value
+bitem_msg<
+
+  @persistence(name='bitem_id')
+  @name(label='联合主键')
+  bitem_id!!: string,
+
+  @persistence(name='bill_msg_code')
+  @name(label='联合主键，账单信息码')
+  bill_msg_code!!: string(4),
+
+  @persistence(name='created_by')
+  @name(label='')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='')
+  timestamp: string,
+
+  @persistence(name='msg_info')
+  @name(label='信息描述内容（替换参数后的信息，新增字段）')
+  msg_info: string(254)
+>
+
+@persistence(name='bitem_read')
+@name(label='记录该账单对应的抄表记录')
+@value
+bitem_read<
+
+  @persistence(name='bitem_id')
+  @name(label='联合主键')
+  bitem_id!!: string,
+
+  @persistence(name='consump_const')
+  @name(label='计费结构，无业务功能引用')
+  consump_const: string,
+
+  @persistence(name='seq')
+  @name(label='联合主键')
+  seq!!: string,
+
+  @persistence(name='calc_usage_ind')
+  @name(label='计算方式的使用指示器')
+  calc_usage_ind: string(2),
+
+  @persistence(name='usage_ind')
+  @name(label='计算指示器')
+  usage_ind: string(2),
+
+  @persistence(name='uom_code')
+  @name(label='单位码，加仑/立方米')
+  uom_code: string(4),
+
+  @persistence(name='start_meter_read_id')
+  @name(label='上期抄表单ID')
+  start_meter_read_id: string,
+
+  @persistence(name='start_read_date')
+  @name(label='上期抄表日期')
+  start_read_date: string,
+
+  @persistence(name='start_reading')
+  @name(label='本期开始读数')
+  start_reading: string,
+
+  @persistence(name='end_meter_read_id')
+  @name(label='本期抄表单ID')
+  end_meter_read_id: string,
+
+  @persistence(name='end_read_date')
+  @name(label='本期抄表日期')
+  end_read_date: string,
+
+  @persistence(name='end_reading')
+  @name(label='本期读数')
+  end_reading: string,
+
+  @persistence(name='measure_qty')
+  @name(label='抄表水量')
+  measure_qty: string,
+
+  @persistence(name='final_uom_code')
+  @name(label='最终单位码')
+  final_uom_code: string(4),
+
+  @persistence(name='final_qty')
+  @name(label='最终水量')
+  final_qty: string,
+
+  @persistence(name='bill_qty_code')
+  @name(label='特殊数量编码，字段全为空')
+  bill_qty_code: string(8),
+
+  @persistence(name='final_bill_qty_code')
+  @name(label='最终特殊数量编码，字段全为空')
+  final_bill_qty_code: string(8),
+
+  @persistence(name='created_by')
+  @name(label='')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='')
+  timestamp: string,
+
+  @persistence(name='premise_id')
+  @name(label='外键ID，关联Premise')
+  premise_id: string
+>
+
+@persistence(name='svc_dtl')
+@name(label='服务明细，用户账户计费中间表，可通过该表获取价格及计费所需的部分开关')
+@entity
+svc_dtl<
+
+  @persistence(name='svc_id')
+  @name(label='服务id')
+  svc_id!!: string,
+
+  @persistence(name='svc_type_code')
+  @name(label='服务类型编码')
+  svc_type_code: &cfg_svc_type(svc_type_code),
+
+  @persistence(name='start_date')
+  @name(label='开始日期')
+  start_date: string,
+
+  @persistence(name='svc_dtl_sts_ind')
+  @name(label='SD的状态指示器')
+  svc_dtl_sts_ind: string,
+
+  @persistence(name='account_id')
+  @name(label='账户id')
+  account_id: string,
+
+  @persistence(name='end_date')
+  @name(label='结束日期')
+  end_date: string,
+
+  @persistence(name='wis_account_no')
+  @name(label='Wis账户号码')
+  wis_account_no: string(15),
+
+  @persistence(name='cust_read_sw')
+  @name(label='是否支持客户自行上传抄表读数')
+  cust_read_sw: string,
+
+  @persistence(name='hsic_code')
+  @name(label='行业分类HSIC码')
+  hsic_code: string(8),
+
+  @persistence(name='request_deposit_amt')
+  @name(label='记录按金金额')
+  request_deposit_amt: string,
+
+  @persistence(name='svc_dtl_relation_id')
+  @name(label='服务详细关系ID')
+  svc_dtl_relation_id: string(10),
+
+  @persistence(name='start_req_by')
+  @name(label='若SD状态为20(现用)回填CC Create_by到该字段上')
+  start_req_by: string(50),
+
+  @persistence(name='stop_req_by')
+  @name(label='若SD状态为40(停止)回填CC Create_by到该字段上')
+  stop_req_by: string(50),
+
+  @persistence(name='high_bill_amt')
+  @name(label='用于生成部分报表')
+  high_bill_amt: string,
+
+  @persistence(name='exp_date')
+  @name(label='CC创建锁喉匠SD时，检查该字段是否已过期，已过期的SD状态将被修改40，并填上EndDate')
+  exp_date: string,
+
+  @persistence(name='created_by')
+  @name(label='创建人')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='创建时间')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='更新人')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='更新时间')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='时间戳')
+  timestamp: string,
+
+  @persistence(name='premise_id')
+  @name(label='房屋id')
+  premise_id: string,
+
+  @persistence(name='svc_dtl_start_date')
+  @name(label='第一次抄表时，记录到Bitem的StartDate,计算用水天数使用')
+  svc_dtl_start_date: string,
+
+  @persistence(name='start_meter_read_id')
+  @name(label='第一次开账时，用于获取第一次抄表单')
+  start_meter_read_id: string,
+
+  @persistence(name='svc_dtl_stop_date')
+  @name(label='服务明细停止日期')
+  svc_dtl_stop_date: string,
+
+  @persistence(name='usage_ind')
+  @name(label='只有一个值+，开账创建Bitem时，将该字段同步到Bitem')
+  usage_ind: string(2),
+
+  @persistence(name='stop_meter_read_id')
+  @name(label='停止水表读数id')
+  stop_meter_read_id: string,
+
+  @persistence(name='rmk')
+  @name(label='备注')
+  rmk: string(500),
+
+  @persistence(name='workflow_id')
+  @name(label='工单id')
+  workflow_id: string,
+
+  @persistence(name='instal_svc_dtl_for_deposit_sw')
+  @name(label='存款下载服务明细开关')
+  instal_svc_dtl_for_deposit_sw: string,
+
+  @persistence(name='start_rsn_ind')
+  @name(label='开始原因指示器')
+  start_rsn_ind: string(4),
+
+  @persistence(name='stop_rsn_ind')
+  @name(label='结束原因指示器')
+  stop_rsn_ind: string(4),
+
+  @persistence(name='no_payment_periods')
+  @name(label='')
+  no_payment_periods: string
+>
+
+@persistence(name='fin_tran')
+@name(label='')
+@entity
+fin_tran<
+
+  @persistence(name='fin_tran_id')
+  @name(label='财务交易编号')
+  fin_tran_id!!: string,
+
+  @persistence(name='fin_tran_type_id')
+  @name(label='财务交易种类编号')
+  fin_tran_type_id: string,
+
+  @persistence(name='svc_id')
+  @name(label='服务编号')
+  svc: &svc_dtl(svc_id),
+
+  @persistence(name='related_id')
+  @name(label='关联编号')
+  related_id: string(12),
+
+  @persistence(name='fin_tran_type_ind')
+  @name(label='财务交易种类状态')
+  fin_tran_type_ind: string(2),
+
+  @persistence(name='cur_amt')
+  @name(label='当前金额')
+  cur_amt: string,
+
+  @persistence(name='tot_amt')
+  @name(label='所有金额')
+  tot_amt: string,
+
+  @persistence(name='created_date')
+  @name(label='创建日期')
+  created_date: string,
+
+  @persistence(name='freeze_sw')
+  @name(label='冻结开关')
+  freeze_sw: string,
+
+  @persistence(name='freeze_userid')
+  @name(label='冻结人员')
+  freeze_userid: string(8),
+
+  @persistence(name='freeze_date')
+  @name(label='冻结日期')
+  freeze_date: string,
+
+  @persistence(name='arrears_date')
+  @name(label='逾期日期')
+  arrears_date: string,
+
+  @persistence(name='correction_sw')
+  @name(label='修正开关')
+  correction_sw: string,
+
+  @persistence(name='old_fin_tran_sw')
+  @name(label='财务交易编号')
+  old_fin_tran_sw: string,
+
+  @persistence(name='debit_in_next_bill_sw')
+  @name(label='借方计入下一个账单开关')
+  debit_in_next_bill_sw: string,
+
+  @persistence(name='show_on_bill_sw')
+  @name(label='展示在账单中开关')
+  show_on_bill_sw: string,
+
+  @persistence(name='offset_sw')
+  @name(label='偏移开关')
+  offset_sw: string,
+
+  @persistence(name='bill_id')
+  @name(label='账单id')
+  bill: &bill(bill_id),
+
+  @persistence(name='accounting_date')
+  @name(label='会计日期')
+  accounting_date: string,
+
+  @persistence(name='txfr_to_gl_date')
+  @name(label='转账到总账的日期')
+  txfr_to_gl_date: string,
+
+  @persistence(name='gl_dist_sts')
+  @name(label='总账分配状态')
+  gl_dist_sts: string,
+
+  @persistence(name='sched_dist_date')
+  @name(label='计划分配日期')
+  sched_dist_date: string,
+
+  @persistence(name='bal_ctrl_grp_id')
+  @name(label='平衡控制组编号')
+  bal_ctrl_grp_id: string,
+
+  @persistence(name='created_by')
+  @name(label='')
+  created_by: string(8),
+
+  @persistence(name='modified_by')
+  @name(label='')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='')
+  timestamp: string,
+
+  @persistence(name='gl_batch_code')
+  @name(label='总账batch编号')
+  gl_batch_code: string(8),
+
+  @persistence(name='gl_batch_no')
+  @name(label='总账batch号码')
+  gl_batch_no: string
+>
+
+@persistence(name='adj')
+@name(label='')
+@entity
+adj<
+
+  @persistence(name='adj_id')
+  @name(label='调整单ID')
+  adj_id!!: string,
+
+  @persistence(name='svc_id')
+  @name(label='服务类型ID')
+  svc_id: string,
+
+  @persistence(name='adj_type_code')
+  @name(label='调整类型编码')
+  adj_type_code: string(8),
+
+  @persistence(name='adj_sts_ind')
+  @name(label='调整单状态')
+  adj_sts_ind: string,
+
+  @persistence(name='created_date')
+  @name(label='创建时间')
+  created_date: string,
+
+  @persistence(name='canc_rsn_code')
+  @name(label='取消原因编码')
+  canc_rsn_code: string(4),
+
+  @persistence(name='adj_amt')
+  @name(label='调整金额')
+  adj_amt: string,
+
+  @persistence(name='txfr_adj_id')
+  @name(label='交易相关的ADJ_ID')
+  txfr_adj_id: string,
+
+  @persistence(name='rmk')
+  @name(label='备注')
+  rmk: string(254),
+
+  @persistence(name='base_amt')
+  @name(label='基础金额')
+  base_amt: string,
+
+  @persistence(name='created_by')
+  @name(label='创建人')
+  created_by: string(8),
+
+  @persistence(name='modified_by')
+  @name(label='修改人')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='修改日期')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='时间戳')
+  timestamp: string,
+
+  @persistence(name='bill_id')
+  @name(label='账单ID')
+  bill_id: string
+>
+
+@persistence(name='bill_msg')
+@name(label='账单的消息模板')
+@value
+bill_msg<
+
+  @persistence(name='bill_id')
+  @name(label='联合主键，关联Bill表，外键')
+  bill_id!!: string,
+
+  @persistence(name='bill_msg_code')
+  @name(label='联合主键，模板编码，关联BILL_MSG_PARAM表')
+  bill_msg_code!!: string(4),
+
+  @persistence(name='created_by')
+  @name(label='')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='')
+  timestamp: string,
+
+  @persistence(name='msg_info')
+  @name(label='信息描述内容（替换参数后的信息，新增字段）')
+  msg_info: string(254)
+>
+
+@persistence(name='bill_msg_param')
+@name(label='账单消息参数')
+@value
+bill_msg_param<
+
+  @persistence(name='bill_id')
+  @name(label='Bill Id')
+  bill_id!!: string,
+
+  @persistence(name='bill_msg_code')
+  @name(label='Bill Message Code')
+  bill_msg_code!!: string(4),
+
+  @persistence(name='seq')
+  @name(label='Sequence')
+  seq!!: string,
+
+  @persistence(name='msg_param_val')
+  @name(label='Message Parameter Value')
+  msg_param_val: string(30),
+
+  @persistence(name='created_by')
+  @name(label='')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='')
+  timestamp: string
+>
+
+@persistence(name='bill_routing')
+@name(label='存储通知方式等信息')
+@value
+bill_routing<
+
+  @persistence(name='bill_id')
+  @name(label='主键ID')
+  bill_id!!: string,
+
+  @persistence(name='seq')
+  @name(label='联合主键')
+  seq!!: string,
+
+  @persistence(name='person_id')
+  @name(label='外键，关联Person表')
+  person_id: string,
+
+  @persistence(name='batch_job_code')
+  @name(label='外键，批次发送编码')
+  batch_job_code: string(8),
+
+  @persistence(name='name_line1')
+  @name(label='名称1')
+  name_line1: string(64),
+
+  @persistence(name='name_line2')
+  @name(label='名称2')
+  name_line2: string(64),
+
+  @persistence(name='name_line3')
+  @name(label='名称3')
+  name_line3: string(64),
+
+  @persistence(name='addr_line1')
+  @name(label='地址行1')
+  addr_line1: string(64),
+
+  @persistence(name='addr_line2')
+  @name(label='地址行2')
+  addr_line2: string(64),
+
+  @persistence(name='addr_line3')
+  @name(label='地址行3')
+  addr_line3: string(64),
+
+  @persistence(name='addr_line4')
+  @name(label='地址行4')
+  addr_line4: string(64),
+
+  @persistence(name='batch_no')
+  @name(label='批次号')
+  batch_no: string,
+
+  @persistence(name='extr_date')
+  @name(label='提取日期')
+  extr_date: string,
+
+  @persistence(name='do_not_extr_sw')
+  @name(label='不提取开关')
+  do_not_extr_sw: string,
+
+  @persistence(name='bill_print_intcp_by')
+  @name(label='账单打印拦截人')
+  bill_print_intcp_by: string(8),
+
+  @persistence(name='bill_route_type_code')
+  @name(label='邮寄方式')
+  bill_route_type_code: string(8),
+
+  @persistence(name='created_by')
+  @name(label='')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='')
+  timestamp: string,
+
+  @persistence(name='skip_threshold_check_sw')
+  @name(label='为N时需检查金额等是否满足，不满足的取消账单')
+  skip_threshold_check_sw: string,
+
+  @persistence(name='cust_comm_id')
+  @name(label='CCID')
+  cust_comm_id: string
+>
+
+@persistence(name='bill_svc_dtl_bal')
+@name(label='存储用户截至当前账单日期，按SD分组的欠费总额表')
+@value
+bill_svc_dtl_bal<
+
+  @persistence(name='bill_id')
+  @name(label='关联表BILL，外键ID')
+  bill_id!!: string,
+
+  @persistence(name='svc_id')
+  @name(label='关联表SVC_DTL，外键ID')
+  svc_id!!: string,
+
+  @persistence(name='cur_amt')
+  @name(label='统计单个SD及之前的欠费金额')
+  cur_amt: string,
+
+  @persistence(name='tot_amt')
+  @name(label='统计单个SD及之前的结余金额')
+  tot_amt: string,
+
+  @persistence(name='created_by')
+  @name(label='')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='')
+  timestamp: string
+>
+
+@persistence(name='cfg_adj_type')
+@name(label='')
+@entity
+cfg_adj_type<
+
+  @persistence(name='adj_type_code')
+  @name(label='调整类型代码')
+  adj_type_code!!: string(8),
+
+  @persistence(name='dist_code')
+  @name(label='财务收入类型')
+  dist_code: string(10),
+
+  @persistence(name='dflt_amt')
+  @name(label='默认金额')
+  dflt_amt: string,
+
+  @persistence(name='prt_dflt_sw')
+  @name(label='是否打印默认值')
+  prt_dflt_sw: string,
+
+  @persistence(name='adj_type_desc')
+  @name(label='调整类型描述')
+  adj_type_desc: string(60),
+
+  @persistence(name='adj_type_desc_tc')
+  @name(label='调整类型描述（繁体中文）')
+  adj_type_desc_tc: string(60),
+
+  @persistence(name='adj_type_desc_sc')
+  @name(label='调整类型描述（简体中文）')
+  adj_type_desc_sc: string(60),
+
+  @persistence(name='adj_type_desc_on_bill')
+  @name(label='账单调整类型描述')
+  adj_type_desc_on_bill: string(80),
+
+  @persistence(name='adj_type_desc_on_bill_tc')
+  @name(label='账单调整类型描述（繁体中文）')
+  adj_type_desc_on_bill_tc: string(80),
+
+  @persistence(name='adj_type_desc_on_bill_sc')
+  @name(label='账单调整类型描述（简体中文）')
+  adj_type_desc_on_bill_sc: string(80),
+
+  @persistence(name='obs_sw')
+  @name(label='作废开关')
+  obs_sw: string,
+
+  @persistence(name='created_by')
+  @name(label='')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='')
+  timestamp: string,
+
+  @persistence(name='special_ind')
+  @name(label='特殊标记')
+  special_ind: string(10),
+
+  @persistence(name='reminder_display_seq')
+  @name(label='提醒显示顺序')
+  reminder_display_seq: string,
+
+  @persistence(name='adj_rmk_to_bill_msg_sw')
+  @name(label='是否在账单上打印调整备注')
+  adj_rmk_to_bill_msg_sw: string,
+
+  @persistence(name='adj_cat')
+  @name(label='调整类型分类')
+  adj_cat: string,
+
+  @persistence(name='mode_of_genr_gl_entry')
+  @name(label='总账的生成模式')
+  mode_of_genr_gl_entry: string(20),
+
+  @persistence(name='sec_pkg_code')
+  @name(label='安全封装代码')
+  sec_pkg_code: string(10),
+
+  @persistence(name='not_allow_odd_cents')
+  @name(label='不允许奇数小数分')
+  not_allow_odd_cents: string,
+
+  @persistence(name='dflt_rmk')
+  @name(label='默认备注')
+  dflt_rmk: string(254),
+
+  @persistence(name='canc_bill_act')
+  @name(label='取消账单操作')
+  canc_bill_act: string(1),
+
+  @persistence(name='optional_sw')
+  @name(label='可选开关')
+  optional_sw: string
+>
+
+@persistence(name='cfg_rate')
+@name(label='价格配置表')
+@entity
+cfg_rate<
+
+  @persistence(name='rate_id')
+  @name(label='主键ID，每一个RateCode有不同的价格版本')
+  rate_id!!: string,
+
+  @persistence(name='rate_code')
+  @name(label='价格代码 外键ID')
+  rate_code: string(8),
+
+  @persistence(name='desc_on_bill')
+  @name(label='描述')
+  desc_on_bill: string(200),
+
+  @persistence(name='desc_on_bill_tc')
+  @name(label='描述（繁体）')
+  desc_on_bill_tc: string(200),
+
+  @persistence(name='desc_on_bill_sc')
+  @name(label='描述（简体）')
+  desc_on_bill_sc: string(200),
+
+  @persistence(name='obs_sw')
+  @name(label='是否废弃开关（N/Y）')
+  obs_sw: string,
+
+  @persistence(name='created_by')
+  @name(label='创建人')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='创建时间')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='修改人')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='修改时间')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='时间戳')
+  timestamp: string,
+
+  @persistence(name='eff_date')
+  @name(label='生效日期')
+  eff_date: string,
+
+  @persistence(name='tier_ind')
+  @name(label='阶梯开关')
+  tier_ind: string,
+
+  @persistence(name='bill_qty_code_for_tier_bdry')
+  @name(label='Bill Qty是否对阶梯生效')
+  bill_qty_code_for_tier_bdry: string(8)
+>
+
+@persistence(name='cfg_rate_code')
+@name(label='价格编码表')
+@entity
+cfg_rate_code<
+
+  @persistence(name='rate_code')
+  @name(label='价格代码')
+  rate_code!!: string(8),
+
+  @persistence(name='rate_sel_mode_ind')
+  @name(label='费用状态')
+  rate_sel_mode_ind: string,
+
+  @persistence(name='svc_cls_code')
+  @name(label='服务类别代码')
+  svc_cls_code: string(2),
+
+  @persistence(name='allow_est_sw')
+  @name(label='允许估计开关')
+  allow_est_sw: string,
+
+  @persistence(name='rate_code_desc')
+  @name(label='费率码说明')
+  rate_code_desc: string(200),
+
+  @persistence(name='rate_code_desc_tc')
+  @name(label='费率码说明繁体中文')
+  rate_code_desc_tc: string(200),
+
+  @persistence(name='rate_code_desc_sc')
+  @name(label='费率码说明简体中文')
+  rate_code_desc_sc: string(200),
+
+  @persistence(name='obs_sw')
+  @name(label='是否废弃开关（N/Y）')
+  obs_sw: string,
+
+  @persistence(name='created_by')
+  @name(label='创建人')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='创建时间')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='修改人')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='修改时间')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='时间戳')
+  timestamp: string,
+
+  @persistence(name='allow_backdate_sw')
+  @name(label='允许回溯开关')
+  allow_backdate_sw: string
+>
+
+@persistence(name='cfg_rate_dtl')
+@name(label='价格配置明细表')
+@entity
+cfg_rate_dtl<
+
+  @persistence(name='rate_dtl_id')
+  @name(label='主键ID')
+  rate_dtl_id!!: string,
+
+  @persistence(name='rate_id')
+  @name(label='关联表cfg_rate，外键ID')
+  rate_id: string,
+
+  @persistence(name='rate_dtl_seq')
+  @name(label='关联表CFG_RATE的序号')
+  rate_dtl_seq: string,
+
+  @persistence(name='dist_code')
+  @name(label='用于标记是否需要合计到Bill Item的应收金额中')
+  dist_code: string(10),
+
+  @persistence(name='bill_param_code')
+  @name(label='帐单参数码')
+  bill_param_code: string(8),
+
+  @persistence(name='print_cond')
+  @name(label='打印控制')
+  print_cond: string(10),
+
+  @persistence(name='attr_type_code')
+  @name(label='属性类型代码')
+  attr_type_code: string(8),
+
+  @persistence(name='attr_val')
+  @name(label='属性类型值')
+  attr_val: string(16),
+
+  @persistence(name='crit_desc')
+  @name(label='crit的描述')
+  crit_desc: string(200),
+
+  @persistence(name='special_ind')
+  @name(label='专用指示器')
+  special_ind: string(20),
+
+  @persistence(name='rate_dtl_type_ind')
+  @name(label='价格明细类型标志')
+  rate_dtl_type_ind: string(10),
+
+  @persistence(name='ref_rate_dtl_desc')
+  @name(label='参考价格详细描述')
+  ref_rate_dtl_desc: string(200),
+
+  @persistence(name='bill_qty_code_for_calc')
+  @name(label='工程量计算代码编号')
+  bill_qty_code_for_calc: string(8),
+
+  @persistence(name='tier_step_start')
+  @name(label='层级步骤开始')
+  tier_step_start: string,
+
+  @persistence(name='tier_step_end')
+  @name(label='层级步骤结束')
+  tier_step_end: string,
+
+  @persistence(name='chg_rate_val')
+  @name(label='费用值')
+  chg_rate_val: string,
+
+  @persistence(name='rate_dtl_desc_on_bill')
+  @name(label='账单上的费用描述')
+  rate_dtl_desc_on_bill: string(80),
+
+  @persistence(name='rate_dtl_desc_on_bill_tc')
+  @name(label='账单上的费用描述繁体中文')
+  rate_dtl_desc_on_bill_tc: string(80),
+
+  @persistence(name='rate_dtl_desc_on_bill_sc')
+  @name(label='账单上的费用描述简体中文')
+  rate_dtl_desc_on_bill_sc: string(80),
+
+  @persistence(name='rate_dtl_desc')
+  @name(label='费用详细描述')
+  rate_dtl_desc: string(200),
+
+  @persistence(name='rate_dtl_desc_tc')
+  @name(label='费用详细描述繁体中文')
+  rate_dtl_desc_tc: string(200),
+
+  @persistence(name='rate_dtl_desc_sc')
+  @name(label='费用详细描述简体中文')
+  rate_dtl_desc_sc: string(200),
+
+  @persistence(name='obs_sw')
+  @name(label='是否废弃开关（N/Y）')
+  obs_sw: string,
+
+  @persistence(name='created_by')
+  @name(label='创建人')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='创建时间')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='修改人')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='修改时间')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='时间戳')
+  timestamp: string,
+
+  @persistence(name='min_chg_rate_val')
+  @name(label='最小收费费用值')
+  min_chg_rate_val: string,
+
+  @persistence(name='last_revision_date')
+  @name(label='最近修订日期')
+  last_revision_date: string,
+
+  @persistence(name='bill_qty_code_for_bitem')
+  @name(label='计费项目的账单数量代码')
+  bill_qty_code_for_bitem: string(8),
+
+  @persistence(name='create_bitem_calc_bd_cond')
+  @name(label='创建计费项目计算基础条件')
+  create_bitem_calc_bd_cond: string(10),
+
+  @persistence(name='org_rate_dtl_id')
+  @name(label='组织费率详细信息编号')
+  org_rate_dtl_id: string,
+
+  @persistence(name='contract_value_code')
+  @name(label='合同价值代码')
+  contract_value_code: string(8)
+>
+
+@persistence(name='cfg_rate_dtl_crit')
+@name(label='价格明细临界值')
+@entity
+cfg_rate_dtl_crit<
+
+  @persistence(name='rate_dtl_crit_id')
+  @name(label='主键ID')
+  rate_dtl_crit_id!!: string,
+
+  @persistence(name='rate_dtl_id')
+  @name(label='关联表cfg_rate_dtl，外键ID')
+  rate_dtl_id: string,
+
+  @persistence(name='seq')
+  @name(label='序号')
+  seq: string,
+
+  @persistence(name='bill_qty_code')
+  @name(label='特殊数量单位码')
+  bill_qty_code: string(8),
+
+  @persistence(name='crit_operator_ind')
+  @name(label='操作符指示器')
+  crit_operator_ind: string(4),
+
+  @persistence(name='crit_val')
+  @name(label='操作值')
+  crit_val: string(254),
+
+  @persistence(name='obs_sw')
+  @name(label='是否废弃开关（N/Y）')
+  obs_sw: string,
+
+  @persistence(name='created_by')
+  @name(label='创建人')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='创建时间')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='修改人')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='修改时间')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='时间戳')
+  timestamp: string,
+
+  @persistence(name='cont_if_true')
+  @name(label='当前检查成功后是否继续检查下一个（一个成功即成功）')
+  cont_if_true: string(4),
+
+  @persistence(name='cont_if_false')
+  @name(label='当前检查失败后是否继续检查下一个（一个失败即失败）')
+  cont_if_false: string(4),
+
+  @persistence(name='attr_type_code')
+  @name(label='属性码')
+  attr_type_code: string(8),
+
+  @persistence(name='attr_type_entity')
+  @name(label='属性值')
+  attr_type_entity: string(30)
+>
+
+@persistence(name='cfg_svc_type')
+@name(label='服务类型表')
+@entity
+cfg_svc_type<
+
+  @persistence(name='svc_type_code')
+  @name(label='服务类型编码,主键')
+  svc_type_code!!: string(8),
+
+  @persistence(name='lpc_calc_algo_code')
+  @name(label='CM-LP%1%，满足正则的需要生成账单逾期信息(BillMsg)')
+  lpc_calc_algo_code: string(12),
+
+  @persistence(name='allow_premise_supy_sw')
+  @name(label='是否供水费用项，为N一般是杂费等一次性费用，计算用水天数时需要用到')
+  allow_premise_supy_sw: string,
+
+  @persistence(name='dist_code')
+  @name(label='财务收入类型')
+  dist_code: string(10),
+
+  @persistence(name='svc_cls_code')
+  @name(label='服务分类')
+  svc_cls_code: string(2),
+
+  @persistence(name='bitem_type_code')
+  @name(label='SP-RATED\BILLCHRG\REC-TATB\null，SP-RATED：水费
+BILLCHRG：非水费
+REC-TATB：按金
+生成账单时，按该字段有不同的公式代码')
+  bitem_type_code: string(8),
+
+  @persistence(name='rev_cls_code')
+  @name(label='用于FinalBill产生开账预分配数据(预分配后才进行定时开账)')
+  rev_cls_code: string(8),
+
+  @persistence(name='debt_cls_code')
+  @name(label='债务类型，标记逾期时需要催动的Collection追收模板')
+  debt_cls_code: string(4),
+
+  @persistence(name='route_req_sw')
+  @name(label='IVRS系统调用，字段为Y则返回信息增加Rate_Code')
+  route_req_sw: string,
+
+  @persistence(name='allow_est_sw')
+  @name(label='允许预估开关')
+  allow_est_sw: string,
+
+  @persistence(name='do_not_overpay_sw')
+  @name(label='标记不可超额付款，=Y时，若用户余额-收款金额<0则报错E00248、E00130')
+  do_not_overpay_sw: string,
+
+  @persistence(name='payment_prio')
+  @name(label='Payment会根据付款优先级进行分配付款金额')
+  payment_prio: string,
+
+  @persistence(name='allow_billing_sw')
+  @name(label='DEBT_RECOVERY使用，猜测为Y时启动DEBT_RECOVERY，否则使用Collection')
+  allow_billing_sw: string,
+
+  @persistence(name='one_time_ch_sw')
+  @name(label='一次性收费开关，为Y时，添加SD时将SD状态置为40(停止)')
+  one_time_ch_sw: string,
+
+  @persistence(name='start_opt_req_sw')
+  @name(label='IVRS系统调用，getSATypePage方法使用，但无接口调用该方法')
+  start_opt_req_sw: string,
+
+  @persistence(name='surchg_sw')
+  @name(label='附加费开关')
+  surchg_sw: string,
+
+  @persistence(name='disp_alrt_sw')
+  @name(label='调度警报开关，N时，警告内容只读')
+  disp_alrt_sw: string,
+
+  @persistence(name='bill_print_prio')
+  @name(label='账单打印优先级，打印顺序')
+  bill_print_prio: string,
+
+  @persistence(name='graph_uom_code')
+  @name(label='单位码，CU.M(加仑)/CM(立方米)')
+  graph_uom_code: string(4),
+
+  @persistence(name='special_role_ind')
+  @name(label='杂项收费时，用于判断按金SD是否需要重新创建、判断插入FT时是否存在未生成Bill的ChargeItem、若是按金类生成账单后将根据SVC_TYPE.AUTOMATION_CODE调用相关的自动化流程(当前AutomationCode全为空)')
+  special_role_ind: string(2),
+
+  @persistence(name='deposit_cls_code')
+  @name(label='关联表CFG_DEPOSIT_CLS，指定按金类型')
+  deposit_cls_code: string(8),
+
+  @persistence(name='wo_debt_cls_code')
+  @name(label='债务类型')
+  wo_debt_cls_code: string(4),
+
+  @persistence(name='bill_proc_seq')
+  @name(label='区分按金单及正常消费账单，用于获取非按金SD上期账单的日期')
+  bill_proc_seq: string,
+
+  @persistence(name='init_start_date_opt_ind')
+  @name(label='用于计算用水天数是否增加1天')
+  init_start_date_opt_ind: string(4),
+
+  @persistence(name='svc_type_desc')
+  @name(label='服务类型描述（英文）')
+  svc_type_desc: string(60),
+
+  @persistence(name='svc_type_desc_tc')
+  @name(label='服务类型描述（中文繁体）')
+  svc_type_desc_tc: string(60),
+
+  @persistence(name='svc_type_desc_sc')
+  @name(label='服务类型描述（中文简体）')
+  svc_type_desc_sc: string(60),
+
+  @persistence(name='svc_type_dflt_desc_on_bill')
+  @name(label='服务类型在账单上的描述（英文）')
+  svc_type_dflt_desc_on_bill: string(80),
+
+  @persistence(name='svc_type_dflt_desc_on_bill_tc')
+  @name(label='服务类型在账单上的描述（中文繁体）')
+  svc_type_dflt_desc_on_bill_tc: string(80),
+
+  @persistence(name='svc_type_dflt_desc_on_bill_sc')
+  @name(label='服务类型在账单上的描述（中文简体）')
+  svc_type_dflt_desc_on_bill_sc: string(80),
+
+  @persistence(name='alrt_text')
+  @name(label='告警信息，界面显示')
+  alrt_text: string(50),
+
+  @persistence(name='obs_sw')
+  @name(label='作废开关')
+  obs_sw: string,
+
+  @persistence(name='created_by')
+  @name(label='创建人')
+  created_by: string(8),
+
+  @persistence(name='created_date')
+  @name(label='创建时间')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='修改人')
+  modified_by: string(8),
+
+  @persistence(name='modified_date')
+  @name(label='修改时间')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='时间戳')
+  timestamp: string,
+
+  @persistence(name='tier1_surchg_adj_type_code')
+  @name(label='生成T1附加费时，使用的ADJ Type')
+  tier1_surchg_adj_type_code: string(8),
+
+  @persistence(name='tier2_surchg_adj_type_code')
+  @name(label='生成T2附加费时，使用的ADJ Type')
+  tier2_surchg_adj_type_code: string(8),
+
+  @persistence(name='deposit_offset_prio')
+  @name(label='按金销账优先级，逾期SD销账时转移按金销账时使用')
+  deposit_offset_prio: string,
+
+  @persistence(name='elig_debt_recovery_sw')
+  @name(label='WriteOff 检查时，若存在Active/PendingSD，则取消WriteOff流程，还原为正常账户，SD需标记该字段为Y才可还原')
+  elig_debt_recovery_sw: string,
+
+  @persistence(name='freq_code')
+  @name(label='用于获取账单计费周期天数(121.64、30.41、0)')
+  freq_code: string(8),
+
+  @persistence(name='lpc_sw')
+  @name(label='附加费开关，为Y的才计算附加费')
+  lpc_sw: string,
+
+  @persistence(name='allow_debt_txfr_sw')
+  @name(label='允许债务转移开关，Adj业务功能会判断该字段是否允许转移')
+  allow_debt_txfr_sw: string,
+
+  @persistence(name='display_seq')
+  @name(label='费用在界面上的显示顺序')
+  display_seq: string,
+
+  @persistence(name='odd_cents_on_reminder_sw')
+  @name(label='用于判断是否对账户欠费金额求余，需要时，该账户可能存在±0.01/0.1的余额，方法calCollectionArrearsAmtAndCfAmt使用')
+  odd_cents_on_reminder_sw: string,
+
+  @persistence(name='bitem_gen_totftflr_sw')
+  @name(label='为Y时，Premise参数表PremiseAttr.NbrFlats(居民单位数量)，PremiseAttr.NbrFloor。参与计算开账')
+  bitem_gen_totftflr_sw: string,
+
+  @persistence(name='bitem_gen_pcwtrcon_sw')
+  @name(label='为Y时，参数SvcDtlAttr.Pcwtrcon,参与计算开账')
+  bitem_gen_pcwtrcon_sw: string,
+
+  @persistence(name='adj_type_sync')
+  @name(label='调整类型同步')
+  adj_type_sync: string(8)
+>
+
+@persistence(name='premise')
+@name(label='地址主表，记录地址主要信息')
+@entity
+premise<
+
+  @persistence(name='premise_id')
+  @name(label='房屋id')
+  premise_id!!: string(255),
+
+  @persistence(name='premise_type_code')
+  @name(label='地址类型')
+  premise_type_code: string(255),
+
+  @persistence(name='housing_id')
+  @name(label='房屋id')
+  housing_id: string(255),
+
+  @persistence(name='ess_inst_sw')
+  @name(label='是否必须安装水表Essential')
+  ess_inst_sw: string(255),
+
+  @persistence(name='ess_inst_desc')
+  @name(label='ESS安装说明')
+  ess_inst_desc: string(255),
+
+  @persistence(name='meter_read_warn_code')
+  @name(label='抄表注意事项')
+  meter_read_warn_code: string(255),
+
+  @persistence(name='meter_read_instr_dtl')
+  @name(label='抄表详细信息')
+  meter_read_instr_dtl: string(255),
+
+  @persistence(name='mail_addr_sw')
+  @name(label='是否可邮寄地址')
+  mail_addr_sw: string(255),
+
+  @persistence(name='obs_sw')
+  @name(label='废弃开关')
+  obs_sw: string(26),
+
+  @persistence(name='demolished_sw')
+  @name(label='已拆除标记，批量上传时使用，其余无业务逻辑相关')
+  demolished_sw: string(26),
+
+  @persistence(name='restricted_sw')
+  @name(label='受限制标记，批量上传时使用，其余无业务逻辑相关')
+  restricted_sw: string(26),
+
+  @persistence(name='addr_line1')
+  @name(label='地址行1')
+  addr_line1: string(255),
+
+  @persistence(name='addr_line2')
+  @name(label='地址行2')
+  addr_line2: string(255),
+
+  @persistence(name='addr_line3')
+  @name(label='地址行3')
+  addr_line3: string(255),
+
+  @persistence(name='addr_line4')
+  @name(label='地址行4')
+  addr_line4: string(255),
+
+  @persistence(name='region_code')
+  @name(label='行政区域，香港、九龙、新界')
+  region_code: string(26),
+
+  @persistence(name='district_code')
+  @name(label='行政区域下的管辖区')
+  district_code: string(26),
+
+  @persistence(name='sub_district_code')
+  @name(label='管辖区下的具体地区名称')
+  sub_district_code: string(26),
+
+  @persistence(name='street_no')
+  @name(label='街道编号')
+  street_no: string(26),
+
+  @persistence(name='start_street_no')
+  @name(label='开始街道编号')
+  start_street_no: string(26),
+
+  @persistence(name='end_street_no')
+  @name(label='结束街道编号')
+  end_street_no: string(26),
+
+  @persistence(name='street_no_add1')
+  @name(label='可录入多个街道编号')
+  street_no_add1: string(255),
+
+  @persistence(name='street_no_add2')
+  @name(label='可录入多个街道编号')
+  street_no_add2: string(255),
+
+  @persistence(name='street_no_add3')
+  @name(label='可录入多个街道编号')
+  street_no_add3: string(255),
+
+  @persistence(name='street_name')
+  @name(label='街道名称')
+  street_name: string(255),
+
+  @persistence(name='street_name_add1')
+  @name(label='可录入多个街道名称')
+  street_name_add1: string(255),
+
+  @persistence(name='street_name_add2')
+  @name(label='可录入多个街道名称')
+  street_name_add2: string(255),
+
+  @persistence(name='street_name_add3')
+  @name(label='可录入多个街道名称')
+  street_name_add3: string(255),
+
+  @persistence(name='estate_name')
+  @name(label='屋邨/村')
+  estate_name: string(255),
+
+  @persistence(name='phase_name')
+  @name(label='期（很多小区分期开发）')
+  phase_name: string(255),
+
+  @persistence(name='village_place_no')
+  @name(label='村庄编号')
+  village_place_no: string(26),
+
+  @persistence(name='village_place_name')
+  @name(label='村庄地名')
+  village_place_name: string(255),
+
+  @persistence(name='block_house_type')
+  @name(label='街区门版牌号类型')
+  block_house_type: string(26),
+
+  @persistence(name='block_house_no')
+  @name(label='街区门牌号')
+  block_house_no: string(26),
+
+  @persistence(name='building_name')
+  @name(label='建筑物名称')
+  building_name: string(255),
+
+  @persistence(name='floor_type')
+  @name(label='楼层类型')
+  floor_type: string(26),
+
+  @persistence(name='floor_no')
+  @name(label='楼层编号')
+  floor_no: string(26),
+
+  @persistence(name='flat_unit_no')
+  @name(label='公寓单元编号')
+  flat_unit_no: string(26),
+
+  @persistence(name='flat_unit_type')
+  @name(label='公寓单元类型')
+  flat_unit_type: string(26),
+
+  @persistence(name='dd_no')
+  @name(label='丈量约分(界面限制边界)')
+  dd_no: string(26),
+
+  @persistence(name='lot_no')
+  @name(label='地段编号')
+  lot_no: string(128),
+
+  @persistence(name='incident_desc')
+  @name(label='地点及项目事件描述')
+  incident_desc: string(255),
+
+  @persistence(name='contract_no')
+  @name(label='合同编号')
+  contract_no: string(26),
+
+  @persistence(name='shortform_building')
+  @name(label='建筑缩写')
+  shortform_building: string(26),
+
+  @persistence(name='shortform_estate')
+  @name(label='土地缩写')
+  shortform_estate: string(26),
+
+  @persistence(name='created_by')
+  @name(label='创建人')
+  created_by: string(26),
+
+  @persistence(name='created_date')
+  @name(label='创建时间')
+  created_date: string,
+
+  @persistence(name='modified_by')
+  @name(label='修改人')
+  modified_by: string(26),
+
+  @persistence(name='modified_date')
+  @name(label='修改时间')
+  modified_date: string,
+
+  @persistence(name='timestamp')
+  @name(label='时间戳')
+  timestamp: string,
+
+  @persistence(name='street_name_no_sw')
+  @name(label='街道名称编号录入开关')
+  street_name_no_sw: string(26),
+
+  @persistence(name='block_house_no_sw')
+  @name(label='街区门牌号码录入开关')
+  block_house_no_sw: string(26),
+
+  @persistence(name='floor_no_sw')
+  @name(label='楼层编号录入开关')
+  floor_no_sw: string(26),
+
+  @persistence(name='dd_lot_no_sw')
+  @name(label='Dd批号录入开关')
+  dd_lot_no_sw: string(26),
+
+  @persistence(name='contract_no_sw')
+  @name(label='合同编号录入开关')
+  contract_no_sw: string(26),
+
+  @persistence(name='incident_desc_sw')
+  @name(label='事件描述录入开关')
+  incident_desc_sw: string(26),
+
+  @persistence(name='estate_sw')
+  @name(label='屋邨/村录入开关')
+  estate_sw: string(26),
+
+  @persistence(name='phase_sw')
+  @name(label='期数录入开关')
+  phase_sw: string(26),
+
+  @persistence(name='village_place_sw')
+  @name(label='村地址录入开关')
+  village_place_sw: string(26),
+
+  @persistence(name='building_sw')
+  @name(label='楼宇名称录入开关')
+  building_sw: string(26),
+
+  @persistence(name='flat_unit_no_sw')
+  @name(label='楼层开关')
+  flat_unit_no_sw: string(26),
+
+  @persistence(name='user_formatted_sw')
+  @name(label='用户格式化的开关')
+  user_formatted_sw: string(26),
+
+  @persistence(name='full_addr')
+  @name(label='完整地址')
+  full_addr: string(256),
+
+  @persistence(name='parent_premise_id')
+  @name(label='父前提id')
+  parent_premise_id: string(255),
+
+  @persistence(name='portable_meter_construction_site')
+  @name(label='便携式电表 / 建筑工地')
+  portable_meter_construction_site: string(2)
+>

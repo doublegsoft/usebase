@@ -14,14 +14,8 @@ import java.util.Arrays;
 
 public class ArrayParser extends UsebaseParser {
 
-  private final ArgumentsParser argumentsParser;
-
-  private final AggregateParser aggregateParser;
-
   public ArrayParser(ModelDefinition dataModel) {
     super(dataModel);
-    argumentsParser = new ArgumentsParser(dataModel);
-    aggregateParser = new AggregateParser(dataModel);
   }
 
   public void assemble(io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctx,
@@ -51,8 +45,7 @@ public class ArrayParser extends UsebaseParser {
             ObjectDefinition propagatedObjDef = new ObjectDefinition(aggObjName, usecase.getContextModel());
             attrType.setComponentType(propagatedObjDef);
             if (ctxObj.usebase_attributes() != null) {
-              AttributesParser attrsParser = new AttributesParser(dataModel);
-              attrsParser.assemble(ctxObj.usebase_attributes(), owner, usecase);
+              getAttributesParser().assemble(ctxObj.usebase_attributes(), owner, usecase);
             } else {
               if (!ModelbaseHelper.isSystemOrExistingInObject(originalObjDef.getName(), propagatedObjDef)) {
                 ModelbaseHelper.cloneAttributes(Arrays.asList(originalObjDef.getAttributes()), propagatedObjDef);
@@ -72,10 +65,10 @@ public class ArrayParser extends UsebaseParser {
                 objName += owner.getName();
               }
               if (owner.getName().startsWith("$")) {
-                argumentsParser.assemble(ctx.usebase_arguments(), owner, usecase);
+                getArgumentsParser().assemble(ctx.usebase_arguments(), owner, usecase);
               } else {
                 ObjectDefinition argsObj = new ObjectDefinition(objName, usecase.getContextModel());
-                argumentsParser.assemble(ctx.usebase_arguments(), argsObj, usecase);
+                getArgumentsParser().assemble(ctx.usebase_arguments(), argsObj, usecase);
               }
             }
           } else {
@@ -83,7 +76,7 @@ public class ArrayParser extends UsebaseParser {
               throw new RuntimeException("multi-objects aggregate with source not allowed");
             }
             ObjectDefinition aggObj = new ObjectDefinition("[]" + owner.getName(), usecase.getContextModel());
-            aggregateParser.assemble(ctx.usebase_aggregate(), aggObj, usecase);
+            getAggregateParser().assemble(ctx.usebase_aggregate(), aggObj, usecase);
             attrType.setComponentType(aggObj);
           }
         }

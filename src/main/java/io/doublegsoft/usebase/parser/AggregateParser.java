@@ -7,6 +7,7 @@ import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metabean.type.DomainType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.CalcExprDefinition;
+import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import com.doublegsoft.jcommons.utils.Inflector;
 import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
@@ -94,7 +95,9 @@ public class AggregateParser extends UsebaseParser {
           msg = msg.substring(1, msg.length() - 1);
           owner.setLabelledOption("required", "message", msg);
         }
-        owner.setLabelledOption("original", "array", "true");
+        if (!(owner instanceof ReturnedObjectDefinition)) {
+          owner.setLabelledOption("original", "array", "true");
+        }
       } else if (ctxData.usebase_derivative() != null) {
         AttributeDefinition attrDeri = new AttributeDefinition(ctxData.usebase_derivative().name.getText(), owner);
         io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctxData.usebase_derivative().usebase_calculate();

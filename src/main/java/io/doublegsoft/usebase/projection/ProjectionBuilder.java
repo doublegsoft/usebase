@@ -7,10 +7,7 @@ import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 import org.w3c.dom.Attr;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ProjectionBuilder {
 
@@ -28,12 +25,20 @@ public class ProjectionBuilder {
 
   public ObjectDefinition build(ObjectDefinition obj, Set<String> exclusions) {
     ObjectDefinition retVal = new ObjectDefinition(obj.getName() + "_info", DUMMY);
-    build(null, obj, exclusions, 0, retVal);
+    build(null, obj, exclusions, new ArrayList<>(), 0, retVal);
+    return retVal;
+  }
+
+  public ObjectDefinition build(ObjectDefinition obj, List<AttributeDefinition> inclusions) {
+    ObjectDefinition retVal = new ObjectDefinition(obj.getName() + "_info", DUMMY);
+    build(null, obj, new HashSet<>(), inclusions, 0, retVal);
     return retVal;
   }
 
   private List<AttributeDefinition> build(AttributeDefinition attrRef, ObjectDefinition obj,
-                                          Set<String> exclusions, int level,
+                                          Set<String> exclusions,
+                                          List<AttributeDefinition> inclusions,
+                                          int level,
                                           ObjectDefinition owner) {
     List<AttributeDefinition> retVal = new ArrayList<>();
     if (exclusions.contains(obj.getName())) {
@@ -60,6 +65,18 @@ public class ProjectionBuilder {
       if (attr.getType().isCollection() || ModelbaseHelper.isSystemAttribute(attr) ||
           attr.getType().isCustom() || (attr.isIdentifiable() && attrRef != null)) {
         continue;
+      }
+      if (!inclusions.isEmpty()) {
+        boolean including = false;
+        for (AttributeDefinition inc : inclusions) {
+          if (attr.getName().equals(inc.getName())) {
+            including = true;
+            break;
+          }
+        }
+        if (!including) {
+          continue;
+        }
       }
       String attrname = attr.getName();
       if (attr.isIdentifiable()) {
@@ -96,7 +113,7 @@ public class ProjectionBuilder {
         PrimitiveType primType = ModelbaseHelper.getPrimitiveType(attr);
         cloningAttr.setType(primType);
       }
-      List<AttributeDefinition> attrs = build(attr, refObj, exclusions, level + 1, owner);
+      List<AttributeDefinition> attrs = build(attr, refObj, exclusions, inclusions,level + 1, owner);
       retVal.addAll(attrs);
     }
     return retVal;
