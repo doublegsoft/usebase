@@ -74,11 +74,13 @@ public class ConditionsParser extends UsebaseParser {
       }
       AttributeDefinition leftSideAttr = null;
       AttributeDefinition rightSideAttr = null;
-      if (conjObj == null) {
+      if (rightSide != null && rightSide.contains("'")) {
+        leftSideAttr = findLeftAttributeInDataModel(leftSide, owner, conditionsIndex);
+        rightSideAttr = findRightAttributeInDataModel(leftSide, owner, conditionsIndex);
+      } else if (conjObj == null) {
         leftSideAttr = findLeftAttributeInDataModel(leftSide, owner, conditionsIndex);
         rightSideAttr = findRightAttributeInDataModel(rightSide, owner, conditionsIndex);
       } else {
-        // TODO: 提高
         for (AttributeDefinition conjAttr : conjObj.getAttributes()) {
           for (AttributeDefinition attr : previousGroupingAttributes) {
             String origObjName = attr.getLabelledOption("original", "object");
@@ -108,10 +110,10 @@ public class ConditionsParser extends UsebaseParser {
         // 说明不需要构建关联关系
         continue;
       }
-      if (leftSideAttr == null) {
+      if (leftSideAttr == null && (rightSide == null || !rightSide.contains("'"))) {
         throw new IllegalArgumentException("'" + getOriginalText(ctxCond) + "'中的左侧变量'" + leftSide + "'在数据模型中没有找到。");
       }
-      if (rightSideAttr == null) {
+      if (rightSideAttr == null && (rightSide == null || !rightSide.contains("'"))) {
         throw new IllegalArgumentException("'" + getOriginalText(ctxCond) + "'中的右侧变量'" + rightSide + "'在数据模型中没有找到。");
       }
       for (AttributeDefinition attr : presentGroupingAttributes) {
@@ -122,7 +124,7 @@ public class ConditionsParser extends UsebaseParser {
         } else {
           attr.setLabelledOptions("conjunction_" + i, conjunction);
         }
-        assemble(origObjName, conjunction, leftSideAttr, rightSideAttr);
+        assemble(origObjName, conjunction, leftSideAttr, rightSideAttr, rightSide);
       }
       if (conditionsIndex == 0) {
         for (AttributeDefinition attr : previousGroupingAttributes) {
@@ -133,7 +135,7 @@ public class ConditionsParser extends UsebaseParser {
           } else {
             attr.setLabelledOptions("conjunction_" + i, conjunction);
           }
-          assemble(origObjName, conjunction, leftSideAttr, rightSideAttr);
+          assemble(origObjName, conjunction, leftSideAttr, rightSideAttr, rightSide);
         }
       }
     }
@@ -224,8 +226,16 @@ public class ConditionsParser extends UsebaseParser {
     return null;
   }
 
-  private void assemble(String origObjName, Map<String, String> conjunction, AttributeDefinition leftSideAttr, AttributeDefinition rightSideAttr) {
-    if (origObjName.equals(leftSideAttr.getParent().getName())) {
+  private void assemble(String origObjName, Map<String, String> conjunction, AttributeDefinition leftSideAttr, AttributeDefinition rightSideAttr, String rightSide) {
+    if (leftSideAttr == null && rightSideAttr != null && rightSide != null) {
+      conjunction.put("source_object", rightSideAttr.getParent().getName());
+      conjunction.put("source_attribute", rightSideAttr.getName());
+      conjunction.put("value", rightSide.substring(1, rightSide.length() - 1));
+    } else if (leftSideAttr != null && rightSideAttr == null && rightSide != null) {
+      conjunction.put("source_object", leftSideAttr.getParent().getName());
+      conjunction.put("source_attribute", leftSideAttr.getName());
+      conjunction.put("value", rightSide.substring(1, rightSide.length() - 1));
+    } else if (origObjName.equals(leftSideAttr.getParent().getName())) {
       conjunction.put("source_object", leftSideAttr.getParent().getName());
       conjunction.put("source_attribute", leftSideAttr.getName());
       conjunction.put("target_object", rightSideAttr.getParent().getName());

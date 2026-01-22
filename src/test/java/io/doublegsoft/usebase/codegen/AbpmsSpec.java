@@ -46,7 +46,7 @@ public class AbpmsSpec extends SpecBase {
         "@find_bitems({bill: bill_id}):[" +
         "  {bitem: bitem_id, desc_on_bill} <bill_id> " +
         "  {bill: bill_id, comp_date} <svc_id> " +
-        "  {svc_dtl: svc_id, svc_type_code} <svc_type_code>" +
+        "  {svc_dtl: svc_id, svc_type_code} <svc_type_code + obs_sw = 'N'>" +
         "  {cfg_svc_type: svc_type_dflt_desc_on_bill_tc}" +
         "]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
@@ -67,7 +67,7 @@ public class AbpmsSpec extends SpecBase {
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
     ObjectDefinition bitem = dataModel.findObjectByName("bitem");
     ObjectDefinition bitemInfo = projBuilder.build(bitem, Arrays.asList(usecase.getReturnedObject().getAttributes()));
-//    Assert.assertEquals("属性应该有七个", 7, bitemInfo.getAttributes().length);
+    Assert.assertEquals("属性应该有七个", 7, usecase.getReturnedObject().getAttributes().length);
   }
 
 }
