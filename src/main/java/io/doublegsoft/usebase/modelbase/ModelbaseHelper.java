@@ -15,9 +15,11 @@ import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metabean.type.CustomType;
 import com.doublegsoft.jcommons.metabean.type.DomainType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
+import com.doublegsoft.jcommons.metamodel.JoinConditionDefinition;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.ValuedAttributeDefinition;
+import com.doublegsoft.jcommons.utils.Strings;
 
 import java.util.*;
 
@@ -279,6 +281,83 @@ public final class ModelbaseHelper {
       return objName + "_" + attrName;
     }
     return attrName;
+  }
+
+  public static List<JoinConditionDefinition> createJoinConditions(AttributeDefinition anyone,
+                                                                   AttributeDefinition another,
+                                                                   ModelDefinition dataModel) {
+    List<JoinConditionDefinition> retVal = new ArrayList<>();
+    if (!anyone.isLabelled("conjunction") || !another.isLabelled("conjunction")) {
+      return retVal;
+    }
+    JoinConditionDefinition joinCond = createJoinCondition(anyone.getLabelledOptions("conjunction"),
+        another.getLabelledOptions("conjunction"), dataModel);
+    if (joinCond != null) {
+      retVal.add(joinCond);
+    }
+
+    for (int i = 1; i < 10; i++) {
+      if (!anyone.isLabelled("conjunction_" + i) || !another.isLabelled("conjunction_" + i)) {
+        return retVal;
+      }
+      joinCond = createJoinCondition(anyone.getLabelledOptions("conjunction_" + i),
+          another.getLabelledOptions("conjunction_" + i), dataModel);
+      if (joinCond != null) {
+        retVal.add(joinCond);
+      }
+    }
+    return retVal;
+  }
+
+  public static JoinConditionDefinition createJoinCondition(Map<String, String> anyoneConj,
+                                                            Map<String, String> anotherConj,
+                                                            ModelDefinition dataModel) {
+    String anyoneSourceObjName = anyoneConj.get("source_object");
+    String anyoneSourceAttrName = anyoneConj.get("source_attribute");
+    String anyoneTargetObjName = anyoneConj.get("target_object");
+    String anyoneTargetAttrName = anyoneConj.get("target_attribute");
+    String value = anotherConj.get("value");
+
+    String anotherSourceObjName = anotherConj.get("source_object");
+    String anotherSourceAttrName = anotherConj.get("source_attribute");
+    String anotherTargetObjName = anotherConj.get("target_object");
+    String anotherTargetAttrName = anotherConj.get("target_attribute");
+
+    if (!anyoneSourceObjName.equals(anotherTargetObjName) ||
+        !anyoneSourceAttrName.equals(anotherTargetAttrName) ||
+        (anyoneTargetObjName != null && !anyoneTargetObjName.equals(anotherSourceObjName)) ||
+        (anyoneTargetAttrName != null && !anyoneTargetAttrName.equals(anotherSourceAttrName))) {
+      return null;
+    }
+
+    ObjectDefinition anyoneObj = dataModel.findObjectByName(anyoneSourceObjName);
+    if (anyoneObj == null) {
+      throw new IllegalArgumentException("没有在数据模型中找到'" + anyoneSourceObjName + "'，请检查模型文件。");
+    }
+    AttributeDefinition anyoneAttr = anyoneObj.getAttribute(anyoneSourceAttrName);
+    if (anyoneAttr == null) {
+      throw new IllegalArgumentException("没有在'" + anyoneSourceObjName + "'对象中找到'" + anyoneSourceAttrName + "'，请检查模型文件。");
+    }
+    JoinConditionDefinition retVal = new JoinConditionDefinition();
+    retVal.setLeftObject(anyoneObj);
+    retVal.setLeftAttribute(anyoneAttr);
+    if (anyoneTargetObjName != null) {
+      ObjectDefinition anotherObj = dataModel.findObjectByName(anyoneTargetObjName);
+      if (anotherObj == null) {
+        throw new IllegalArgumentException("没有在数据模型中找到'" + anyoneTargetObjName + "'，请检查模型文件。");
+      }
+      AttributeDefinition anotherAttr = anotherObj.getAttribute(anyoneTargetAttrName);
+      if (anotherAttr == null) {
+        throw new IllegalArgumentException("没有在'" + anyoneTargetObjName + "'对象中找到'" + anyoneTargetAttrName + "'，请检查模型文件。");
+      }
+      retVal.setRightObject(anotherObj);
+      retVal.setRightAttribute(anotherAttr);
+    } else if (value != null) {
+      retVal.setValue(value);
+    } else {
+      throw new IllegalArgumentException("在连接的定义中既没有目前对象和属性，也没有常量值的定义。");
+    }
+    return retVal;
   }
 
   private ModelbaseHelper() {

@@ -3,6 +3,7 @@ package io.doublegsoft.usebase.codegen;
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
+import com.doublegsoft.jcommons.metamodel.JoinConditionDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
@@ -10,11 +11,13 @@ import io.doublegsoft.usebase.aggregate.AggregateBuilder;
 import io.doublegsoft.usebase.aggregate.AggregateRelationshipChain;
 import io.doublegsoft.usebase.association.AssociationBuilder;
 import io.doublegsoft.usebase.association.AssociationChain;
+import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 import io.doublegsoft.usebase.projection.ProjectionBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class AbpmsSpec extends SpecBase {
 
@@ -61,13 +64,16 @@ public class AbpmsSpec extends SpecBase {
       System.out.println("  " + sourceObject + "(" + sourceAttribute + ") <> " +targetObject + "(" +
           targetAttribute + ")");
     }
-    AssociationBuilder assocBuilder = new AssociationBuilder(dataModel);
-    AssociationChain assocChain = assocBuilder.build(usecase.getParameterizedObject(), usecase.getReturnedObject());
 
+    AttributeDefinition bitemId = usecase.getReturnedObject().getAttributes()[0];
+    AttributeDefinition billId = usecase.getReturnedObject().getAttributes()[2];
+
+    List<JoinConditionDefinition> joinConds = ModelbaseHelper.createJoinConditions(bitemId, billId, dataModel);
+    Assert.assertEquals(1, joinConds.size());
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
     ObjectDefinition bitem = dataModel.findObjectByName("bitem");
     ObjectDefinition bitemInfo = projBuilder.build(bitem, Arrays.asList(usecase.getReturnedObject().getAttributes()));
-    Assert.assertEquals("属性应该有七个", 7, usecase.getReturnedObject().getAttributes().length);
+    Assert.assertEquals("返回的结果集属性应该有七个", 7, usecase.getReturnedObject().getAttributes().length);
   }
 
 }
