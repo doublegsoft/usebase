@@ -17,7 +17,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class AbpmsSpec extends SpecBase {
 
@@ -65,10 +67,18 @@ public class AbpmsSpec extends SpecBase {
           targetAttribute + ")");
     }
 
-    AttributeDefinition bitemId = usecase.getReturnedObject().getAttributes()[0];
-    AttributeDefinition billId = usecase.getReturnedObject().getAttributes()[2];
+    Set<JoinConditionDefinition> mergedConds = new HashSet<>();
+    for (AttributeDefinition currAttr : usecase.getReturnedObject().getAttributes()) {
+      List<JoinConditionDefinition> conds = ModelbaseHelper.createJoinConditions(currAttr, dataModel);
+      mergedConds.addAll(conds);
+    }
+    for (JoinConditionDefinition cond : mergedConds) {
+      System.out.println(cond);
+    }
 
-    List<JoinConditionDefinition> joinConds = ModelbaseHelper.createJoinConditions(bitemId, billId, dataModel);
+    AttributeDefinition bitemId = usecase.getReturnedObject().getAttributes()[0];
+
+    List<JoinConditionDefinition> joinConds = ModelbaseHelper.createJoinConditions(bitemId, dataModel);
     Assert.assertEquals(1, joinConds.size());
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
     ObjectDefinition bitem = dataModel.findObjectByName("bitem");

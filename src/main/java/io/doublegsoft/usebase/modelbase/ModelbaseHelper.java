@@ -284,24 +284,21 @@ public final class ModelbaseHelper {
   }
 
   public static List<JoinConditionDefinition> createJoinConditions(AttributeDefinition anyone,
-                                                                   AttributeDefinition another,
                                                                    ModelDefinition dataModel) {
     List<JoinConditionDefinition> retVal = new ArrayList<>();
-    if (!anyone.isLabelled("conjunction") || !another.isLabelled("conjunction")) {
+    if (!anyone.isLabelled("conjunction")) {
       return retVal;
     }
-    JoinConditionDefinition joinCond = createJoinCondition(anyone.getLabelledOptions("conjunction"),
-        another.getLabelledOptions("conjunction"), dataModel);
+    JoinConditionDefinition joinCond = createJoinCondition(anyone.getLabelledOptions("conjunction"), dataModel);
     if (joinCond != null) {
       retVal.add(joinCond);
     }
 
     for (int i = 1; i < 10; i++) {
-      if (!anyone.isLabelled("conjunction_" + i) || !another.isLabelled("conjunction_" + i)) {
+      if (!anyone.isLabelled("conjunction_" + i)) {
         return retVal;
       }
-      joinCond = createJoinCondition(anyone.getLabelledOptions("conjunction_" + i),
-          another.getLabelledOptions("conjunction_" + i), dataModel);
+      joinCond = createJoinCondition(anyone.getLabelledOptions("conjunction_" + i), dataModel);
       if (joinCond != null) {
         retVal.add(joinCond);
       }
@@ -310,25 +307,12 @@ public final class ModelbaseHelper {
   }
 
   public static JoinConditionDefinition createJoinCondition(Map<String, String> anyoneConj,
-                                                            Map<String, String> anotherConj,
                                                             ModelDefinition dataModel) {
     String anyoneSourceObjName = anyoneConj.get("source_object");
     String anyoneSourceAttrName = anyoneConj.get("source_attribute");
     String anyoneTargetObjName = anyoneConj.get("target_object");
     String anyoneTargetAttrName = anyoneConj.get("target_attribute");
-    String value = anotherConj.get("value");
-
-    String anotherSourceObjName = anotherConj.get("source_object");
-    String anotherSourceAttrName = anotherConj.get("source_attribute");
-    String anotherTargetObjName = anotherConj.get("target_object");
-    String anotherTargetAttrName = anotherConj.get("target_attribute");
-
-    if (!anyoneSourceObjName.equals(anotherTargetObjName) ||
-        !anyoneSourceAttrName.equals(anotherTargetAttrName) ||
-        (anyoneTargetObjName != null && !anyoneTargetObjName.equals(anotherSourceObjName)) ||
-        (anyoneTargetAttrName != null && !anyoneTargetAttrName.equals(anotherSourceAttrName))) {
-      return null;
-    }
+    String value = anyoneConj.get("value");
 
     ObjectDefinition anyoneObj = dataModel.findObjectByName(anyoneSourceObjName);
     if (anyoneObj == null) {
