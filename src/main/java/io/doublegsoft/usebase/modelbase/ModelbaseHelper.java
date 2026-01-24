@@ -290,18 +290,14 @@ public final class ModelbaseHelper {
       return retVal;
     }
     JoinConditionDefinition joinCond = createJoinCondition(anyone.getLabelledOptions("conjunction"), dataModel);
-    if (joinCond != null) {
-      retVal.add(joinCond);
-    }
+    retVal.add(joinCond);
 
     for (int i = 1; i < 10; i++) {
       if (!anyone.isLabelled("conjunction_" + i)) {
         return retVal;
       }
       joinCond = createJoinCondition(anyone.getLabelledOptions("conjunction_" + i), dataModel);
-      if (joinCond != null) {
-        retVal.add(joinCond);
-      }
+      retVal.add(joinCond);
     }
     return retVal;
   }

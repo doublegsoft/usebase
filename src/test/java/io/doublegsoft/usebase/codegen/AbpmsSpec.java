@@ -4,6 +4,7 @@ import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.JoinConditionDefinition;
+import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
@@ -80,10 +81,53 @@ public class AbpmsSpec extends SpecBase {
 
     List<JoinConditionDefinition> joinConds = ModelbaseHelper.createJoinConditions(bitemId, dataModel);
     Assert.assertEquals(1, joinConds.size());
-    ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
-    ObjectDefinition bitem = dataModel.findObjectByName("bitem");
-    ObjectDefinition bitemInfo = projBuilder.build(bitem, Arrays.asList(usecase.getReturnedObject().getAttributes()));
     Assert.assertEquals("返回的结果集属性应该有七个", 7, usecase.getReturnedObject().getAttributes().length);
+  }
+
+  @Test
+  public void test_find_fin_trans() throws Exception {
+    ModelDefinition dataModel = loadModel("abpms");
+    ModelDefinition apiModel = new ModelDefinition();
+    String expr =
+        "@find_fin_trans({bill: bill_id}):[" +
+            "  ft{fin_tran: fin_tran_id#ft_id, fin_tran_type_id} <svc_id> " +
+            "  {svc_dtl: svc_id, svc_type_code} <svc_type_code + obs_sw = 'N'>" +
+            "  {cfg_svc_type: svc_type_dflt_desc_on_bill_tc} <fin_tran_type_id=adj_id>"  +
+            "  {adj: adj_id, adj_type_code} <adj_type_code> " +
+            "  {cfg_adj_type: adj_type_desc}" +
+            "]";
+    UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    checkOriginalIndexAndObject(usecase.getReturnedObject());
+
+    ReturnedObjectDefinition retObj = usecase.getReturnedObject();
+    AttributeDefinition ftId = retObj.getAttribute("ft_id");
+    Assert.assertEquals("ft", ftId.getLabelledOption("alias", "object"));
+    Assert.assertEquals("ft_id", ftId.getName());
+
+    for (AttributeDefinition attr : usecase.getReturnedObject().getAttributes()) {
+      String sourceObject = attr.getLabelledOption("conjunction", "source_object");
+      String targetObject = attr.getLabelledOption("conjunction", "target_object");
+      String sourceAttribute = attr.getLabelledOption("conjunction", "source_attribute");
+      String targetAttribute = attr.getLabelledOption("conjunction", "target_attribute");
+      System.out.println(attr.getName() + "  " + attr.getLabelledOption("original", "index"));
+      System.out.println("  " + sourceObject + "(" + sourceAttribute + ") <> " +targetObject + "(" +
+          targetAttribute + ")");
+    }
+
+    Set<JoinConditionDefinition> mergedConds = new HashSet<>();
+    for (AttributeDefinition currAttr : usecase.getReturnedObject().getAttributes()) {
+      List<JoinConditionDefinition> conds = ModelbaseHelper.createJoinConditions(currAttr, dataModel);
+      mergedConds.addAll(conds);
+    }
+    for (JoinConditionDefinition cond : mergedConds) {
+      System.out.println(cond);
+    }
+
+    AttributeDefinition bitemId = usecase.getReturnedObject().getAttributes()[0];
+
+    List<JoinConditionDefinition> joinConds = ModelbaseHelper.createJoinConditions(bitemId, dataModel);
+    Assert.assertEquals(1, joinConds.size());
+    Assert.assertEquals("返回的结果集属性应该有八个", 8, usecase.getReturnedObject().getAttributes().length);
   }
 
 }

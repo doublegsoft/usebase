@@ -821,7 +821,7 @@ fin_tran<
 
   @persistence(name='svc_id')
   @name(label='服务编号')
-  svc: &svc_dtl(svc_id),
+  svc_id: string,
 
   @persistence(name='related_id')
   @name(label='关联编号')

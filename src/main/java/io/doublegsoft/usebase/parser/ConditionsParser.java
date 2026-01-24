@@ -76,7 +76,6 @@ public class ConditionsParser extends UsebaseParser {
       AttributeDefinition rightSideAttr = null;
       if (rightSide != null && rightSide.contains("'")) {
         leftSideAttr = findLeftAttributeInDataModel(leftSide, owner, conditionsIndex);
-        rightSideAttr = findRightAttributeInDataModel(leftSide, owner, conditionsIndex);
       } else if (conjObj == null) {
         leftSideAttr = findLeftAttributeInDataModel(leftSide, owner, conditionsIndex);
         rightSideAttr = findRightAttributeInDataModel(rightSide, owner, conditionsIndex);

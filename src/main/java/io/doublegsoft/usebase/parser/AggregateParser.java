@@ -33,6 +33,9 @@ public class AggregateParser extends UsebaseParser {
             if (originalObjName.equals(attrInOwner.getLabelledOption("original", "object"))) {
               attrInOwner.setLabelledOption("original", "index", String.valueOf(i));
             }
+            if (ctxData.usebase_object().alias != null) {
+              attrInOwner.setLabelledOption("alias", "object", ctxData.usebase_object().alias.getText());
+            }
           }
         } else if (ctxObj.usebase_arguments() != null) {
           // 对象查询参数
@@ -46,6 +49,9 @@ public class AggregateParser extends UsebaseParser {
             }
             AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, owner);
             attrInObj.setLabelledOption("original", "index", String.valueOf(i));
+            if (ctxData.usebase_object().alias != null) {
+              attrInObj.setLabelledOption("alias", "object", ctxData.usebase_object().alias.getText());
+            }
           }
         }
         if (ctxData.usebase_object().usebase_source() != null) {
@@ -64,6 +70,9 @@ public class AggregateParser extends UsebaseParser {
             }
             if (attr.getLabelledOption("original", "attribute") == null) {
               attr.setLabelledOption("original", "attribute", attr.getName());
+            }
+            if (ctxData.usebase_object().alias != null) {
+              attr.setLabelledOption("alias", "object", ctxData.usebase_object().alias.getText());
             }
           }
         }

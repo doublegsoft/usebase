@@ -54,12 +54,10 @@ public class AttributesParser extends UsebaseParser {
       if (ctxAttr.usebase_validation() != null) {
         attrInOwner.getConstraint().setNullable(false);
       }
+      if (ctxAttr.alias != null) {
+        attrInOwner.setName(ctxAttr.alias.getText());
+      }
       if (ctxAttr.value != null) {
-//        String text = ctxAttr.value.getText();
-//        if (text.startsWith("'")) {
-//          text = text.substring(1, text.length() - 1);
-//        }
-//        attrInOwner.getConstraint().setDefaultValue(text);
         ValueDefinition value = new ValueDefinition();
         getValueParser().assemble(ctxAttr.value, value, usecase);
       }

@@ -21,14 +21,20 @@ public class ObjectParser extends UsebaseParser {
               ctxAttr.name.getText() + "\" not defined in data model.");
         }
         if (!ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), owner)) {
-          ModelbaseHelper.cloneAttribute(attrDef, owner);
+          AttributeDefinition attr = ModelbaseHelper.cloneAttribute(attrDef, owner);
+          if (ctx.alias != null) {
+            attr.setLabelledOption("alias", "object", ctx.alias.getText());
+          }
         }
       }
     } else {
       ObjectDefinition originalObj = dataModel.findObjectByName(ctx.name.getText());
       for (AttributeDefinition attrDef : originalObj.getAttributes()) {
         if (!ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), owner)) {
-          ModelbaseHelper.cloneAttribute(attrDef, owner);
+          AttributeDefinition attr = ModelbaseHelper.cloneAttribute(attrDef, owner);
+          if (ctx.alias != null) {
+            attr.setLabelledOption("alias", "object", ctx.alias.getText());
+          }
         }
       }
     }
