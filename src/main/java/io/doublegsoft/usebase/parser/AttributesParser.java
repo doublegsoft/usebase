@@ -47,10 +47,12 @@ public class AttributesParser extends UsebaseParser {
         throw new RuntimeException("\"" + getOriginalText(ctx) + "\" has an attribute named \"" +
             ctxAttr.name.getText() + "\" not defined in data model.");
       }
-      if (ModelbaseHelper.isSystemOrExistingInObject(attrInDataObj.getName(), owner)) {
+      attrname = ctxAttr.alias != null ? ctxAttr.alias.getText() : attrInDataObj.getName();
+      if (ModelbaseHelper.isSystemOrExistingInObject(attrname, owner)) {
         continue;
       }
-      ValuedAttributeDefinition attrInOwner = (ValuedAttributeDefinition) ModelbaseHelper.cloneAttribute(attrInDataObj, owner);
+      ValuedAttributeDefinition attrInOwner = (ValuedAttributeDefinition) ModelbaseHelper.cloneAttribute(
+          attrname, attrInDataObj, owner);
       if (ctxAttr.usebase_validation() != null) {
         attrInOwner.getConstraint().setNullable(false);
       }

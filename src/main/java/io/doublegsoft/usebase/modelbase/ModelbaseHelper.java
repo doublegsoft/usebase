@@ -133,11 +133,11 @@ public final class ModelbaseHelper {
   }
 
   public static AttributeDefinition cloneAttribute(String alias, AttributeDefinition original, ObjectDefinition owner) {
-    AttributeDefinition retVal = owner.getModel().findAttributeByNames(owner.getName(), original.getName());
-    if (retVal != null) {
-      return retVal;
-    }
-    retVal = new ValuedAttributeDefinition(alias, owner);
+//    AttributeDefinition retVal = owner.getModel().findAttributeByNames(owner.getName(), original.getName());
+//    if (retVal != null) {
+//      return retVal;
+//    }
+    AttributeDefinition retVal = new ValuedAttributeDefinition(alias, owner);
     retVal.setUnit(original.getUnit());
     retVal.setAlias(original.getAlias());
     retVal.setType(original.getType());
@@ -306,8 +306,10 @@ public final class ModelbaseHelper {
                                                             ModelDefinition dataModel) {
     String anyoneSourceObjName = anyoneConj.get("source_object");
     String anyoneSourceAttrName = anyoneConj.get("source_attribute");
+    String anyoneSourceAlias = anyoneConj.get("source_alias");
     String anyoneTargetObjName = anyoneConj.get("target_object");
     String anyoneTargetAttrName = anyoneConj.get("target_attribute");
+    String anyoneTargetAlias = anyoneConj.get("target_alias");
     String value = anyoneConj.get("value");
 
     ObjectDefinition anyoneObj = dataModel.findObjectByName(anyoneSourceObjName);
@@ -319,6 +321,7 @@ public final class ModelbaseHelper {
       throw new IllegalArgumentException("没有在'" + anyoneSourceObjName + "'对象中找到'" + anyoneSourceAttrName + "'，请检查模型文件。");
     }
     JoinConditionDefinition retVal = new JoinConditionDefinition();
+    retVal.setLeftObjectAlias(anyoneSourceAlias);
     retVal.setLeftObject(anyoneObj);
     retVal.setLeftAttribute(anyoneAttr);
     if (anyoneTargetObjName != null) {
@@ -330,6 +333,7 @@ public final class ModelbaseHelper {
       if (anotherAttr == null) {
         throw new IllegalArgumentException("没有在'" + anyoneTargetObjName + "'对象中找到'" + anyoneTargetAttrName + "'，请检查模型文件。");
       }
+      retVal.setRightObjectAlias(anyoneTargetAlias);
       retVal.setRightObject(anotherObj);
       retVal.setRightAttribute(anotherAttr);
     } else if (value != null) {

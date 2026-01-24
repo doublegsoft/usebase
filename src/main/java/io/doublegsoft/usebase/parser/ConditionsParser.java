@@ -72,6 +72,8 @@ public class ConditionsParser extends UsebaseParser {
           rightSide = leftSide;
         }
       }
+      String leftObjectAlias = null;
+      String rightObjectAlias = null;
       AttributeDefinition leftSideAttr = null;
       AttributeDefinition rightSideAttr = null;
       if (rightSide != null && rightSide.contains("'")) {
@@ -79,11 +81,28 @@ public class ConditionsParser extends UsebaseParser {
       } else if (conjObj == null) {
         leftSideAttr = findLeftAttributeInDataModel(leftSide, owner, conditionsIndex);
         rightSideAttr = findRightAttributeInDataModel(rightSide, owner, conditionsIndex);
+        for (int j = previousGroupingAttributes.size() - 1; j >= 0; j--) {
+          AttributeDefinition attr = previousGroupingAttributes.get(j);
+          String origObjName = attr.getLabelledOption("original", "object");
+          if (origObjName.equals(leftSideAttr.getParent().getName())) {
+            leftObjectAlias = attr.getLabelledOption("alias", "object");
+            break;
+          }
+        }
+        for (AttributeDefinition attr : presentGroupingAttributes) {
+          String origObjName = attr.getLabelledOption("original", "object");
+          String origAttrName = attr.getLabelledOption("original", "attribute");
+          if (rightSideAttr != null && origObjName.equals(rightSideAttr.getParent().getName())) {
+            rightObjectAlias = attr.getLabelledOption("alias", "object");
+            break;
+          }
+        }
       } else {
         for (AttributeDefinition conjAttr : conjObj.getAttributes()) {
           for (AttributeDefinition attr : previousGroupingAttributes) {
             String origObjName = attr.getLabelledOption("original", "object");
             if (conjAttr.getType().getName().equals(origObjName)) {
+              leftObjectAlias = attr.getLabelledOption("alias", "object");
               leftSideAttr = conjAttr;
               break;
             }
@@ -96,6 +115,7 @@ public class ConditionsParser extends UsebaseParser {
           for (AttributeDefinition attr : presentGroupingAttributes) {
             String origObjName = attr.getLabelledOption("original", "object");
             if (conjAttr.getType().getName().equals(origObjName)) {
+              rightObjectAlias = attr.getLabelledOption("alias", "object");
               rightSideAttr = conjAttr;
               break;
             }
@@ -123,7 +143,7 @@ public class ConditionsParser extends UsebaseParser {
         } else {
           attr.setLabelledOptions("conjunction_" + i, conjunction);
         }
-        assemble(origObjName, conjunction, leftSideAttr, rightSideAttr, rightSide);
+        assemble(origObjName, conjunction, leftSideAttr, rightSideAttr, leftObjectAlias, rightObjectAlias, rightSide);
       }
       if (conditionsIndex == 0) {
         for (AttributeDefinition attr : previousGroupingAttributes) {
@@ -134,7 +154,8 @@ public class ConditionsParser extends UsebaseParser {
           } else {
             attr.setLabelledOptions("conjunction_" + i, conjunction);
           }
-          assemble(origObjName, conjunction, leftSideAttr, rightSideAttr, rightSide);
+          assemble(origObjName, conjunction, leftSideAttr, rightSideAttr,
+              leftObjectAlias, rightObjectAlias, rightSide);
         }
       }
     }
@@ -225,25 +246,46 @@ public class ConditionsParser extends UsebaseParser {
     return null;
   }
 
-  private void assemble(String origObjName, Map<String, String> conjunction, AttributeDefinition leftSideAttr, AttributeDefinition rightSideAttr, String rightSide) {
+  private void assemble(String origObjName, Map<String, String> conjunction,
+                        AttributeDefinition leftSideAttr, AttributeDefinition rightSideAttr,
+                        String leftObjectAlias, String rightObjectAlias,
+                        String rightSide) {
     if (leftSideAttr == null && rightSideAttr != null && rightSide != null) {
       conjunction.put("source_object", rightSideAttr.getParent().getName());
       conjunction.put("source_attribute", rightSideAttr.getName());
+      if (rightObjectAlias != null) {
+        conjunction.put("source_alias", rightObjectAlias);
+      }
       conjunction.put("value", rightSide.substring(1, rightSide.length() - 1));
     } else if (leftSideAttr != null && rightSideAttr == null && rightSide != null) {
       conjunction.put("source_object", leftSideAttr.getParent().getName());
       conjunction.put("source_attribute", leftSideAttr.getName());
+      if (leftObjectAlias != null) {
+        conjunction.put("source_alias", leftObjectAlias);
+      }
       conjunction.put("value", rightSide.substring(1, rightSide.length() - 1));
     } else if (origObjName.equals(leftSideAttr.getParent().getName())) {
       conjunction.put("source_object", leftSideAttr.getParent().getName());
       conjunction.put("source_attribute", leftSideAttr.getName());
       conjunction.put("target_object", rightSideAttr.getParent().getName());
       conjunction.put("target_attribute", rightSideAttr.getName());
+      if (leftObjectAlias != null) {
+        conjunction.put("source_alias", leftObjectAlias);
+      }
+      if (rightObjectAlias != null) {
+        conjunction.put("target_alias", rightObjectAlias);
+      }
     } else if (origObjName.equals(rightSideAttr.getParent().getName())) {
       conjunction.put("source_object", rightSideAttr.getParent().getName());
       conjunction.put("source_attribute", rightSideAttr.getName());
       conjunction.put("target_object", leftSideAttr.getParent().getName());
       conjunction.put("target_attribute", leftSideAttr.getName());
+      if (leftObjectAlias != null) {
+        conjunction.put("target_alias", leftObjectAlias);
+      }
+      if (rightObjectAlias != null) {
+        conjunction.put("source_alias", rightObjectAlias);
+      }
     }
   }
 }

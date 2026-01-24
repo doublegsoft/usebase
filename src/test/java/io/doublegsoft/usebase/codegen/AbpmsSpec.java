@@ -92,9 +92,10 @@ public class AbpmsSpec extends SpecBase {
         "@find_fin_trans({bill: bill_id}):[" +
             "  ft{fin_tran: fin_tran_id#ft_id, fin_tran_type_id} <svc_id> " +
             "  {svc_dtl: svc_id, svc_type_code} <svc_type_code + obs_sw = 'N'>" +
-            "  {cfg_svc_type: svc_type_dflt_desc_on_bill_tc} <fin_tran_type_id=adj_id>"  +
+            "  {cfg_svc_type: svc_type_dflt_desc_on_bill_tc} <fin_tran_type_id = adj_id>"  +
             "  {adj: adj_id, adj_type_code} <adj_type_code> " +
-            "  {cfg_adj_type: adj_type_desc}" +
+            "  {cfg_adj_type: adj_type_desc} <adj_id = fin_tran_type_id>" +
+            "  ft_adj{fin_tran: fin_tran_id#adj_ft_id, fin_tran_type_id#adj_ft_type_id} " +
             "]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     checkOriginalIndexAndObject(usecase.getReturnedObject());
@@ -127,7 +128,7 @@ public class AbpmsSpec extends SpecBase {
 
     List<JoinConditionDefinition> joinConds = ModelbaseHelper.createJoinConditions(bitemId, dataModel);
     Assert.assertEquals(1, joinConds.size());
-    Assert.assertEquals("返回的结果集属性应该有八个", 8, usecase.getReturnedObject().getAttributes().length);
+    Assert.assertEquals("返回的结果集属性应该有十个", 10, usecase.getReturnedObject().getAttributes().length);
   }
 
 }

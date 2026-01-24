@@ -27,14 +27,16 @@ public class AggregateParser extends UsebaseParser {
         io.doublegsoft.usebase.UsebaseParser.Usebase_objectContext ctxObj = ctxData.usebase_object();
         ModelbaseHelper.addOptions(owner, "original", "object", originalObjName);
         if (ctxObj.usebase_attributes() != null) {
-          // 对象属性
+          // 对象属性数据封装
           getAttributesParser().assemble(ctxObj.usebase_attributes(), owner, usecase);
+          // 重新设置index和alias
           for (AttributeDefinition attrInOwner : owner.getAttributes()) {
-            if (originalObjName.equals(attrInOwner.getLabelledOption("original", "object"))) {
+            if (originalObjName.equals(attrInOwner.getLabelledOption("original", "object")) &&
+                attrInOwner.getLabelledOption("original", "index") == null) {
               attrInOwner.setLabelledOption("original", "index", String.valueOf(i));
-            }
-            if (ctxData.usebase_object().alias != null) {
-              attrInOwner.setLabelledOption("alias", "object", ctxData.usebase_object().alias.getText());
+              if (ctxData.usebase_object().alias != null ) {
+                attrInOwner.setLabelledOption("alias", "object", ctxData.usebase_object().alias.getText());
+              }
             }
           }
         } else if (ctxObj.usebase_arguments() != null) {
@@ -48,10 +50,10 @@ public class AggregateParser extends UsebaseParser {
               continue;
             }
             AttributeDefinition attrInObj = ModelbaseHelper.cloneAttribute(attrDef, owner);
-            attrInObj.setLabelledOption("original", "index", String.valueOf(i));
             if (ctxData.usebase_object().alias != null) {
               attrInObj.setLabelledOption("alias", "object", ctxData.usebase_object().alias.getText());
             }
+            attrInObj.setLabelledOption("original", "index", String.valueOf(i));
           }
         }
         if (ctxData.usebase_object().usebase_source() != null) {
@@ -108,7 +110,8 @@ public class AggregateParser extends UsebaseParser {
           AttributeDefinition attrArray = owner.getAttributes()[owner.getAttributes().length - 1];
           attrArray.setLabelledOption("original", "index", String.valueOf(i));
           if (attrArray.getLabelledOption("original", "object") == null) {
-            attrArray.setLabelledOption("original", "object", owner.getLabelledOption("original", "object"));
+            attrArray.setLabelledOption("original", "object",
+                owner.getLabelledOption("original", "object"));
           }
         }
         if (ctxArr.usebase_arguments() != null) {
