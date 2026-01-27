@@ -30,8 +30,8 @@ public class AbpmsSpec extends SpecBase {
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@get_bill_aggregate({bill: bill_id}):" +
-            "{bill: bill_id, comp_date} <bill.account_id = account.account_id> " +
-            "{account: account_id} <> [bitem] <> [svc_dtl] <> [fin_tran]";
+        "{bill: bill_id, comp_date} <bill.account_id = account.account_id> " +
+        "{account: account_id} <> [bitem] <> [svc_dtl] <> [fin_tran]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     checkOriginalIndexAndObject(usecase.getReturnedObject());
 
@@ -90,13 +90,13 @@ public class AbpmsSpec extends SpecBase {
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@find_fin_trans({bill: bill_id}):[" +
-            "  ft{fin_tran: fin_tran_id#ft_id, fin_tran_type_id} <svc_id> " +
-            "  {svc_dtl: svc_id, svc_type_code} <svc_type_code + obs_sw = 'N'>" +
-            "  {cfg_svc_type: svc_type_dflt_desc_on_bill_tc} <fin_tran_type_id = adj_id>"  +
-            "  {adj: adj_id, adj_type_code} <adj_type_code> " +
-            "  {cfg_adj_type: adj_type_desc} <adj_id = fin_tran_type_id>" +
-            "  ft_adj{fin_tran: fin_tran_id#adj_ft_id, fin_tran_type_id#adj_ft_type_id} " +
-            "]";
+        "  ft{fin_tran: fin_tran_id#ft_id, fin_tran_type_id} <svc_id> " +
+        "  {svc_dtl: svc_id, svc_type_code} <svc_type_code + obs_sw = 'N'>" +
+        "  {cfg_svc_type: svc_type_dflt_desc_on_bill_tc} <fin_tran_type_id = adj_id>"  +
+        "  {adj: adj_id, adj_type_code} <adj_type_code> " +
+        "  {cfg_adj_type: adj_type_desc} <adj_id = fin_tran_type_id>" +
+        "  ft_adj{fin_tran: fin_tran_id#adj_ft_id, fin_tran_type_id#adj_ft_type_id} " +
+        "]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     checkOriginalIndexAndObject(usecase.getReturnedObject());
 

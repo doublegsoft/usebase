@@ -1,0 +1,364 @@
+@entity
+@persistence(name='tn_cca_cognent')
+@name(label='知识入口', singular='cognition_entry', plural='cognition_entries')
+cognition_entry<
+
+  @persistence(name='cognentid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='cognentnm')
+  @name(label='名称')
+  name+!: string(200),
+
+  @persistence(name='enttyp')
+  @name(label='类型')
+  type!: enum[OBJ:对象,SCN:场景,ERR:错误,CAP:容量],
+
+  @persistence(name='tit')
+  @name(label='标题')
+  title: string(500),
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: string(2000),
+
+  @persistence(name='sts')
+  @name(label='状态')
+  status: enum[AC:活跃,AR:存档],
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time = now: datetime,
+
+  @conjunction(name='cognition_entry_concept')
+  @name(singular='concept')
+  concepts: &cognition_concept(id)[],
+
+  @conjunction(name='cognition_entry_topic')
+  @name(singular='topic')
+  topics: &cognition_topic(id)[],
+
+  @conjunction(name='cognition_entry_tag')
+  @name(singular='tag')
+  tags: &cognition_tag(id)[]
+>
+
+@entity
+@persistence(name='tn_cca_cogncep')
+@name(label='概念', singular='cognition_concept', plural='cognition_concepts')
+cognition_concept<
+
+  @persistence(name='cogncepid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='cogncepnm')
+  @name(label='名称')
+  name+!: string(200),
+
+  @persistence(name='tit')
+  @name(label='标题')
+  title!: string(500),
+
+  @persistence(name='defn')
+  @name(label='定义')
+  definition: string(3000),
+
+  @persistence(name='stab')
+  @name(label='认知程度')
+  stability!: enum[LW:个人理解,MD:工程共识,HG:长期认知],
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time: now,
+
+  @conjunction(name='cognition_concept_tag')
+  @name(singular='tag')
+  tags: &cognition_tag(id)[]
+>
+
+@entity
+@persistence(name='tn_cca_cogntop')
+@name(label='主题', singular='cognition_topic', plural='cognition_topics')
+cognition_topic<
+
+  @persistence(name='cogntopid')
+  @name(label='主题标识')
+  id!!: long,
+
+  @persistence(name='cogntopnm')
+  @name(label='主题名称')
+  name+!: string(200),
+
+  @persistence(name='tit')
+  @name(label='标题')
+  title!: string(500),
+
+  @persistence(name='smry')
+  @name(label='概要')
+  summary: string(3000),
+
+  @persistence(name='abstlvl')
+  @name(label='抽象层度')
+  abstraction_level!: enum[LW:技术实现,MD:系统模式,HG:方法认知],
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time: now,
+
+  @conjunction(name='cognition_topic_tag')
+  @name(singular='tag')
+  tags: &cognition_tag(id)[]
+>
+
+@conjunction
+@persistence(name='tx_cca_cognentcep')
+@name(
+  label='知识入口与概念的关联关系',
+  singular='cognition_entry_concept', plural='cognition_entry_concepts'
+)
+cognition_entry_concept<
+
+  @persistence(name='cognentid')
+  cognition_entry!!: &cognition_entry(id),
+
+  @persistence(name='cogncepid')
+  cognition_concept!!: &cognition_concept(id)
+>
+
+@conjunction
+@persistence(name='tx_cca_cognceptop')
+@name(
+  label='概念与主题的关联关系',
+  singular='cognition_concept_topic', plural='cognition_concept_topics'
+)
+cognition_concept_topic<
+
+  @persistence(name='cogncepid')
+  cognition_concept!!: &cognition_concept(id),
+
+  @persistence(name='cogntopid')
+  cognition_topic!!: &cognition_topic(id)
+>
+
+@conjunction
+@persistence(name='tx_cca_cognenttop')
+@name(
+  label='知识入口与主题的关联关系',
+  singular='cognition_entry_topic', plural='cognition_entry_topics'
+)
+cognition_entry_topic<
+
+  @persistence(name='cognentid')
+  cognition_entry!!: &cognition_entry(id),
+
+  @persistence(name='cogntopid')
+  cognition_topic!!: &cognition_topic(id)
+>
+
+@entity
+@persistence(name='tn_cogntg')
+@name(label='标签', singular='cognition_tag', plural='cognition_tags')
+cognition_tag<
+
+  @persistence(name='cogntgid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='cogntgnm')
+  @name(label='名称')
+  name!+: string(200),
+
+  @persistence(name='descr')
+  description: string(1000),
+
+  @persistence(name='crttm')
+  created_time = now: datetime
+>
+
+@conjunction
+@persistence(name='tx_cca_cognenttg')
+@name(
+  label='知识入口与标签的关联关系',
+  singular='cognition_entry_tag', plural='cognition_entry_tags'
+)
+cognition_entry_tag<
+
+  @persistence(name='cognentid')
+  cognition_entry!!: &cognition_entry(id),
+
+  @persistence(name='cogntgid')
+  cognition_tag!!: &cognition_tag(id)
+>
+
+@conjunction
+@persistence(name='tx_cca_cognceptg')
+@name(
+  label='概念与标签的关联关系',
+  singular='cognition_concept_tag', plural='cognition_concept_tags'
+)
+cognition_concept_tag<
+
+  @persistence(name='cogncepid')
+  cognition_concept!!: &cognition_concept(id),
+
+  @persistence(name='cogntgid')
+  cognition_tag!!: &cognition_tag(id)
+>
+
+@conjunction
+@persistence(name='tx_cca_cogntoptg')
+@name(
+  label='主题与标签的关联关系',
+  singular='cognition_topic_tag', plural='cognition_topic_tags'
+)
+cognition_topic_tag<
+
+  @persistence(name='cogntopid')
+  cognition_topic!!: &cognition_topic(id),
+
+  @persistence(name='cogntgid')
+  cognition_tag!!: &cognition_tag(id)
+>
+
+@entity
+@persistence(name='tn_cca_cognasst')
+@name(label='资产', singular='cognition_asset', plural='cognition_assets')
+cognition_asset<
+
+  @persistence(name='cognasstid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='cognasstnm')
+  @name(label='名称')
+  name!+: string(200),
+
+  @persistence(name='cognassttyp')
+  @name(label='类型')
+  type!: enum[FL:文件,VD:视频,IM:图片,CD:代码,DC:文档,LN:链接],
+
+  @persistence(name='tit')
+  title: string(500),
+
+  @persistence(name='loc')
+  @name(label='文件地址')
+  location: string(1000),
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: string(2000),
+
+  @persistence(name='hs')
+  @name(label='checksum')
+  hash: string(128),
+
+  @persistence(name='sz')
+  @name(label='文件大小')
+  size: long,
+
+  @persistence(name='mime')
+  @name(label='媒体类型')
+  mime: string(200),
+
+  @persistence(name='dur')
+  @name(label='时长')
+  duration: long,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time: now
+>
+
+@value
+@persistence(name='tv_cca_cognentasst')
+cognition_entry_asset<
+
+  @persistence(name='cognentid')
+  cognition_entry!!: &cognition_entry(id),
+
+  @persistence(name='cognasstid')
+  cognition_asset!!: &cognition_asset(id),
+
+  @persistence(name='role')
+  role!: enum[PR:主要资料,RF:参考资料,EX:示例]
+>
+
+@entity
+@persistence(name='tn_cca_cognlib')
+@name(label='资料库', singular='cognition_library', plural='cognition_libraries')
+cognition_library<
+
+  @persistence(name='cognlibid')
+  id!!: long,
+
+  @persistence(name='cognlibnm')
+  name!: string(200),
+
+  @persistence(name='tit')
+  title: string(500),
+
+  @persistence(name='descr')
+  description: string(3000),
+
+  @persistence(name='cognlibtyp')
+  type!: enum[PS:个人,PJ:项目,DM:领域,RF:参考],
+
+  @persistence(name='governance_level')
+  governance_level!: enum[LS:松散,NM:正常,ST:严格],
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time: now,
+
+  @conjunction(name='cognition_library_concept')
+  @name(singular='concept')
+  concepts: &cognition_concept(id)[],
+
+  @conjunction(name='cognition_library_topic')
+  @name(singular='topic')
+  topics: &cognition_topic(id)[]
+>
+
+@conjunction
+@persistence(name='tx_cca_cognlibtop')
+cognition_library_topic<
+
+  @persistence(name='cogntopid')
+  cognition_topic!!: &cognition_topic(id),
+
+  @persistence(name='cognlibid')
+  cognition_library!!: &cognition_library(id)
+>
+
+@value
+@persistence(name='tx_cca_cognlibcep')
+cognition_library_concept<
+
+  @persistence(name='cogncepid')
+  cognition_concept!!: &cognition_concept(id),
+
+  @persistence(name='cognlibid')
+  cognition_library!!: &cognition_library(id)
+>
