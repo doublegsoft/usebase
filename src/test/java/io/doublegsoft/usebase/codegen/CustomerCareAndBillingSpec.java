@@ -15,6 +15,7 @@ import io.doublegsoft.usebase.aggregate.AggregateRelationshipChain;
 import io.doublegsoft.usebase.aggregate.ObjectRelationships;
 import io.doublegsoft.usebase.aggregate.Relationship;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -33,6 +34,37 @@ public class CustomerCareAndBillingSpec extends SpecBase {
   @BeforeClass
   public static void initialize() throws Exception {
     new FileOutputStream(OUTPUT).close();
+  }
+
+  @Before
+  public void test_gen_infos() throws Exception {
+    ModelDefinition dataModel = loadModel("cc&b");
+    ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
+
+    ObjectDefinition customer = dataModel.findObjectByName("customer");
+    ObjectDefinition customerInfo = projBuilder.build(customer);
+
+    ObjectDefinition account = dataModel.findObjectByName("account");
+    ObjectDefinition accountInfo = projBuilder.build(account);
+
+    ObjectDefinition bill = dataModel.findObjectByName("bill");
+    ObjectDefinition billInfo = projBuilder.build(bill);
+
+    ObjectDefinition billSegment = dataModel.findObjectByName("bill_segment");
+    ObjectDefinition billSegmentInfo = projBuilder.build(billSegment);
+
+    ObjectDefinition serviceAgreement = dataModel.findObjectByName("service_agreement");
+    ObjectDefinition serviceAgreementInfo = projBuilder.build(serviceAgreement);
+
+    ObjectDefinition adjustment = dataModel.findObjectByName("adjustment");
+    ObjectDefinition adjustmentInfo = projBuilder.build(adjustment);
+
+    ObjectDefinition financialTransaction = dataModel.findObjectByName("financial_transaction");
+    ObjectDefinition financialTransactionInfo = projBuilder.build(financialTransaction,
+        new HashSet<>(Arrays.asList("bill", "account")));
+
+    printUsecaseForModelbase(OUTPUT, null, accountInfo, customerInfo, billInfo,
+        billSegmentInfo, financialTransactionInfo, serviceAgreementInfo, adjustmentInfo);
   }
 
   @Test
@@ -61,6 +93,12 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     ObjectDefinition billSegment = dataModel.findObjectByName("bill_segment");
     ObjectDefinition billSegmentInfo = projBuilder.build(billSegment);
 
+    ObjectDefinition serviceAgreement = dataModel.findObjectByName("service_agreement");
+    ObjectDefinition serviceAgreementInfo = projBuilder.build(serviceAgreement);
+
+    ObjectDefinition adjustment = dataModel.findObjectByName("adjustment");
+    ObjectDefinition adjustmentInfo = projBuilder.build(adjustment);
+
     ObjectDefinition financialTransaction = dataModel.findObjectByName("financial_transaction");
     ObjectDefinition financialTransactionInfo = projBuilder.build(financialTransaction,
         new HashSet<>(Arrays.asList("bill", "account")));
@@ -71,6 +109,8 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
+
+    printUsecaseForModelbase(OUTPUT, usecase);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
         usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE,
@@ -98,7 +138,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-    printUsecaseForModelbase(OUTPUT, usecase, ftInfo);
+    printUsecaseForModelbase(OUTPUT, usecase);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
         usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE,
@@ -163,14 +203,6 @@ public class CustomerCareAndBillingSpec extends SpecBase {
             "%}]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
 
-    ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
-    ObjectDefinition sa = dataModel.findObjectByName("service_agreement");
-    ObjectDefinition saInfo = projBuilder.build(sa);
-    ObjectDefinition account = dataModel.findObjectByName("account");
-    ObjectDefinition accountInfo = projBuilder.build(account);
-    ObjectDefinition customer = dataModel.findObjectByName("customer");
-    ObjectDefinition customerInfo = projBuilder.build(customer);
-
     AssignmentDefinition assign = (AssignmentDefinition) usecase.getStatements().get(0);
     Assert.assertEquals("第一个语句通过账户标识查找账户（对象值）",
         "account", assign.getValue().getObjectValue().getLabelledOption("original", "object"));
@@ -199,7 +231,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-    printUsecaseForModelbase(OUTPUT, usecase, saInfo, accountInfo, customerInfo);
+    printUsecaseForModelbase(OUTPUT, usecase);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
         usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE,

@@ -344,6 +344,16 @@ public final class ModelbaseHelper {
     return retVal;
   }
 
+  public static String renameAttribute(AttributeDefinition attrInDataModel, String customName) {
+    String objname = attrInDataModel.getParent().getName();
+    if (attrInDataModel.isIdentifiable()) {
+      if ("id".equals(attrInDataModel.getName()) || "id".equals(customName)) {
+        return objname + "_" + attrInDataModel.getName();
+      }
+    }
+    return attrInDataModel.getName();
+  }
+
   private ModelbaseHelper() {
 
   }

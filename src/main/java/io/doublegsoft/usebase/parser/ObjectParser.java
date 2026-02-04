@@ -14,19 +14,8 @@ public class ObjectParser extends UsebaseParser {
 
   public void assemble(io.doublegsoft.usebase.UsebaseParser.Usebase_objectContext ctx, ObjectDefinition owner, UsecaseDefinition usecase) {
     if (ctx.usebase_attributes() != null) {
-      for (io.doublegsoft.usebase.UsebaseParser.Usebase_attributeContext ctxAttr : ctx.usebase_attributes().usebase_attribute()) {
-        AttributeDefinition attrDef = dataModel.findAttributeByNames(ctx.name.getText(), ctxAttr.name.getText());
-        if (attrDef == null) {
-          throw new RuntimeException("\"" + getOriginalText(ctx) + "\" has an attribute named \"" +
-              ctxAttr.name.getText() + "\" not defined in data model.");
-        }
-        if (!ModelbaseHelper.isSystemOrExistingInObject(attrDef.getName(), owner)) {
-          AttributeDefinition attr = ModelbaseHelper.cloneAttribute(attrDef, owner);
-          if (ctx.alias != null) {
-            attr.setLabelledOption("alias", "object", ctx.alias.getText());
-          }
-        }
-      }
+      owner.setLabelledOption("original", "object", ctx.name.getText());
+      getAttributesParser().assemble(ctx.usebase_attributes(), owner, usecase);
     } else {
       ObjectDefinition originalObj = dataModel.findObjectByName(ctx.name.getText());
       for (AttributeDefinition attrDef : originalObj.getAttributes()) {

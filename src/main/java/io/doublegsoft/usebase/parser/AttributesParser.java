@@ -7,6 +7,7 @@ import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import com.doublegsoft.jcommons.metamodel.ValueDefinition;
 import com.doublegsoft.jcommons.metamodel.ValuedAttributeDefinition;
+import com.doublegsoft.jcommons.utils.Strings;
 import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 
 import java.util.HashMap;
@@ -53,15 +54,23 @@ public class AttributesParser extends UsebaseParser {
       }
       ValuedAttributeDefinition attrInOwner = (ValuedAttributeDefinition) ModelbaseHelper.cloneAttribute(
           attrname, attrInDataObj, owner);
+      attrInOwner.setName(ModelbaseHelper.renameAttribute(attrInDataObj, ctxAttr.name.getText()));
       if (ctxAttr.usebase_validation() != null) {
         attrInOwner.getConstraint().setNullable(false);
       }
       if (ctxAttr.alias != null) {
         attrInOwner.setName(ctxAttr.alias.getText());
       }
-      if (ctxAttr.value != null) {
+      if (ctxAttr.value != null && !Strings.isEmpty(ctxAttr.value.getText())) {
         ValueDefinition value = new ValueDefinition();
         getValueParser().assemble(ctxAttr.value, value, usecase);
+        attrInOwner.setValue(value);
+        if (value.getNumber() != null) {
+          attrInOwner.getConstraint().setDefaultValue(value.getNumber());
+        } else if (value.getString() != null) {
+          attrInOwner.getConstraint().setDefaultValue(value.getString());
+        }
+        // TODO: ...
       }
     }
   }

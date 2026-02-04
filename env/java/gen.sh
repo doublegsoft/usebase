@@ -8,7 +8,7 @@ export OUTPUT_ROOT=out/java
 export SPEC="cc&b"
 export APPNAME=ccnb
 export NAMESPACE=biz.doublegsoft
-export MOBELBASE_MODEL=src/test/resources/model/"$SPEC".modelbase
+export MOBELBASE_MODEL="src/test/resources/model/$SPEC.modelbase"
 export PROJECT_ROOT=$OUTPUT_ROOT/$SPEC
 ################################################################################
 ##                                                                            ##

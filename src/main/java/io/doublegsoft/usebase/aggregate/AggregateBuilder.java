@@ -28,6 +28,14 @@ public class AggregateBuilder {
     for (AttributeDefinition attr : aggregateObj.getAttributes()) {
       String origObjName = attr.getLabelledOption("original", "object");
       String conjObjName = attr.getLabelledOption("conjunction", "expression");
+      if (attr.getType().isCollection()) {
+        CollectionType collType = (CollectionType) attr.getType();
+        ObjectDefinition obj = dataModel.findObjectByName(collType.getComponentType().getName());
+        if (!objsInRet.containsKey(origObjName)) {
+          retVal.addObject(obj, true);
+        }
+        objsInRet.put(obj.getName(), obj);
+      }
       // TODO
       String conjSourceObjName = attr.getLabelledOption("conjunction", "source_object");
       String conjSourceAttrName = attr.getLabelledOption("conjunction", "source_attribute");
@@ -45,14 +53,6 @@ public class AggregateBuilder {
           retVal.addObject(obj, true);
         }
         objsInRet.put(conjObjName, obj);
-      }
-      if (attr.getType().isCollection()) {
-        CollectionType collType = (CollectionType) attr.getType();
-        ObjectDefinition obj = dataModel.findObjectByName(collType.getComponentType().getName());
-        if (!objsInRet.containsKey(origObjName)) {
-          retVal.addObject(obj, true);
-        }
-        objsInRet.put(obj.getName(), obj);
       }
     }
     // 构建相互关联的数据

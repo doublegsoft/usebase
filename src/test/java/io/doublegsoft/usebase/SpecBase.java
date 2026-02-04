@@ -68,8 +68,12 @@ public class SpecBase {
   protected void printUsecaseForModelbase(String filePath, UsecaseDefinition usecase, ObjectDefinition... objs) throws IOException {
     StringWriter sw = new StringWriter();
     ModelbaseWriter writer = new ModelbaseWriter(sw);
-    writer.write(usecase.getParameterizedObject());
-    writer.write(usecase.getReturnedObject());
+    if (usecase != null) {
+      writer.write(usecase.getParameterizedObject());
+      if (usecase.getReturnedObject() != null) {
+        writer.write(usecase.getReturnedObject());
+      }
+    }
     if (objs != null && objs.length > 0) {
       for (ObjectDefinition obj : objs) {
         writer.write(obj);

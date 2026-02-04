@@ -33,7 +33,7 @@ cognition_entry<
 
   @persistence(name='updtm')
   @name(label='更新时间')
-  updated_time = now: datetime,
+  updated_time: now,
 
   @conjunction(name='cognition_entry_concept')
   @name(singular='concept')
@@ -45,7 +45,11 @@ cognition_entry<
 
   @conjunction(name='cognition_entry_tag')
   @name(singular='tag')
-  tags: &cognition_tag(id)[]
+  tags: &cognition_tag(id)[],
+
+  @conjunction(name='cognition_entry_asset')
+  @name(singular='asset')
+  assets: &cognition_asset(id)[]
 >
 
 @entity
@@ -289,6 +293,11 @@ cognition_asset<
 
 @value
 @persistence(name='tv_cca_cognentasst')
+@name(
+  label='知识入口与知识资产的关联关系',
+  singular='cognition_entry_asset', plural='cognition_entry_assets'
+)
+@facet(object='cognition_asset')
 cognition_entry_asset<
 
   @persistence(name='cognentid')
@@ -298,7 +307,15 @@ cognition_entry_asset<
   cognition_asset!!: &cognition_asset(id),
 
   @persistence(name='role')
-  role!: enum[PR:主要资料,RF:参考资料,EX:示例]
+  role! = 'RF': enum[PR:主要资料,RF:参考资料,EX:示例],
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time: now
 >
 
 @entity
