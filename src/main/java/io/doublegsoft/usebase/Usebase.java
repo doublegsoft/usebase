@@ -15,6 +15,7 @@ import com.doublegsoft.jcommons.metabean.type.DomainType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.*;
 import com.doublegsoft.jcommons.utils.Inflector;
+import com.doublegsoft.jcommons.utils.Strings;
 import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 import io.doublegsoft.usebase.parser.*;
 import org.antlr.v4.runtime.CharStream;
@@ -84,6 +85,11 @@ public class Usebase {
       ParameterizedObjectDefinition paramObj = new ParameterizedObjectDefinition("$" + retVal.getName(), retVal.getContextModel());
       argumentsParser.assemble(ctx.usebase_arguments(), paramObj, retVal);
       retVal.setParameterizedObject(paramObj);
+      // 传入的参数需要注册成为变量
+      if (!Strings.isEmpty(paramObj.getLabelledOption("original", "object"))) {
+        ObjectDefinition obj = dataModel.findObjectByName(paramObj.getLabelledOption("original", "object"));
+        retVal.registerVariable(obj.getName(), obj);
+      }
     }
     if (ctx.usebase_return() != null) {
       io.doublegsoft.usebase.UsebaseParser.Usebase_aggregateContext ctxAgg =
@@ -181,6 +187,8 @@ public class Usebase {
       retVal.setValue(value);
       retVal.setAssignee(ctxAssign.variable.getText());
       retVal.setAssignOp(ctxAssign.usebase_assignop().getText());
+      // 注册变量
+      registerVariable(usecase, retVal.getAssignee(), value);
       if (ctx.usebase_remote() != null) {
         ValueDefinition remote = new ValueDefinition();
         valueParser.assemble(ctx.usebase_remote(), remote);
@@ -212,8 +220,11 @@ public class Usebase {
         retVal.setSaveObject(saveObj);
       } else if (ctxExpr.var != null) {
         String var = ctxExpr.var.getText();
-        retVal.setVariable(var);
-        // TODO: 在上下文环境中去找到var的ObjectDefinition
+        VariableDefinition varDef = usecase.getVariable(var);
+        if (varDef == null) {
+          throw new IllegalArgumentException("there is no \"" + var + "\" variable in usecase context");
+        }
+        retVal.setVariableObject(varDef);
       } else if (ctxExpr.usebase_array() != null) {
         io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctxArr = ctxExpr.usebase_array();
         String saveObjName = "null";
@@ -269,4 +280,21 @@ public class Usebase {
     }
   }
 
+  private void registerVariable(UsecaseDefinition usecase, String name, ValueDefinition value) {
+    if (value.getObjectValue() != null) {
+      String origObjName = value.getObjectValue().getLabelledOption("original", "object");
+      ObjectDefinition obj = dataModel.findObjectByName(origObjName);
+      usecase.registerVariable(name, obj);
+    } else if (value.getArrayValue() != null) {
+      String origObjName = value.getArrayValue().getLabelledOption("original", "object");
+      ObjectDefinition componentObj = dataModel.findObjectByName(origObjName);
+      usecase.registerVariable(name, componentObj, true);
+    } else if (value.getString() != null) {
+      usecase.registerVariable(name, new PrimitiveType("string"));
+    } else if (value.getNumber() != null) {
+      usecase.registerVariable(name, new PrimitiveType("number"));
+    } else if (value.getBool() != null) {
+      usecase.registerVariable(name, new PrimitiveType("bool"));
+    }
+  }
 }

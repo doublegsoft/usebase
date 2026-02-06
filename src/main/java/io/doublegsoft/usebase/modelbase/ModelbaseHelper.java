@@ -354,6 +354,29 @@ public final class ModelbaseHelper {
     return attrInDataModel.getName();
   }
 
+  public static AttributeDefinition findAttributeByNames(String objName, String attrName, ModelDefinition dataModel) {
+    AttributeDefinition retVal = dataModel.findAttributeByNames(objName, attrName);
+    if (retVal == null) {
+      String searchAttrName = attrName.replace(objName + "_" , "");
+      retVal = dataModel.findAttributeByNames(objName, searchAttrName);
+    }
+    if (retVal == null) {
+      String searchAttrName = attrName.replace("_id" , "");
+      retVal = dataModel.findAttributeByNames(objName, searchAttrName);
+    }
+    return retVal;
+  }
+
+  public static AttributeDefinition findAttributeByNames(ObjectDefinition obj, String attrName, ModelDefinition dataModel) {
+    String objName = obj.getName();
+    AttributeDefinition retVal = findAttributeByNames(objName, attrName, dataModel);
+    if (retVal == null) {
+      objName = obj.getLabelledOption("original", "object");
+      retVal = findAttributeByNames(objName, attrName, dataModel);
+    }
+    return retVal;
+  }
+
   private ModelbaseHelper() {
 
   }

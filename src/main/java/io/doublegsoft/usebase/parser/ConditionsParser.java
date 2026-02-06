@@ -4,6 +4,7 @@ import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.utils.Strings;
+import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -74,17 +75,26 @@ public class ConditionsParser extends UsebaseParser {
       }
       String leftObjectAlias = null;
       String rightObjectAlias = null;
-      AttributeDefinition leftSideAttr = null;
-      AttributeDefinition rightSideAttr = null;
+      AttributeDefinition leftSideAttrInDataObj = null;
+      AttributeDefinition rightSideAttrInDataObj = null;
       if (rightSide != null && rightSide.contains("'")) {
-        leftSideAttr = findLeftAttributeInDataModel(leftSide, owner, conditionsIndex);
+        leftSideAttrInDataObj = findLeftAttributeInDataModel(leftSide, owner, conditionsIndex);
       } else if (conjObj == null) {
-        leftSideAttr = findLeftAttributeInDataModel(leftSide, owner, conditionsIndex);
-        rightSideAttr = findRightAttributeInDataModel(rightSide, owner, conditionsIndex);
+        //******************************************//
+        // 如果<...>中的如果不是连接对象，那就必须是明确的属性 //
+        //******************************************//
+        AttributeDefinition rightAttrInOwner = presentGroupingAttributes.get(presentGroupingAttributes.size() - 1);
+        ObjectDefinition rightObj = dataModel.findObjectByName(rightAttrInOwner.getLabelledOption("original", "object"));
+        // 注意此处
+        leftSideAttrInDataObj = findLeftAttributeInDataModel(leftSide, owner, conditionsIndex);
+        rightSideAttrInDataObj = findRightAttributeInDataModel(rightSide, rightObj, conditionsIndex);
+        //***************************************//
+        // 标注所有与其同属一个数据对象的属性相同的注解 //
+        //***************************************//
         for (int j = previousGroupingAttributes.size() - 1; j >= 0; j--) {
           AttributeDefinition attr = previousGroupingAttributes.get(j);
           String origObjName = attr.getLabelledOption("original", "object");
-          if (origObjName.equals(leftSideAttr.getParent().getName())) {
+          if (origObjName.equals(leftSideAttrInDataObj.getParent().getName())) {
             leftObjectAlias = attr.getLabelledOption("alias", "object");
             break;
           }
@@ -92,7 +102,7 @@ public class ConditionsParser extends UsebaseParser {
         for (AttributeDefinition attr : presentGroupingAttributes) {
           String origObjName = attr.getLabelledOption("original", "object");
           String origAttrName = attr.getLabelledOption("original", "attribute");
-          if (rightSideAttr != null && origObjName.equals(rightSideAttr.getParent().getName())) {
+          if (rightSideAttrInDataObj != null && origObjName.equals(rightSideAttrInDataObj.getParent().getName())) {
             rightObjectAlias = attr.getLabelledOption("alias", "object");
             break;
           }
@@ -103,11 +113,11 @@ public class ConditionsParser extends UsebaseParser {
             String origObjName = attr.getLabelledOption("original", "object");
             if (conjAttr.getType().getName().equals(origObjName)) {
               leftObjectAlias = attr.getLabelledOption("alias", "object");
-              leftSideAttr = conjAttr;
+              leftSideAttrInDataObj = conjAttr;
               break;
             }
           }
-          if (leftSideAttr != null) {
+          if (leftSideAttrInDataObj != null) {
             break;
           }
         }
@@ -116,23 +126,23 @@ public class ConditionsParser extends UsebaseParser {
             String origObjName = attr.getLabelledOption("original", "object");
             if (conjAttr.getType().getName().equals(origObjName)) {
               rightObjectAlias = attr.getLabelledOption("alias", "object");
-              rightSideAttr = conjAttr;
+              rightSideAttrInDataObj = conjAttr;
               break;
             }
           }
-          if (rightSideAttr != null) {
+          if (rightSideAttrInDataObj != null) {
             break;
           }
         }
       }
-      if (leftSideAttr == null && rightSideAttr == null) {
+      if (leftSideAttrInDataObj == null && rightSideAttrInDataObj == null) {
         // 说明不需要构建关联关系
         continue;
       }
-      if (leftSideAttr == null && (rightSide == null || !rightSide.contains("'"))) {
+      if (leftSideAttrInDataObj == null && (rightSide == null || !rightSide.contains("'"))) {
         throw new IllegalArgumentException("'" + getOriginalText(ctxCond) + "'中的左侧变量'" + leftSide + "'在数据模型中没有找到。");
       }
-      if (rightSideAttr == null && (rightSide == null || !rightSide.contains("'"))) {
+      if (rightSideAttrInDataObj == null && (rightSide == null || !rightSide.contains("'"))) {
         throw new IllegalArgumentException("'" + getOriginalText(ctxCond) + "'中的右侧变量'" + rightSide + "'在数据模型中没有找到。");
       }
       for (AttributeDefinition attr : presentGroupingAttributes) {
@@ -143,7 +153,7 @@ public class ConditionsParser extends UsebaseParser {
         } else {
           attr.setLabelledOptions("conjunction_" + i, conjunction);
         }
-        assemble(origObjName, conjunction, leftSideAttr, rightSideAttr, leftObjectAlias, rightObjectAlias, rightSide);
+        assemble(origObjName, conjunction, leftSideAttrInDataObj, rightSideAttrInDataObj, leftObjectAlias, rightObjectAlias, rightSide);
       }
       if (conditionsIndex == 0) {
         for (AttributeDefinition attr : previousGroupingAttributes) {
@@ -154,7 +164,7 @@ public class ConditionsParser extends UsebaseParser {
           } else {
             attr.setLabelledOptions("conjunction_" + i, conjunction);
           }
-          assemble(origObjName, conjunction, leftSideAttr, rightSideAttr,
+          assemble(origObjName, conjunction, leftSideAttrInDataObj, rightSideAttrInDataObj,
               leftObjectAlias, rightObjectAlias, rightSide);
         }
       }
@@ -164,18 +174,32 @@ public class ConditionsParser extends UsebaseParser {
   protected AttributeDefinition findLeftAttributeInDataModel(String expr, ObjectDefinition owner, int originalIndex) {
     String[] names = expr.split("\\.");
     if (names.length == 2) {
-      return findAttributeInDataModel(names[0], names[1]);
+      return ModelbaseHelper.findAttributeByNames(names[0], names[1], dataModel);
     }
     ObjectDefinition conjObj = dataModel.findObjectByName(names[0]);
     if (conjObj != null) {
       return conjObj.getIdentifiableAttribute();
     }
+    // 正常在数据模型中的对象中去寻找属性
+    AttributeDefinition retVal = findAttributeInDataModel(owner, expr);
+    if (retVal != null) {
+      return retVal;
+    }
     for (AttributeDefinition attrInOwner : owner.getAttributes()) {
-      int index = Integer.valueOf(attrInOwner.getLabelledOption("original", "index"));
+      int index = -1;
+      try {
+        index = Integer.parseInt(attrInOwner.getLabelledOption("original", "index"));
+      } catch (Throwable cause) {
+
+      }
       if (index > originalIndex) {
         break;
       }
-      AttributeDefinition found = findAttributeInDataModel(attrInOwner, expr);
+      AttributeDefinition found = ModelbaseHelper.findAttributeByNames(
+          attrInOwner.getLabelledOption("original", "object"),
+          expr, dataModel
+      );
+//      AttributeDefinition found = findAttributeInDataModel(attrInOwner, expr);
       if (found != null) {
         return found;
       }
@@ -191,56 +215,28 @@ public class ConditionsParser extends UsebaseParser {
     }
     String[] names = expr.split("\\.");
     if (names.length == 2) {
-      return findAttributeInDataModel(names[0], names[1]);
+      return ModelbaseHelper.findAttributeByNames(names[0], names[1], dataModel);
     }
     ObjectDefinition conjObj = dataModel.findObjectByName(names[0]);
     if (conjObj != null) {
       return conjObj.getIdentifiableAttribute();
+    }
+    // 正常在数据模型中的对象中去寻找属性
+    AttributeDefinition retVal = findAttributeInDataModel(owner, expr);
+    if (retVal != null) {
+      return retVal;
     }
     for (AttributeDefinition attrInOwner : owner.getAttributes()) {
       int index = Integer.valueOf(attrInOwner.getLabelledOption("original", "index"));
       if (index <= originalIndex) {
         continue;
       }
-      AttributeDefinition found = findAttributeInDataModel(attrInOwner, expr);
+      AttributeDefinition found = ModelbaseHelper.findAttributeByNames(
+          attrInOwner.getLabelledOption("original", "object"),
+          expr, dataModel
+      );
       if (found != null) {
         return found;
-      }
-    }
-    return null;
-  }
-
-  private AttributeDefinition findAttributeInDataModel(AttributeDefinition attrInOwner, String expr) {
-    String origObjName = attrInOwner.getLabelledOption("original", "object");
-    ObjectDefinition obj = dataModel.findObjectByName(origObjName);
-    if (obj == null) {
-      return null;
-    }
-    for (AttributeDefinition attrInObj : obj.getAttributes()) {
-      String attrname = attrInObj.getName();
-      if (attrInObj.getType().isCustom() && expr.equals(attrInObj.getType().getName() + "_id")) {
-        return attrInObj;
-      }
-      if (expr.equals(attrname) || expr.equals(attrInObj.getName() + "_" + attrname)) {
-        return attrInObj;
-      }
-    }
-    return null;
-  }
-
-  private AttributeDefinition findAttributeInDataModel(String objname, String attrname) {
-    ObjectDefinition obj = dataModel.findObjectByName(objname);
-    for (AttributeDefinition attr : obj.getAttributes()) {
-      if (attr.getName().equals(attrname)) {
-        return attr;
-      }
-      if (attr.getType().isCustom()) {
-        ObjectDefinition refObj = dataModel.findObjectByName(attr.getType().getName());
-        AttributeDefinition idAttrRefObj = refObj.getIdentifiableAttribute();
-        if (idAttrRefObj.getName().equals(attrname) ||
-            (refObj.getName() + "_" + idAttrRefObj.getName()).equals(attrname)) {
-          return attr;
-        }
       }
     }
     return null;

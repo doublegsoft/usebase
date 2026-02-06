@@ -107,12 +107,6 @@ public class AggregateParser extends UsebaseParser {
           }
         } else {
           getArrayParser().assemble(ctxArr, owner, usecase);
-          AttributeDefinition attrArray = owner.getAttributes()[owner.getAttributes().length - 1];
-          attrArray.setLabelledOption("original", "index", String.valueOf(i));
-          if (attrArray.getLabelledOption("original", "object") == null) {
-            attrArray.setLabelledOption("original", "object",
-                owner.getLabelledOption("original", "object"));
-          }
         }
         if (ctxArr.usebase_arguments() != null) {
           getArgumentsParser().decorate(ctxArr.usebase_arguments(), owner);

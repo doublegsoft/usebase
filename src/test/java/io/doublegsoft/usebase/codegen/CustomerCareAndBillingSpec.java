@@ -197,10 +197,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
             "amount = %{meter_read: usage}#(service_agreement.premise, status = 'E') * " +
             "{cfg_rate: rate}#(service_agreement.rate_type)%}]&service_agreements\n" +
         "|+| {bill: id = '', status = 'E'}\n" +
-        "|+| [{bill_segment: status = 'E', bill = bill_id, amount = %" +
-            "{meter_read: usage}#(service_agreement.premise, status = 'E') * " +
-            "{cfg_rate: rate}#(service_agreement.rate_type)" +
-            "%}]";
+        "|+| [{bill_segment: status = 'E', bill = bill_id}]&bill_segments";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
 
     AssignmentDefinition assign = (AssignmentDefinition) usecase.getStatements().get(0);

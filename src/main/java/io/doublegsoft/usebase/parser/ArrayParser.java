@@ -105,11 +105,12 @@ public class ArrayParser extends UsebaseParser {
         getArgumentsParser().assembleOrCreateAndThen(ctx.usebase_arguments(), owner, usecase);
       }
     }
-    if (!(owner instanceof ReturnedObjectDefinition)) {
-      AttributeDefinition collAttr = new AttributeDefinition(attrName, owner);
-      collAttr.setLabelledOption("original", "object", attrType.getComponentType().getName());
-      collAttr.setLabelledOption("original", "array", "true");
-      collAttr.setType(attrType);
-    }
+    // FIXME: 此处什么意思
+//    if (!(owner instanceof ReturnedObjectDefinition)) {
+//      AttributeDefinition collAttr = new AttributeDefinition(attrName, owner);
+//      collAttr.setLabelledOption("original", "object", attrType.getComponentType().getName());
+//      collAttr.setLabelledOption("original", "array", "true");
+//      collAttr.setType(attrType);
+//    }
   }
 }

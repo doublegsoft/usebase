@@ -25,10 +25,8 @@ public class AttributesParser extends UsebaseParser {
       if (ctxAttr.usebase_attrgroup() != null) {
         for (io.doublegsoft.usebase.UsebaseParser.Anybase_idContext ctxId : ctxAttr.usebase_attrgroup().anybase_id()) {
           String attrname = ctxId.getText();
-          AttributeDefinition attrDef = findAttributeInDataModel(owner, attrname);// dataModel.findAttributeByNames(owner.getName(), attrname);
-          if (attrDef == null) {
-            attrDef = dataModel.findAttributeByNames(owner.getName(), attrname.replace(owner.getName() + "_", ""));
-          }
+          AttributeDefinition attrDef = ModelbaseHelper.findAttributeByNames(owner, attrname, dataModel);
+
           AttributeDefinition attrInOwner = ModelbaseHelper.cloneAttribute(attrDef, owner);
           String groupName = "";
           for (io.doublegsoft.usebase.UsebaseParser.Anybase_idContext ctxIdInner : ctxAttr.usebase_attrgroup().anybase_id()) {
@@ -39,10 +37,10 @@ public class AttributesParser extends UsebaseParser {
         continue;
       }
       String attrname = ctxAttr.name.getText();
-      AttributeDefinition attrInDataObj = findAttributeInDataModel(owner, attrname);
+      AttributeDefinition attrInDataObj = ModelbaseHelper.findAttributeByNames(owner, attrname, dataModel);
       if (attrInDataObj == null) {
         String origObjName = owner.getLabelledOption("original", "object");
-        attrInDataObj = dataModel.findAttributeByNames(origObjName, attrname);
+        attrInDataObj = ModelbaseHelper.findAttributeByNames(origObjName, attrname, dataModel);
       }
       if (attrInDataObj == null) {
         throw new RuntimeException("\"" + getOriginalText(ctx) + "\" has an attribute named \"" +
@@ -70,7 +68,7 @@ public class AttributesParser extends UsebaseParser {
         } else if (value.getString() != null) {
           attrInOwner.getConstraint().setDefaultValue(value.getString());
         }
-        // TODO: ...
+        attrInOwner.setValue(value);
       }
     }
   }

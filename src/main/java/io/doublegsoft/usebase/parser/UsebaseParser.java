@@ -67,9 +67,6 @@ public abstract class UsebaseParser {
     if (obj == null) {
       obj = dataModel.findObjectByName(origObjName);
     }
-    if (obj != null) {
-      objName = origObjName;
-    }
     AttributeDefinition retVal = dataModel.findAttributeByNames(objName, attrName);
     if (retVal == null) {
       if (attrName.startsWith(objName + "_")) {
@@ -78,7 +75,7 @@ public abstract class UsebaseParser {
       }
     }
     if (retVal == null) {
-      String newAttrName = attrName.replaceAll("_id", "");
+      String newAttrName = attrName.replace(owner.getName() + "_", "");
       retVal = dataModel.findAttributeByNames(objName, newAttrName);
     }
     return retVal;

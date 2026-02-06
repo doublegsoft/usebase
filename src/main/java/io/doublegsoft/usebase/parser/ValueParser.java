@@ -26,8 +26,10 @@ public class ValueParser extends UsebaseParser {
       String str = ctx.anybase_identifier().getText();
       if ("now".equals(str)) {
         value.setKeyword(str);
+      } else if ("true".equals(str) || "false".equals(str)){
+        value.setBool(str);
       } else {
-        value.setVariable(ctx.anybase_identifier().getText());
+        value.setVariable(str);
       }
     } else if (ctx.anybase_number() != null) {
       value.setNumber(new BigDecimal(ctx.anybase_number().getText()));
