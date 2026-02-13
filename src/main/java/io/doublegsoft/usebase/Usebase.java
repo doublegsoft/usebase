@@ -179,7 +179,7 @@ public class Usebase {
       AssignmentDefinition retVal = new AssignmentDefinition();
       retVal.setOperator(ctx.usebase_operator().getText());
       String op = retVal.getOperator().substring(retVal.getOperator().length() - 2);
-      if (!"&|".equals(op) && !"=|".equals(op) && !":|".equals(op)) {
+      if (!"&|".equals(op) && !"=|".equals(op) && !":|".equals(op) && !"#|".equals(op)) {
         throw new RuntimeException("\"" + getOriginalText(ctx) + "\" not allowed to have assignment rule");
       }
       ValueDefinition value = new ValueDefinition();

@@ -4,6 +4,8 @@ import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
+import com.doublegsoft.jcommons.metabean.type.CustomType;
+import com.doublegsoft.jcommons.metabean.type.DomainType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
@@ -48,12 +50,19 @@ public class ArgumentsParser extends UsebaseParser {
         }
         if (attrInOwner == null) {
           attrInOwner = new AttributeDefinition(attrname, owner);
-          attrInOwner.setType(new PrimitiveType("string"));
+          attrInOwner.setType(new DomainType(attrname));
         }
         if (ctxArg.value != null) {
           String text = ctxArg.value.getText();
-          if (text.startsWith("'")) {
+          if (ctxArg.value.anybase_string() != null) {
             text = text.substring(1, text.length() - 1);
+            attrInOwner.setType(new PrimitiveType("string"));
+          } else if (ctxArg.value.anybase_number() != null) {
+            attrInOwner.setType(new PrimitiveType("string"));
+          } else if (ctxArg.value.anybase_identifier() != null) {
+            attrInOwner.setType(new DomainType(text));
+          } else {
+            throw new IllegalArgumentException("not support this value type for argument: " + ctxArg.value.getText());
           }
           attrInOwner.getConstraint().setDefaultValue(text);
         }
@@ -168,13 +177,20 @@ public class ArgumentsParser extends UsebaseParser {
   public void assembleOrCreateAndThen(
       io.doublegsoft.usebase.UsebaseParser.Usebase_argumentsContext ctx,
       ObjectDefinition owner, UsecaseDefinition usecase) {
-    String objName = "$";
+    assembleOrCreateAndThen(ctx, false, owner, usecase);
+  }
+
+  public void assembleOrCreateAndThen(
+      io.doublegsoft.usebase.UsebaseParser.Usebase_argumentsContext ctx,
+      boolean hashSign,
+      ObjectDefinition owner, UsecaseDefinition usecase) {
+    String objName = hashSign ? "#" : "$";
     if (owner.getName().startsWith("#")) {
       objName += owner.getName().substring(1);
     } else if (owner.getName().startsWith("$")) {
       objName += owner.getName().substring(1);
     } else {
-      objName += owner.getName();
+      objName += getOriginalText(ctx);
     }
     if (owner.getName().startsWith("$")) {
       getArgumentsParser().assemble(ctx, owner, usecase);
