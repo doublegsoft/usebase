@@ -1,4 +1,4 @@
-@module(name='iam')
+@module(name='iam', text='identity and access management')
 @persistence(name='tn_iam_user')
 @name(label='用户', singular='user', plural='users')
 user<

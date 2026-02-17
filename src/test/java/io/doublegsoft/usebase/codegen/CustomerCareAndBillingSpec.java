@@ -217,8 +217,8 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     Assert.assertEquals("表达式中的有两个对象变量", 2, operands.size());
     Assert.assertNotNull("表达式的被赋值变量是个数组", assign.getValue().getArrayValue());
 
-    ValueDefinition firstOperand = operands.get(0);
-    ValueDefinition secondOperand = operands.get(1);
+    ValueDefinition firstOperand = calcExpr.getLeftOperand().getValue(); // operands.get(0);
+    ValueDefinition secondOperand = calcExpr.getRightOperand().getValue(); // operands.get(1);
     AttributeDefinition firstAttrInApi = firstOperand.getObjectValue().getAttributes()[0];
     AttributeDefinition secondAttrInApi = secondOperand.getObjectValue().getAttributes()[0];
     Assert.assertEquals("第一个运算数的值", "usage", firstAttrInApi.getName());
@@ -262,7 +262,6 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     Assert.assertEquals("第五个语句通过新增许多账单明细数据",
         "bill_segment", save.getSaveObject().getName());
     Assert.assertTrue("账单明细数据是个数组", save.isArray());
-
 
     ObjectDefinition paramObj = usecase.getParameterizedObject();
     ObjectDefinition retObj = usecase.getReturnedObject();

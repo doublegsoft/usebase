@@ -146,6 +146,10 @@ service_agreement<
   @persistence(name='end_dt')
   end_date: date,
 
+  @persistence(name='rate_id')
+  @name(label='费率')
+  rate_id: string(20),
+
   @name(label='账户')
   account: &account(id),
 
@@ -447,7 +451,7 @@ cfg_rate<
   // 物理主键
   @persistence(name='rate_cfg_id')
   @name(label='配置标识')
-  id!!: string(30),
+  rate_id!!: string(30),
 
   // ===================================
   // 查找键 (Lookup Keys)
@@ -513,7 +517,7 @@ cfg_rate_step<
   // 在实际查询时，通常使用 rate_type + effective_date + uom 来定位
   @persistence(name='rate_cfg_id')
   @name(label='所属费率配置')
-  rate_header: &cfg_rate(id),
+  rate_header: &cfg_rate(rate_id),
 
   // ===================================
   // 阶梯定义
