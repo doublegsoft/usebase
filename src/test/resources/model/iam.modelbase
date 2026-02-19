@@ -1,21 +1,21 @@
 @module(name='iam', text='identity and access management')
-@persistence(name='tn_iam_user')
-@name(label='用户', singular='user', plural='users')
+@persistence(name='tn_iam_usr')
+@name(label='用户', plural='users')
 user<
 
-  @persistence(name='userid')
+  @persistence(name='usrid')
   @name(label='用户标识')
   id!!: long,
 
-  @persistence(name='username')
+  @persistence(name='usrnm')
   @name(label='用户名')
   username: string(100),
 
-  @persistence(name='passwd')
-  @name(label='密码')
-  password: string(255),
+  @persistence(name='encrpwd')
+  @name(label='加密后密码')
+  encrypted_password: string(255),
 
-  @persistence(name='email')
+  @persistence(name='em')
   @name(label='邮箱')
   email: string(255),
 
@@ -35,15 +35,15 @@ user<
   user_roles: &user_role(user)[]
 >
 
-@persistence(name='tn_iam_role')
-@name(label='角色', singular='role', plural='roles')
+@persistence(name='tn_iam_rl')
+@name(label='角色', plural='roles')
 role<
 
-  @persistence(name='roleid')
+  @persistence(name='rlid')
   @name(label='角色标识')
   id!!: id,
 
-  @persistence(name='rolenm')
+  @persistence(name='rlnm')
   @name(label='角色名称')
   name: string(100),
 
@@ -67,17 +67,23 @@ role<
   role_permissions: &role_permission(role)[]
 >
 
-@persistence(name='tn_iam_permission')
-@name(label='权限', singular='permission', plural='permissions')
+@persistence(name='tn_iam_perm')
+@name(label='权限', plural='permissions')
 permission<
 
   @persistence(name='permid')
   @name(label='权限标识')
   id!!: id,
 
-  @persistence(name='res')
-  @name(label='资源')
-  resource: string(255),
+  @persistence(name='restyp')
+  @name(label='资源类型')
+  @reference(name='resource', value='type')
+  resource_type: string(300),
+
+  @persistence(name='resid')
+  @name(label='资源标识')
+  @reference(name='resource', value='id')
+  resource_id: string(300),
 
   @persistence(name='act')
   @name(label='操作')
@@ -96,15 +102,15 @@ permission<
   created_time = now: datetime
 >
 
-@persistence(name='tn_iam_user_role')
-@name(label='用户角色', singular='user_role', plural='user_roles')
+@persistence(name='tn_iam_usrrl')
+@name(label='用户角色', plural='user_roles')
 user_role<
 
-  @persistence(name='userid')
+  @persistence(name='usrid')
   @name(label='用户')
   user!!: &user(id),
 
-  @persistence(name='roleid')
+  @persistence(name='rlid')
   @name(label='角色')
   role!!: &role(id),
 

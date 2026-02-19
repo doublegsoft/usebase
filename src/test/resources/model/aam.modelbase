@@ -1,7 +1,9 @@
-@module(name='aam')
+@module(name='aam', text='automation administration management')
+
 @persistence(name='tn_aam_autprcs')
-@name(label='流程定义', singular='automated_process', plural='automated_processes')
+@name(label='流程定义', plural='automated_processes')
 automated_process<
+
   @persistence(name='autprcsid')
   @name(label='流程编号')
   id!!: id,
@@ -37,47 +39,134 @@ automated_process<
 
   @persistence(name='createdat')
   @name(label='创建时间')
-  created_at: datetime
+  created_at: datetime,
+
+  @name(label='资流程流程节点', singular='subprocess')
+  subprocesses: &automated_subprocess(id)[]
 >
 
-@persistence(name='bpm_instance')
+@entity
+@persistence(name='tn_aam_autsprcs')
+@name(label='子流程（流程节点）定义', plural='automated_subprocesses')
+automated_subprocess<
+
+  @persistence(name='autsprcsid')
+  @name(label='子流程标识')
+  id!!: id,
+
+  @persistence(name='autprcsid')
+  @name(label='所属流程')
+  process: &automated_process(id),
+
+  @persistence(name='autsprcscd')
+  @name(label='子流程编码')
+  code: string(50),
+
+  @persistence(name='autsprcsnm')
+  @name(label='子流程名称')
+  name: string(200),
+
+  @persistence(name='autsprcstyp')
+  @name(label='子流程类型')
+  type: enum[
+    ST:开始,
+    AC:自动任务,
+    HU:人工任务,
+    DC:条件判断,
+    TM:定时器,
+    SB:子流程,
+    EN:结束
+  ],
+
+  @persistence(name='exec')
+  @name(label='执行类/脚本/Bean')
+  executor: string(200),
+
+  @persistence(name='expr')
+  @name(label='条件表达式')
+  expression: string(1000),
+
+  @persistence(name='tosec')
+  @name(label='超时（秒）')
+  timeout_seconds: integer,
+
+  @name(label='流出连线', singular='transition')
+  transitions: &automated_process_transition(source)[]
+>
+
+@value
+@persistence(name='tv_aam_autprcstrans')
+@name(label='流程定义', plural='automated_process_transitions')
+automated_process_transition<
+
+  @persistence(name='srcsprcsid')
+  @name(label='源头节点')
+  source!!: &automated_subprocess(id),
+
+  @persistence(name='tgtsprcsid')
+  @name(label='目标节点')
+  target!!: &automated_subprocess(id),
+
+  @persistence(name='cond')
+  @name(label='条件')
+  condition: string(1000),
+
+  @persistence(name='prio')
+  @name(label='优先级')
+  priority: integer
+>
+
+
+
+@persistence(name='tn_aam_autprcsinst')
 @name(label='流程实例', singular='automated_process_instance', plural='automated_process_instances')
 automated_process_instance<
 
-  @persistence(name='instid')
+  @persistence(name='autprcsinstid')
+  @name(label='流程实例标识')
   id!!: id,
 
-  @persistence(name='procid')
+  @persistence(name='autprcsid')
+  @name(label='流程定义')
   automated_process: &automated_process(id),
 
-  @persistence(name='status')
-  status: enum[01:pending, 02:running, 03:completed, 04:failed, 05:cancelled],
+  @persistence(name='sts')
+  @name(label='流程状态')
+  status: enum[01:挂起, 02:运行, 03:完成, 04:失败, 05:取消],
 
-  @persistence(name='startedby')
-  started_by: string,  // 用户名或系统标识
+  @persistence(name='stby')
+  @name(label='流程启动用户')
+  started_by: id,
 
-  @persistence(name='startedat')
-  started_at: datetime,
+  @persistence(name='sttm')
+  @name(label='流程启动时间')
+  started_time: datetime,
 
-  @persistence(name='endedat')
-  ended_at: datetime
+  @persistence(name='ndtm')
+  @name(label='流程结束时间')
+  end_time: datetime
 >
 
-@persistence(name='bpm_variable')
+@persistence(name='tn_aam_autprcsvar')
 @name(label='流程变量', singular='automated_process_variable', plural='automated_process_variables')
 automated_process_variable<
-  @persistence(name='varid')
+  @persistence(name='autprcsvarid')
+  @name(label='流程变量标识')
   id!!: id,
 
-  @persistence(name='instid')
+  @persistence(name='autprcsinstid')
+  @name(label='流程实例')
   automated_process_instance: &automated_process_instance(id),
 
-  @persistence(name='key')
-  key: string,
+  @persistence(name='autprcsvarnm')
+  @name(label='流程变量名称')
+  name: string,
 
-  @persistence(name='value')
-  value: string,
+  @persistence(name='autprcsvartyp')
+  @name(label='流程变量类型')
+  type: enum[ST:字符串, NR:数字, BL:布尔, JS:JSON, DT:日期],
 
-  @persistence(name='type')
-  type: enum[ST:字符串, NR:数字, BL:布尔, JS:JSON, DT:日期]
+  @persistence(name='val')
+  @name(label='流程变量值')
+  value: string
 >

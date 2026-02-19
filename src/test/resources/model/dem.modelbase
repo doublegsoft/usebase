@@ -1,0 +1,112 @@
+@module(name='dem')
+
+@persistence(name='tn_dem_datast')
+@name(label='数据资产', plural='data_assets')
+data_asset<
+
+  @persistence(name='datastid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='datastcd')
+  @name(label='资产编码')
+  code: string(100),
+
+  @persistence(name='datastnm')
+  @name(label='资产名称')
+  name: string(100),
+
+  @persistence(name='tblnm')
+  @name(label='物理表名')
+  table_name: string(100),
+
+  @persistence(name='is_active')
+  is_active: boolean
+>
+
+@persistence(name='tn_dem_enpol')
+@name(label='权益策略', plural='entitlement_policies')
+entitlement_policy<
+
+  @persistence(name='enpolid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='enpolnm')
+  @name(label='策略名称')
+  name: string(100),
+
+  @persistence(name='prio')
+  @name(label='优先级')
+  priority: integer,
+
+  @persistence(name='rlcd')
+  @name(label='适用角色')
+  role_code: string(50),
+
+  @persistence(name='tgtastid')
+  @name(label='目标资产')
+  target_asset: &data_asset(id),
+
+  @persistence(name='rwscpdefid')
+  @name(label='行级范围')
+  row_scope: &row_scope_definition(id),
+
+  @persistence(name='colpfdefid')
+  @name(label='列级配置')
+  column_profile: &column_profile_definition(id)
+>
+
+// ==========================================
+// 3. 行级范围定义 (Row Scope Definition)
+// Defines "Which rows are visible?"
+// ==========================================
+@persistence(name='tn_dem_rwscpdef')
+@name(label='行级范围', plural='row_scope_definitions')
+row_scope_definition<
+
+  @persistence(name='rwscpdefid')
+  id!!: id,
+
+  @persistence(name='rwscpdefnm')
+  name: string(100),
+
+  @persistence(name='filttyp')
+  @name(label='过滤类型')
+  type: enum[
+    STATIC_EXPR:静态表达式,
+    DYNAMIC_VAR:动态变量,
+    CUSTOM_SQL:自定义SQL
+  ],
+
+  @persistence(name='expr')
+  @name(label='过滤表达式')
+  expression: text
+>
+
+// ==========================================
+// 4. 列级配置定义 (Column Profile Definition)
+// Defines "Which columns are hidden/masked?"
+// ==========================================
+@persistence(name='tn_dem_colpfdef')
+@name(label='列级配置', singular='col_profile', plural='col_profiles')
+column_profile_definition<
+
+  @persistence(name='colpfdefid')
+  id!!: string(32),
+
+  @persistence(name='colpfdefnm')
+  name: string(100),
+
+  @persistence(name='blklst')
+  @name(label='禁止访问列')
+  // Comma-separated list of columns to HIDE completely (return null)
+  // e.g., "password, secret_key"
+  hidden_columns: string(500),
+
+  @persistence(name='mskrul')
+  @name(label='脱敏规则配置')
+  // JSON configuration for partial masking.
+  // e.g., { "phone": "MASK_MIDDLE_4", "id_card": "MASK_LAST_4", "email": "MASK_DOMAIN" }
+  masking_rules: text
+>

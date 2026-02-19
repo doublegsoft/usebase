@@ -5,8 +5,8 @@ export PROJBASE_DATA_ROOT=/Users/christian/export/local/works/doublegsoft.io/pro
 export PROJBASE_JAR=/Users/christian/export/opt/projbase/protosys-plugin-projbase-4.5-shaded.jar
 export OUTPUT_ROOT=out/java
 
-export SPEC="bpe"
-export APPNAME=bpe
+export SPEC="aam"
+export APPNAME=aam
 export NAMESPACE=biz.doublegsoft
 export MOBELBASE_MODEL="src/test/resources/model/$SPEC.modelbase"
 export PROJECT_ROOT=$OUTPUT_ROOT/$SPEC
