@@ -10,10 +10,7 @@ package io.doublegsoft.usebase.modelbase;
 
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metabean.type.CollectionType;
-import com.doublegsoft.jcommons.metabean.type.CustomType;
-import com.doublegsoft.jcommons.metabean.type.ObjectType;
-import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
+import com.doublegsoft.jcommons.metabean.type.*;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 
@@ -169,6 +166,8 @@ public class ModelbaseWriter {
       writer.write("&" + ((CollectionType) type).getComponentType().getName() + "_info[]");
     } else if (type instanceof CustomType) {
       writer.write("&" + type.getName() + "_info(id)");
+    } else if (type instanceof DomainType) {
+      writer.write("string");
     }
   }
 

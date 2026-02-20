@@ -25,10 +25,9 @@ import java.util.List;
 
 public class CustomerCareAndBillingSpec extends SpecBase {
 
-  private static final String OUTPUT = "out/cc&b.usebase";
+  private static final String OUTPUT = "out/usebase/cc&b.modelbase";
 
   public static final String OUTPUT_DIR = "out/java/cc&b/src/main/java/biz/doublegsoft/ccnb/service";
-
 
   @BeforeClass
   public static void initialize() throws Exception {

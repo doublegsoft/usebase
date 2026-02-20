@@ -7,7 +7,9 @@ import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
+import io.doublegsoft.usebase.projection.ProjectionBuilder;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -15,11 +17,17 @@ import java.io.FileOutputStream;
 
 public class WorkflowManagementSpec extends SpecBase {
 
-  private static final String OUTPUT = "out/wfm.usebase";
+  private static final String OUTPUT = "out/usebase/wfm.modelbase";
 
   @BeforeClass
   public static void initialize() throws Exception {
     new FileOutputStream(OUTPUT).close();
+  }
+
+  @Before
+  public void test_gen_infos() throws Exception {
+    ModelDefinition dataModel = loadModel("wfm");
+    ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
   }
 
   /**

@@ -15,16 +15,38 @@ import io.doublegsoft.usebase.aggregate.ObjectRelationships;
 import io.doublegsoft.usebase.aggregate.Relationship;
 import io.doublegsoft.usebase.association.AssociationBuilder;
 import io.doublegsoft.usebase.association.AssociationChain;
+import io.doublegsoft.usebase.projection.ProjectionBuilder;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.FileOutputStream;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class IdentityAndAccessManagementSpec extends SpecBase {
 
-  private static final String OUTPUT = "out/iam.usebase";
+  private static final String OUTPUT = "out/usebase/iam.modelbase";
 
   public static final String OUTPUT_DIR = "out/java/iam/src/main/java/biz/doublegsoft/iam/service";
+
+  @BeforeClass
+  public static void initialize() throws Exception {
+    new FileOutputStream(OUTPUT).close();
+  }
+
+  @Before
+  public void test_gen_infos() throws Exception {
+    ModelDefinition dataModel = loadModel("iam");
+    ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
+
+//    ObjectDefinition customer = dataModel.findObjectByName("customer");
+//    ObjectDefinition customerInfo = projBuilder.build(customer);
+//
+//    printModelbaseExtensionByUsecase(OUTPUT, null, customerInfo);
+  }
 
   /**
    * 查询用户。
@@ -149,7 +171,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    * </ul>
    */
   @Test
-  public void test_login() throws Exception {
+  public void test_iam_login() throws Exception {
     ModelDefinition dataModel = loadModel("iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
@@ -185,7 +207,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     AssignmentDefinition assign = (AssignmentDefinition) stmt;
     Assert.assertEquals("encrypted_password", assign.getAssignee());
 
-    printModelbaseExtensionByUsecase(usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
         usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE,
