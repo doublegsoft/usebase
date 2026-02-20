@@ -62,7 +62,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     ObjectDefinition financialTransactionInfo = projBuilder.build(financialTransaction,
         new HashSet<>(Arrays.asList("bill", "account")));
 
-    printUsecaseForModelbase(OUTPUT, null, accountInfo, customerInfo, billInfo,
+    printModelbaseExtensionByUsecase(OUTPUT, null, accountInfo, customerInfo, billInfo,
         billSegmentInfo, financialTransactionInfo, serviceAgreementInfo, adjustmentInfo);
   }
 
@@ -109,7 +109,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
       System.out.println(objInChain.getName());
     }
 
-    printUsecaseForModelbase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
         usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE,
@@ -137,7 +137,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-    printUsecaseForModelbase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
         usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE,
@@ -160,7 +160,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-    printUsecaseForModelbase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
@@ -180,7 +180,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-    printUsecaseForModelbase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
     printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
@@ -271,7 +271,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
     for (ObjectDefinition objInChain : assocChain.getAssociatingObjects()) {
       System.out.println(objInChain.getName());
     }
-    printUsecaseForModelbase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
         usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE,

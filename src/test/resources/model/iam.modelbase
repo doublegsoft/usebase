@@ -104,6 +104,7 @@ permission<
 
 @persistence(name='tn_iam_usrrl')
 @name(label='用户角色', plural='user_roles')
+@value
 user_role<
 
   @persistence(name='usrid')
@@ -119,8 +120,9 @@ user_role<
   created_time = now: datetime
 >
 
+@value
 @persistence(name='tn_iam_role_permission')
-@name(label='角色权限', singular='role_permission', plural='role_permissions')
+@name(label='角色权限', plural='role_permissions')
 role_permission<
 
   @persistence(name='roleid')
@@ -136,25 +138,31 @@ role_permission<
   created_time = now: datetime
 >
 
-@persistence(name='tn_iam_policy')
-@name(label='策略', singular='policy', plural='policies')
+@persistence(name='tn_iam_pol')
+@name(label='策略', plural='policies')
 policy<
 
-  @persistence(name='policyid')
+  @persistence(name='polid')
   @name(label='策略标识')
   id!!: id,
 
-  @persistence(name='policynm')
+  @persistence(name='polnm')
   @name(label='策略名称')
   name: string(100),
 
-  @persistence(name='effect')
+  @persistence(name='eff')
   @name(label='效果')
   effect: enum[AL:允许, DN:拒绝],
 
-  @persistence(name='res')
-  @name(label='资源')
-  resource: string(255),
+  @persistence(name='restyp')
+  @name(label='资源类型')
+  @reference(name='resource', value='type')
+  resource_type: string(255),
+
+  @persistence(name='resid')
+  @name(label='资源标识')
+  @reference(name='resource', value='id')
+  resource_id: string(255),
 
   @persistence(name='act')
   @name(label='操作')
@@ -177,16 +185,16 @@ policy<
   created_time = now: datetime
 >
 
-@persistence(name='tn_iam_policy_user')
-@name(label='策略用户', singular='policy_user', plural='policy_users')
 @value
+@persistence(name='tv_iam_polusr')
+@name(label='策略用户', plural='policy_users')
 policy_user<
 
-  @persistence(name='policyid')
+  @persistence(name='polid')
   @name(label='策略')
   policy!!: &policy(id),
 
-  @persistence(name='userid')
+  @persistence(name='usrid')
   @name(label='用户')
   user!!: &user(id),
 
@@ -195,17 +203,17 @@ policy_user<
   created_time = now: datetime
 >
 
-@persistence(name='tn_iam_policy_role')
+@persistence(name='tv_iam_polrl')
 @name(label='策略角色', singular='policy_role', plural='policy_roles')
 policy_role<
 
-  @persistence(name='policyid')
+  @persistence(name='polid')
   @name(label='策略')
-  policy: &policy(id),
+  policy!!: &policy(id),
 
-  @persistence(name='roleid')
+  @persistence(name='rlid')
   @name(label='角色')
-  role: &role(id),
+  role!!: &role(id),
 
   @persistence(name='crttm')
   @name(label='创建时间')

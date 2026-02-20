@@ -1,9 +1,7 @@
 package io.doublegsoft.usebase.codegen;
 
-import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metamodel.AssignmentDefinition;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
@@ -113,7 +111,7 @@ public class WorkflowManagementSpec extends SpecBase {
 //    Assert.assertEquals("workflow_definition", wfactconnsArgsObj.getAttributes()[0]
 //        .getLabelledOptions("original").get("object"));
 
-    printUsecaseForModelbase(usecase);
+    printModelbaseExtensionByUsecase(usecase);
   }
 
   /**
@@ -159,7 +157,7 @@ public class WorkflowManagementSpec extends SpecBase {
     Assert.assertEquals(3, stmt2.getStatements().size());
     Assert.assertEquals(6, usecase.getStatements().size());
 
-    printUsecaseForModelbase(usecase);
+    printModelbaseExtensionByUsecase(usecase);
   }
 
   /**

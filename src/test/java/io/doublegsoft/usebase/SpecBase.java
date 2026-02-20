@@ -51,7 +51,7 @@ public class SpecBase {
     }
   }
 
-  protected void printUsecaseForModelbase(UsecaseDefinition usecase, ObjectDefinition... objs) throws IOException {
+  protected void printModelbaseExtensionByUsecase(UsecaseDefinition usecase, ObjectDefinition... objs) throws IOException {
     StringWriter sw = new StringWriter();
     ModelbaseWriter writer = new ModelbaseWriter(sw);
     writer.write(usecase.getParameterizedObject());
@@ -65,7 +65,7 @@ public class SpecBase {
     System.out.println(sw);
   }
 
-  protected void printUsecaseForModelbase(String filePath, UsecaseDefinition usecase, ObjectDefinition... objs) throws IOException {
+  protected void printModelbaseExtensionByUsecase(String filePath, UsecaseDefinition usecase, ObjectDefinition... objs) throws IOException {
     StringWriter sw = new StringWriter();
     ModelbaseWriter writer = new ModelbaseWriter(sw);
     if (usecase != null) {
@@ -91,7 +91,7 @@ public class SpecBase {
   protected void printJavaCodeForUsecase(String templateName, UsecaseDefinition usecase, ModelDefinition dataModel, String outputFile) throws IOException {
     StringWriter sw = new StringWriter();
     Map<String,Object> app = new HashMap<>();
-    app.put("name", "ccnb");
+    app.put("name", usecase.getModule());
     Map<String,Object> data = new HashMap<>();
     TemplateOutputWriter writer = new TemplateOutputWriter(sw,
         "../usebase-data",
