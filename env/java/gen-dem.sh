@@ -8,7 +8,7 @@ export OUTPUT_ROOT=out/java
 export SPEC="dem"
 export APPNAME=dem
 export NAMESPACE=biz.doublegsoft
-export MOBELBASE_MODEL="src/test/resources/model/$SPEC.modelbase"
+export MODELBASE_MODEL="src/test/resources/model/$SPEC.modelbase"
 export PROJECT_ROOT=$OUTPUT_ROOT/$SPEC
 ################################################################################
 ##                                                                            ##
@@ -23,7 +23,7 @@ do
 export TEMPLATE_ROOT=$MODELBASE_DATA_ROOT/java/$repo
 
 java -jar $MODELBASE_JAR \
---model=$MOBELBASE_MODEL \
+--model=$MODELBASE_MODEL \
 --template-root=$TEMPLATE_ROOT \
 --output-root=$PROJECT_ROOT \
 --license=env/LICENSE \
@@ -46,19 +46,19 @@ done
 
 ################################################################################
 ##                                                                            ##
-##                                 USEBASE JAVA                               ##
+##                    MODELBASE PROPAGATION BY USEBASE                        ##
 ##                                                                            ##
 ################################################################################
 REPOS=("java-dto@gfc-1.x")
 
-export MOBELBASE_MODEL=out/"$SPEC".usebase
+export MODELBASE_MODEL=out/usebase/"$SPEC".modelbase
 
 for repo in "${REPOS[@]}"
 do
 export TEMPLATE_ROOT=$USEBAS_DATA_ROOT/java/$repo
 
 java -jar $MODELBASE_JAR \
---model=$MOBELBASE_MODEL \
+--model=$MODELBASE_MODEL \
 --template-root=$TEMPLATE_ROOT \
 --output-root=$PROJECT_ROOT \
 --license=env/LICENSE \

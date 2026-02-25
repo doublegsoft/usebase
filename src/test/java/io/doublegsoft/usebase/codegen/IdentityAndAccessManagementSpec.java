@@ -42,10 +42,17 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("iam");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
-//    ObjectDefinition customer = dataModel.findObjectByName("customer");
-//    ObjectDefinition customerInfo = projBuilder.build(customer);
-//
-//    printModelbaseExtensionByUsecase(OUTPUT, null, customerInfo);
+    ObjectDefinition user = dataModel.findObjectByName("user");
+    ObjectDefinition userInfo = projBuilder.build(user);
+    ObjectDefinition permission = dataModel.findObjectByName("permission");
+    ObjectDefinition permissionInfo = projBuilder.build(permission);
+    ObjectDefinition role = dataModel.findObjectByName("role");
+    ObjectDefinition roleInfo = projBuilder.build(role);
+    ObjectDefinition policy = dataModel.findObjectByName("policy");
+    ObjectDefinition policyInfo = projBuilder.build(policy);
+
+    printModelbaseExtensionByUsecase(OUTPUT, null,
+        userInfo, permissionInfo, roleInfo, policyInfo);
   }
 
   /**
@@ -177,7 +184,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     String expr =
         "@login({user: username!}, password!, captcha!):{user} <> :token \n" +
         "|:| encrypted_password = @bcrypt(password) \n" +
-        "|:| user = {user}#(username, encrypted_password as password)!'用户名与密码错误！'\n" +
+        "|:| user = {user}#(username, encrypted_password)!'用户名与密码错误！'\n" +
         "|?| captcha != @get_captcha_from_session('captcha') !'验证码错误' \n" +
         "|@| @put_user_into_session(user) \n" +
         "|:| token = @generate_token(user) \n" +
@@ -218,19 +225,25 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    * 用户登出。
    */
   @Test
-  public void test_logout() throws Exception {
+  public void test_iam_logout() throws Exception {
     ModelDefinition dataModel = loadModel("iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
-        "@logout({user: id}) \n" +
-        "|@| @remove_user_from_session(#session, id) \n";
+        "@logout({user: user_id}) \n" +
+        "|@| @remove_user_from_session(#session, user_id) \n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("iam");
+
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("user_id", obj.getAttributes()[0].getName());
     obj = usecase.getReturnedObject();
     Assert.assertNull("没有返回值的定义才是正确的", obj);
 
-    printModelbaseExtensionByUsecase(usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   /**
