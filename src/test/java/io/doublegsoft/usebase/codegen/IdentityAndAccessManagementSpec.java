@@ -44,6 +44,8 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
 
     ObjectDefinition user = dataModel.findObjectByName("user");
     ObjectDefinition userInfo = projBuilder.build(user);
+    ObjectDefinition userRole = dataModel.findObjectByName("user_role");
+    ObjectDefinition userRoleInfo = projBuilder.build(userRole);
     ObjectDefinition permission = dataModel.findObjectByName("permission");
     ObjectDefinition permissionInfo = projBuilder.build(permission);
     ObjectDefinition role = dataModel.findObjectByName("role");
@@ -52,7 +54,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ObjectDefinition policyInfo = projBuilder.build(policy);
 
     printModelbaseExtensionByUsecase(OUTPUT, null,
-        userInfo, permissionInfo, roleInfo, policyInfo);
+        userInfo, userRoleInfo, permissionInfo, roleInfo, policyInfo);
   }
 
   /**
@@ -65,6 +67,8 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     String expr =
         "@find_users({user: username, email, status}, {role: name}):[{user: user_id, username, email} <> :role_count%count[{user_role}]%]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("iam");
+
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("username", obj.getAttributes()[0].getName());
     Assert.assertEquals("email", obj.getAttributes()[1].getName());
@@ -75,8 +79,13 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("username", ret.getAttributes()[1].getName());
     Assert.assertEquals("email", ret.getAttributes()[2].getName());
 
-    printModelbaseExtensionByUsecase(usecase);
-//    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   @Test
@@ -87,6 +96,8 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
         "@get_user({user: user_id, (username, email)}):" +
             "{user: user_id, username, email} <user_role> [role] <role_permission> [permission]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("iam");
+
     ObjectDefinition paramObj = usecase.getParameterizedObject();
     Assert.assertEquals("username", paramObj.getAttributes()[1].getName());
     Assert.assertEquals("email", paramObj.getAttributes()[2].getName());
@@ -98,9 +109,9 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
 
     AggregateBuilder builder = new AggregateBuilder(dataModel);
     AggregateRelationshipChain chain = builder.build(usecase.getReturnedObject());
-//    Assert.assertNotNull(chain.getRelationship("user_role", "role"));
-//    Assert.assertNotNull(chain.getRelationship("role_permission", "role"));
-//    Assert.assertNotNull(chain.getRelation("role_permission", "user_role"));
+    Assert.assertNotNull(chain.getRelationship("user_role", "role"));
+    Assert.assertNotNull(chain.getRelationship("role_permission", "role"));
+    Assert.assertNotNull(chain.getRelationship("role_permission", "permission"));
 
     AssociationChain assoc = new AssociationBuilder(dataModel).build(paramObj, retObj);
     usecase.setOption("relations", chain);
@@ -108,9 +119,13 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
       System.out.println(rel);
     }
 
-    List<ObjectRelationships> objRelsList = chain.build("user");
-//    printUsecaseForModelbase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   @Test
@@ -120,6 +135,8 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     String expr =
         "@save_user({user} <> roles[user_role]#(user, role)):{user: id}";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("iam");
+
     ParameterizedObjectDefinition paramObj = usecase.getParameterizedObject();
     Assert.assertEquals("$save_user", paramObj.getName());
 
@@ -131,6 +148,14 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
 
     ObjectDefinition ret = usecase.getReturnedObject();
     Assert.assertEquals("user_id", ret.getAttributes()[0].getName());
+
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   /**
@@ -144,10 +169,17 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
         "@disable_user({user: status = 'D', user_id!}):{user: id}\n" +
         "|=| {user: status = 'D'}#(user_id)\n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("iam");
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("status", obj.getAttributes()[0].getName());
-    printModelbaseExtensionByUsecase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
+
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   /**
@@ -161,10 +193,17 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
         "@enable_user({user: status = 'E', user_id!}):{user: id}" +
         "|=| {user: status = 'E'}#(user_id)\n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("iam");
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("status", obj.getAttributes()[0].getName());
-    printModelbaseExtensionByUsecase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
+
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   /**
@@ -180,7 +219,6 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
   @Test
   public void test_iam_login() throws Exception {
     ModelDefinition dataModel = loadModel("iam");
-    ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@login({user: username!}, password!, captcha!):{user} <> :token \n" +
         "|:| encrypted_password = @bcrypt(password) \n" +
@@ -215,6 +253,8 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("encrypted_password", assign.getAssignee());
 
     printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
         usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE,
@@ -227,7 +267,6 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
   @Test
   public void test_iam_logout() throws Exception {
     ModelDefinition dataModel = loadModel("iam");
-    ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@logout({user: user_id}) \n" +
         "|@| @remove_user_from_session(#session, user_id) \n";
@@ -240,6 +279,8 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertNull("没有返回值的定义才是正确的", obj);
 
     printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
         usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE,
@@ -252,50 +293,10 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    * 新添加人员的时候同时创建用户，
    * “#(national_id, person_name)”说明通过身份证号和人名控制重复录入，
    * “<person_id=user_id>”说明人员标识和用户标识构成一对一关系；
-   * 默认通过标识判断新增或者更新，同时保存日志（业务无关，系统相关）。
-   */
-  @Test
-  public void test_iam_save_person_user_roles() throws Exception {
-    ModelDefinition dataModel = loadModel("sms", "iam");
-    String expr =
-        "@save_person_and_user_with_roles({person}#(national_id, person_name) <person_id=user_id> {user} <user_role> [role])";
-//        "|+| {audit_log: name = person_name, audit_time = now, modifier_id = 'SYS'}";
-    Usebase usebase = new Usebase(dataModel);
-    UsecaseDefinition usecase = usebase.parse(expr).get(0);
-    printModelbaseExtensionByUsecase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
-//
-//    UsebaseAggregate agg = (UsebaseAggregate) usecase.getArguments().get(0).getValue();
-//    Assert.assertEquals("person", agg.getPrimaryObject().getName());
-//    Assert.assertEquals(2, agg.getObjects().size());
-//    Assert.assertEquals("person", agg.getObjects().get(0).getName());
-//    Assert.assertEquals("user", agg.getObjects().get(1).getName());
-//
-//    List<UsebaseArgument> args = agg.getObjects().get(0).getFilterArguments();
-//    Assert.assertEquals(2, args.size());
-//    Assert.assertEquals("national_id", args.get(0).getName());
-//    Assert.assertEquals("person_name", args.get(1).getName());
-
-//    UsebaseSave stmt0 = (UsebaseSave) usecase.getStatements().get(0);
-//    Assert.assertEquals("audit_log", stmt0.getTypeName());
-//    Assert.assertEquals("name", stmt0.getSelectedAttributes().get(0).getName());
-//    Assert.assertEquals("person_name", stmt0.getSelectedAttributes().get(0).getDefaultValue().getVariable());
-//    Assert.assertEquals("audit_time", stmt0.getSelectedAttributes().get(1).getName());
-//    Assert.assertEquals("now", stmt0.getSelectedAttributes().get(1).getDefaultValue().getKeyword());
-//    Assert.assertEquals("modifier_id", stmt0.getSelectedAttributes().get(2).getName());
-//    Assert.assertEquals("SYS", stmt0.getSelectedAttributes().get(2).getDefaultValue().getString());
-  }
-
-  /**
-   * 业务场景：
-   * <p>
-   * 新添加人员的时候同时创建用户，
-   * “#(national_id, person_name)”说明通过身份证号和人名控制重复录入，
-   * “<person_id=user_id>”说明人员标识和用户标识构成一对一关系；
    * 默认通过标识判断新增或者更新，在远程日志服务器上保存日志（业务无关，系统相关）。
    */
   @Test
-  public void test_iam_save_person_user_roles_and_remote_log() throws Exception {
+  public void test_iam_save_person_user_roles() throws Exception {
     ModelDefinition dataModel = loadModel("sms", "iam");
     String expr =
         "@save_user_with_roles({person}#(national_id!, person_name!) <person.id=user.id> {user} <user_role> [role]) \n" +
@@ -305,16 +306,15 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
         "|+| [user_role] \n";
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
-    ParameterizedObjectDefinition paramObj = usecase.getParameterizedObject();
+    usecase.setModule("iam");
 
-    printModelbaseExtensionByUsecase(usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
-//    printJavaCodeForUsecase("Service.java.ftl", usecase);
-//    UsebaseSave stmt0 = (UsebaseSave) usecase.getStatements().get(0);
-//    UsebaseRemote remote = stmt0.getRemote();
-//    Assert.assertEquals("http", remote.getScheme());
-//    Assert.assertEquals("log.storage.com", remote.getHost());
-//    Assert.assertEquals("/audit", remote.getUri());
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
 }

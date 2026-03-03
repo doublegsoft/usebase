@@ -8,7 +8,7 @@ export OUTPUT_ROOT=out/java
 export SPEC="iam"
 export APPNAME=iam
 export NAMESPACE=biz.doublegsoft
-export MODELBASE_MODEL="src/test/resources/model/$SPEC.modelbase"
+export MODELBASE_MODEL="src/test/resources/model/$SPEC.modelbase;src/test/resources/model/sms.modelbase"
 export PROJECT_ROOT=$OUTPUT_ROOT/$SPEC
 ################################################################################
 ##                                                                            ##
@@ -16,7 +16,7 @@ export PROJECT_ROOT=$OUTPUT_ROOT/$SPEC
 ##                                                                            ##
 ################################################################################
 REPOS=("java-poco@gfc-1.x" "java-util@gfc-1.x" "java-dto@gfc-1.x" "java-orm@mybatis-1.x" "java-orm@rdbms-1.x" \
-"java-tx@spring-1.x")
+"java-tx@spring-1.x" "java-runtime@springboot-1.x")
 
 for repo in "${REPOS[@]}"
 do

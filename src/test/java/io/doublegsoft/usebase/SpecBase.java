@@ -22,6 +22,8 @@ public class SpecBase {
 
   public static final String TEMPLATE_ROOT = "java-tx@spring-1.x/src/main/java/$namespace$/$app$";
 
+  public static final String TEMPLATE_SERVICE_HELPER = TEMPLATE_ROOT + "/service/helper/$usecase$Helper.java.ftl";
+
   public static final String TEMPLATE_SERVICE_IMPL = TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl";
 
   public static final String TEMPLATE_SERVICE = TEMPLATE_ROOT + "/service/$usecase$Service.java.ftl";
@@ -103,9 +105,10 @@ public class SpecBase {
     data.put("aggregateBuilder", new AggregateBuilder(dataModel));
     data.put("associationBuilder", new AssociationBuilder(dataModel));
     writer.write(templateName, usecase, data);
-    System.out.println(sw);
+
     if (outputFile != null) {
       File f = new File(outputFile);
+      f.getParentFile().mkdirs();
       f.createNewFile();
       Files.write(f.toPath(), sw.toString().getBytes(StandardCharsets.UTF_8));
     }

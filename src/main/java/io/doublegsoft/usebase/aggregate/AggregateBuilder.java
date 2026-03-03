@@ -27,32 +27,69 @@ public class AggregateBuilder {
     // 返回对象的定义中全部的对象函数
     for (AttributeDefinition attr : aggregateObj.getAttributes()) {
       String origObjName = attr.getLabelledOption("original", "object");
-      String conjObjName = attr.getLabelledOption("conjunction", "expression");
+      String conjExpr = attr.getLabelledOption("conjunction", "expression");
+      String conjObjName = attr.getLabelledOption("conjunction", "object");
+      if (conjObjName == null) {
+        conjObjName = attr.getLabelledOption("conjunction", "name");
+      }
+      ObjectDefinition collObj = null;
       if (attr.getType().isCollection()) {
         CollectionType collType = (CollectionType) attr.getType();
-        ObjectDefinition obj = dataModel.findObjectByName(collType.getComponentType().getName());
+        collObj = dataModel.findObjectByName(collType.getComponentType().getName());
         if (!objsInRet.containsKey(origObjName)) {
-          retVal.addObject(obj, true);
+          retVal.addObject(collObj, true);
         }
-        objsInRet.put(obj.getName(), obj);
+        objsInRet.put(collObj.getName(), collObj);
       }
       // TODO
       String conjSourceObjName = attr.getLabelledOption("conjunction", "source_object");
       String conjSourceAttrName = attr.getLabelledOption("conjunction", "source_attribute");
       String conjTargetObjName = attr.getLabelledOption("conjunction", "target_object");
       String conjTargetAttrName = attr.getLabelledOption("conjunction", "target_attribute");
+
       if (origObjName != null && !objsInRet.containsKey(origObjName)) {
         ObjectDefinition obj = dataModel.findObjectByName(origObjName);
         if (!objsInRet.containsKey(origObjName)) {
           retVal.addObject(obj);
         }
         objsInRet.put(origObjName, obj);
-      } else if (conjObjName != null && !objsInRet.containsKey(conjObjName)) {
-        ObjectDefinition obj = dataModel.findObjectByName(conjObjName);
+      } else if (conjExpr != null && !objsInRet.containsKey(conjExpr)) {
+        ObjectDefinition obj = dataModel.findObjectByName(conjExpr);
         if (!objsInRet.containsKey(origObjName)) {
           retVal.addObject(obj, true);
         }
-        objsInRet.put(conjObjName, obj);
+        objsInRet.put(conjExpr, obj);
+      } else if (conjObjName != null) {
+        ObjectDefinition conjObj = dataModel.findObjectByName(conjObjName);
+        ObjectDefinition targetObj = dataModel.findObjectByName(conjTargetObjName);
+        objsInRet.put(conjObjName, conjObj);
+        if (collObj != null) {
+          Relationship rel = new Relationship();
+          for (AttributeDefinition conjObjAttr : conjObj.getAttributes()) {
+            if (conjObjAttr.getType().getName().equals(targetObj.getName())) {
+              rel.setSourceAttribute(conjObjAttr);
+              break;
+            }
+          }
+          rel.setSourceAttribute(conjObj.getIdentifiableAttribute());
+          rel.setSourceObject(conjObj);
+          rel.setTargetObject(targetObj);
+          rel.setTargetAttribute(targetObj.getIdentifiableAttribute());
+          retVal.addRelationship(rel);
+
+          rel = new Relationship();
+          for (AttributeDefinition conjObjAttr : conjObj.getAttributes()) {
+            if (conjObjAttr.getType().getName().equals(collObj.getName())) {
+              rel.setSourceAttribute(conjObjAttr);
+              break;
+            }
+          }
+          rel.setSourceAttribute(conjObj.getIdentifiableAttribute());
+          rel.setSourceObject(conjObj);
+          rel.setTargetObject(collObj);
+          rel.setTargetAttribute(collObj.getIdentifiableAttribute());
+          retVal.addRelationship(rel);
+        }
       }
     }
     // 构建相互关联的数据

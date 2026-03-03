@@ -143,7 +143,8 @@ public class AggregateRelationshipChain {
       return;
     }
     objRels = new ObjectRelationships(rootObj);
-    objRels.setArray(objectArrays.get(rootObj.getName()));
+    Boolean flag = objectArrays.get(rootObj.getName());
+    objRels.setArray(flag != null && flag);
     processedObjs.put(rootObj.getName(), objRels);
     returnedObjs.add(objRels);
     for (Relationship rel : orderingRelationships) {

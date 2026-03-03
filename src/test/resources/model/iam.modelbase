@@ -41,7 +41,7 @@ role<
 
   @persistence(name='rlid')
   @name(label='角色标识')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='rlnm')
   @name(label='角色名称')
@@ -73,7 +73,7 @@ permission<
 
   @persistence(name='permid')
   @name(label='权限标识')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='restyp')
   @name(label='资源类型')
@@ -144,7 +144,7 @@ policy<
 
   @persistence(name='polid')
   @name(label='策略标识')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='polnm')
   @name(label='策略名称')

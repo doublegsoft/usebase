@@ -135,7 +135,7 @@ public class ConditionsParser extends UsebaseParser {
           }
         }
       }
-      if (leftSideAttrInDataObj == null && rightSideAttrInDataObj == null) {
+      if ((leftSideAttrInDataObj == null && rightSideAttrInDataObj == null)) {
         // 说明不需要构建关联关系
         continue;
       }
@@ -148,10 +148,24 @@ public class ConditionsParser extends UsebaseParser {
       for (AttributeDefinition attr : presentGroupingAttributes) {
         String origObjName = attr.getLabelledOption("original", "object");
         Map<String, String> conjunction = new HashMap<>();
-        if (i == 0) {
-          attr.setLabelledOptions("conjunction", conjunction);
-        } else {
-          attr.setLabelledOptions("conjunction_" + i, conjunction);
+        if (conjObj != null) {
+          conjunction.put("object", conjObj.getName());
+          conjunction.put("name", conjObj.getName());
+          for (AttributeDefinition conjObjAttr : conjObj.getAttributes()) {
+            for (int j = previousGroupingAttributes.size() - 1; j >= 0; j--) {
+              AttributeDefinition prevConjAttr = previousGroupingAttributes.get(j);
+              String prevOrigObjName = prevConjAttr.getLabelledOption("original", "object");
+              if (prevOrigObjName.equals(conjObjAttr.getType().getName())) {
+                conjunction.put("target_object", prevOrigObjName);
+                break;
+              }
+            }
+          }
+          if (i == 0) {
+            attr.setLabelledOptions("conjunction", conjunction);
+          } else {
+            attr.setLabelledOptions("conjunction_" + i, conjunction);
+          }
         }
         assemble(origObjName, conjunction, leftSideAttrInDataObj, rightSideAttrInDataObj, leftObjectAlias, rightObjectAlias, rightSide);
       }
