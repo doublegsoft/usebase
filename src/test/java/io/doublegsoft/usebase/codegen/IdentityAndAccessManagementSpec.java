@@ -296,7 +296,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    * 默认通过标识判断新增或者更新，在远程日志服务器上保存日志（业务无关，系统相关）。
    */
   @Test
-  public void test_iam_save_person_user_roles() throws Exception {
+  public void save_user_with_roles() throws Exception {
     ModelDefinition dataModel = loadModel("sms", "iam");
     String expr =
         "@save_user_with_roles({person}#(national_id!, person_name!) <person.id=user.id> {user} <user_role> [role]) \n" +
