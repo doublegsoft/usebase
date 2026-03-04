@@ -9,7 +9,7 @@ workflow_definition<
 
   @name(label='工作流定义标识')
   @persistence(name='wfdefid', query='=')
-  id!!: id,
+  id!!: long,
 
   @name(label='工作流定义编码')
   @persistence(name='wfdefcd', query='%%')
@@ -65,7 +65,7 @@ workflow_definition<
 workflow_action<
 
   @persistence(name='wfactid', text='工作流操作标识', query='=')
-  id!!: id,
+  id!!: long,
 
   @name(label='工作流操作名称')
   @persistence(name='wfactnm', query='%%')
@@ -189,7 +189,7 @@ workflow_instance<
 
   @name(label='工作流实例标识')
   @persistence(name='wfinstid', query='=;[]workflow_instance_ids')
-  id!!: id,
+  id!!: long,
 
   @name(label='工作流实例名称')
   @persistence(name='wfinstnm', query='%%')
@@ -249,7 +249,7 @@ workflow_instance<
 workflow_action_instance<
 
   @persistence(name='wfactinstid', text='工作流实例操作标识')
-  id!!: id,
+  id!!: long,
 
   @name(label='工作流操作标识')
   @persistence(name='wfinstid')
@@ -386,7 +386,7 @@ workflow_action_connection_instance<
 workflow_action_todo<
 
   @persistence(name='wfacttdid', text='工作流代办事项标识')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='wfinstid', text='工作流实例标识')
   workflow_instance: &workflow_instance(id),
@@ -425,7 +425,7 @@ workflow_action_todo<
 workflow_action_journal<
 
   @persistence(name='wfactjnlid', text='工作流日志标识')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='wfinstid', text='工作流实例')
   workflow_instance!: &workflow_instance(id),

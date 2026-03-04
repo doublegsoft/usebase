@@ -263,8 +263,9 @@ public final class ModelbaseHelper {
       if (attr.getType().isCustom()) {
         // FIXME: HARD-CODED LONG
         return new PrimitiveType("Long");
+      } else {
+        return (PrimitiveType) attr.getType();
       }
-      return getPrimitiveType(attr);
     } else if (attr.getType().isCustom()) {
       ObjectDefinition obj = attr.getParent();
       return getPrimitiveType(obj.getIdentifiableAttribute());

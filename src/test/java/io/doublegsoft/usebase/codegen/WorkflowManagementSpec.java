@@ -19,6 +19,8 @@ public class WorkflowManagementSpec extends SpecBase {
 
   private static final String OUTPUT = "out/usebase/wfm.modelbase";
 
+  public static final String OUTPUT_DIR = "out/java/usebase-env-java/src/main/java/biz/doublegsoft/wfm/service";
+
   @BeforeClass
   public static void initialize() throws Exception {
     new FileOutputStream(OUTPUT).close();
@@ -28,6 +30,28 @@ public class WorkflowManagementSpec extends SpecBase {
   public void test_gen_infos() throws Exception {
     ModelDefinition dataModel = loadModel("wfm");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
+
+    ObjectDefinition workflowDefinition = dataModel.findObjectByName("workflow_definition");
+    ObjectDefinition workflowDefinitionInfo = projBuilder.build(workflowDefinition);
+    ObjectDefinition workflowAction = dataModel.findObjectByName("workflow_action");
+    ObjectDefinition workflowActionInfo = projBuilder.build(workflowAction);
+    ObjectDefinition workflowActionConnection = dataModel.findObjectByName("workflow_action_connection");
+    ObjectDefinition workflowActionConnectionInfo = projBuilder.build(workflowActionConnection);
+    ObjectDefinition workflowInstance = dataModel.findObjectByName("workflow_instance");
+    ObjectDefinition workflowInstanceInfo = projBuilder.build(workflowInstance);
+    ObjectDefinition workflowActionInstance = dataModel.findObjectByName("workflow_action_instance");
+    ObjectDefinition workflowActionInstanceInfo = projBuilder.build(workflowActionInstance);
+    ObjectDefinition workflowActionConnectionInstance = dataModel.findObjectByName("workflow_action_connection_instance");
+    ObjectDefinition workflowActionConnectionInstanceInfo = projBuilder.build(workflowActionConnectionInstance);
+    ObjectDefinition workflowActionTodo = dataModel.findObjectByName("workflow_action_todo");
+    ObjectDefinition workflowActionTodoInfo = projBuilder.build(workflowActionTodo);
+    ObjectDefinition workflowActionJournal = dataModel.findObjectByName("workflow_action_journal");
+    ObjectDefinition workflowActionJournalInfo = projBuilder.build(workflowActionJournal);
+
+    printModelbaseExtensionByUsecase(OUTPUT, null,
+        workflowDefinitionInfo, workflowActionInfo, workflowActionConnectionInfo,
+        workflowInstanceInfo, workflowActionInstanceInfo, workflowActionConnectionInstanceInfo,
+        workflowActionTodoInfo, workflowActionConnectionInfo);
   }
 
   /**
@@ -41,14 +65,15 @@ public class WorkflowManagementSpec extends SpecBase {
             "|&| wfdef = {workflow_definition}#({workflow_definition: id}) \n" +
             "|&| wfactconns = [workflow_action_connection]#({workflow_definition: id}) \n" +
             "|&| wfacts = [workflow_action]#(wfactconns) \n" +
-            "|=| wfinst = {workflow_instance: status = 'ST'}&wfdef \n" +
-            "|=| wfactconninsts = [{workflow_action_connection_instance}]&wfactconns \n" +
-            "|=| wfactInsts = [{workflow_action_instance}]&wfacts \n" +
+            "|:| wfinst = {workflow_instance: status = 'ST'}&wfdef \n" +
+            "|:| wfactconninsts = [{workflow_action_connection_instance}]&wfactconns \n" +
+            "|:| wfactInsts = [{workflow_action_instance}]&wfacts \n" +
             "|+| wfinst \n" +
             "|+| wfactconninsts \n" +
-            "|+| wfactInsts \n" +
+            "|+| wfactInsts\n" +
             "|=| {workflow_action_instance: status = 'CP'}#(workflow_action) // TODO: 更新当前的操作实例状态（未实现）\n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("wfm");
     checkOriginalIndexAndObject(usecase.getReturnedObject());
 
     ObjectDefinition paramObj = usecase.getParameterizedObject();
@@ -119,7 +144,13 @@ public class WorkflowManagementSpec extends SpecBase {
 //    Assert.assertEquals("workflow_definition", wfactconnsArgsObj.getAttributes()[0]
 //        .getLabelledOptions("original").get("object"));
 
-    printModelbaseExtensionByUsecase(usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   /**
@@ -149,6 +180,7 @@ public class WorkflowManagementSpec extends SpecBase {
         "    // 记录工作流日志 \n" +
         "|+| {workflow_action_journal: previous_action = workflow_action_instance, status = wf_act_curr_inst.status}&wf_act_curr_inst \n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("wfm");
     checkOriginalIndexAndObject(usecase.getReturnedObject());
 
     ObjectDefinition obj = usecase.getParameterizedObject();
@@ -209,6 +241,7 @@ public class WorkflowManagementSpec extends SpecBase {
             "  |:| {workflow_action_instance: status = 'PENDING'}#(wf_act_curr_inst.id) \n" +
             "  |+| {workflow_action_journal: previous_action = workflow_action_instance, status=wf_act_curr_inst.status}&wf_act_curr_inst \n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("wfm");
     checkOriginalIndexAndObject(usecase.getReturnedObject());
     Assert.assertEquals(6, usecase.getStatements().size());
   }
