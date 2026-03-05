@@ -9,6 +9,7 @@ import com.doublegsoft.jcommons.metabean.type.DomainType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
+import com.doublegsoft.jcommons.metamodel.VariableDefinition;
 import com.doublegsoft.jcommons.utils.Strings;
 import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 
@@ -97,7 +98,9 @@ public class ArgumentsParser extends UsebaseParser {
    * @param ctx   usebase 参数上下文（ANTLR 解析树）
    * @param owner 当前正在被修饰的对象定义
    */
-  public void decorate(io.doublegsoft.usebase.UsebaseParser.Usebase_argumentsContext ctx, ObjectDefinition owner) {
+  public void decorate(io.doublegsoft.usebase.UsebaseParser.Usebase_argumentsContext ctx,
+                       ObjectDefinition owner,
+                       UsecaseDefinition usecase) {
     if (ctx == null) {
       return;
     }
@@ -105,6 +108,7 @@ public class ArgumentsParser extends UsebaseParser {
     for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext ctxArg : ctx.usebase_argument()) {
       if (ctxArg.anybase_identifier() != null) {
         String id = ctxArg.anybase_identifier().getText();
+        // strs[0]可以是object name，也可以是variable name
         String[] strs = id.split("\\.");
         if (strs.length <= 2) {
           String objName = strs[0];
@@ -164,6 +168,33 @@ public class ArgumentsParser extends UsebaseParser {
           }
           owner.addLabelledOption("unique", "object", attr.getParent().getName());
           owner.addLabelledOption("unique", "attribute", attr.getName());
+          if (ctxArg.value != null && ctxArg.value.anybase_number() != null) {
+            owner.addLabelledOption("unique", "type", "number");
+            owner.addLabelledOption("unique", "value", ctxArg.value.getText());
+          } else if (ctxArg.value != null && ctxArg.value.anybase_string() != null) {
+            owner.addLabelledOption("unique", "type", "string");
+            owner.addLabelledOption("unique", "value", ctxArg.value.getText());
+          } else if (ctxArg.value != null && ctxArg.value.anybase_identifier() != null) {
+            String[] valStrs = ctxArg.value.anybase_identifier().getText().split("\\.");
+            if (valStrs.length == 1) {
+              VariableDefinition var = usecase.getVariable(valStrs[0]);
+              if (var == null) {
+                var = usecase.getVariable(attr.getType().getName() + "_" + valStrs[0]);
+              }
+              if (var == null) {
+                var = usecase.getVariable(attr.getParent().getName() + "_" + valStrs[0]);
+              }
+              owner.addLabelledOption("unique", "type", "");
+              owner.addLabelledOption("unique", "value", var.getName());
+            } else {
+              VariableDefinition var = usecase.getVariable(valStrs[0]);
+              owner.addLabelledOption("unique", "type", var.getName());
+              owner.addLabelledOption("unique", "value", valStrs[1]);
+            }
+          } else {
+            owner.addLabelledOption("unique", "type", attr.getParent().getName());
+            owner.addLabelledOption("unique", "value", attr.getName());
+          }
         } else {
           throw new IllegalArgumentException("'" + getOriginalText(ctxArg) + "' is not an attribute expression");
         }

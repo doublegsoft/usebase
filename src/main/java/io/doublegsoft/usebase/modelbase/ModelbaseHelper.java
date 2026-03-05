@@ -361,6 +361,22 @@ public final class ModelbaseHelper {
     return attrInDataModel.getName();
   }
 
+  public static String getAttributeName(AttributeDefinition attr) {
+    String origObjName = attr.getLabelledOption("original", "object");
+    if (!Strings.isEmpty(origObjName)) {
+      if ("id".equals(attr.getName())) {
+        return origObjName + "_" + attr.getName();
+      } else if ("code".equals(attr.getName())) {
+        return origObjName + "_" + attr.getName();
+      } else if ("type".equals(attr.getName())) {
+        return origObjName + "_" + attr.getName();
+      } else if ("name".equals(attr.getName())) {
+        return origObjName + "_" + attr.getName();
+      }
+    }
+    return attr.getName();
+  }
+
   public static AttributeDefinition findAttributeByNames(String objName, String attrName, ModelDefinition dataModel) {
     AttributeDefinition retVal = dataModel.findAttributeByNames(objName, attrName);
     if (retVal == null) {

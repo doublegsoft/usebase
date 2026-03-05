@@ -90,6 +90,9 @@ public class Usebase {
         ObjectDefinition obj = dataModel.findObjectByName(paramObj.getLabelledOption("original", "object"));
         retVal.registerVariable(obj.getName(), obj);
       }
+      for (AttributeDefinition paramObjAttr : paramObj.getAttributes()) {
+        retVal.registerVariable(paramObjAttr.getName(), paramObjAttr.getType());
+      }
     }
     if (ctx.usebase_return() != null) {
       io.doublegsoft.usebase.UsebaseParser.Usebase_aggregateContext ctxAgg =
@@ -202,6 +205,17 @@ public class Usebase {
       retVal.setItemVar(ctxExpr.item.getText());
       retVal.setArrayVar(ctxExpr.array.getText());
       retVal.setOriginalText(getOriginalText(ctxExpr));
+      return retVal;
+    } else if (ctx.usebase_operator().getText().endsWith(".|")) {
+      ReturnDefinition retVal = new ReturnDefinition();
+      retVal.setOperator(ctx.usebase_operator().getText());
+      if (ctxExpr.var != null) {
+        retVal.addVariable(ctxExpr.var.getText());
+      } else if (ctxExpr.anybase_identifier().size() > 1) {
+        for (io.doublegsoft.usebase.UsebaseParser.Anybase_identifierContext ctxId : ctxExpr.anybase_identifier()) {
+          retVal.addVariable(ctxId.getText());
+        }
+      }
       return retVal;
     } else if (ctx.usebase_operator().getText().endsWith("+|") || ctx.usebase_operator().getText().endsWith("=|")) {
       // SAVE: CREATE AND UPDATE

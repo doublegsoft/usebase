@@ -41,7 +41,7 @@ public class AggregateParser extends UsebaseParser {
           }
         } else if (ctxObj.usebase_arguments() != null) {
           // 对象查询参数
-          getArgumentsParser().decorate(ctxObj.usebase_arguments(), owner);
+          getArgumentsParser().decorate(ctxObj.usebase_arguments(), owner, usecase);
         } else {
           // 只有对象，为指定（选择）任何对象中的属性
           ObjectDefinition objInDataModel = dataModel.findObjectByName(ctxObj.name.getText());
@@ -109,7 +109,7 @@ public class AggregateParser extends UsebaseParser {
           getArrayParser().assemble(ctxArr, owner, usecase);
         }
         if (ctxArr.usebase_arguments() != null) {
-          getArgumentsParser().decorate(ctxArr.usebase_arguments(), owner);
+          getArgumentsParser().decorate(ctxArr.usebase_arguments(), owner, usecase);
         }
         if (ctxData.usebase_array().msg != null) {
           String msg = ctxData.usebase_array().msg.getText();
