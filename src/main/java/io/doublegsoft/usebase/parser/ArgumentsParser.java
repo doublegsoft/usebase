@@ -184,14 +184,17 @@ public class ArgumentsParser extends UsebaseParser {
               if (var == null) {
                 var = usecase.getVariable(attr.getParent().getName() + "_" + valStrs[0]);
               }
+              // 直接变量，没有父级对象
               owner.addLabelledOption("unique", "type", "");
               owner.addLabelledOption("unique", "value", var.getName());
             } else {
+              // 间接变量，父级对象是变量
               VariableDefinition var = usecase.getVariable(valStrs[0]);
               owner.addLabelledOption("unique", "type", var.getName());
               owner.addLabelledOption("unique", "value", valStrs[1]);
             }
           } else {
+            // 直接属性引用
             owner.addLabelledOption("unique", "type", attr.getParent().getName());
             owner.addLabelledOption("unique", "value", attr.getName());
           }
