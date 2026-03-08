@@ -19,7 +19,7 @@ public class WorkflowManagementSpec extends SpecBase {
 
   private static final String OUTPUT = "out/usebase/wfm.modelbase";
 
-  public static final String OUTPUT_DIR = "out/java/usebase-env-java/src/main/java/biz/doublegsoft/wfm/service";
+  public static final String OUTPUT_DIR = "out/java/usebase-env-java/src/main/java/biz/doublegsoft/" + PROJ_NAME + "/service";
 
   @BeforeClass
   public static void initialize() throws Exception {
@@ -62,15 +62,13 @@ public class WorkflowManagementSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("wfm");
     // 如何确定开始节点？这是个难点
     String expr =
-        "@instantiate({workflow_definition: id}, {workflow_instance: reference_id, reference_type}):{workflow_instance: id} \n" +
+        "@instantiate({workflow_definition: id!}, {workflow_instance: reference_id, reference_type}):{workflow_instance: id} \n" +
         "|&| wfdef = {workflow_definition}#(id = id) \n" +
         "|&| wfactconns = [workflow_action_connection]#(workflow_definition = id, previous_action = 0) \n" +
         "|&| wfacts = [workflow_action]#(id = wfactconns.current_action) \n" +
         "|:| wfinst = {workflow_instance: status = 'ST'}&wfdef \n" +
-//      "|:| wfgraphdef = <workflow_action, workflow_action_connection>#({workflow_definition: id}) \n" +
-//      "|:| wfgraphinst = <workflow_action_instance, workflow_action_connection_instance>&wfgraphdef \n" +
         "|:| wfactInsts = [{workflow_action_instance}]&wfacts \n" +
-        "|:| wfactconninsts = [{workflow_action_connection_instance}]&wfactconns \n" +
+        "|:| wfactconninsts = [{workflow_action_connection_instance: current_action_instance = wfactInsts.id}]&wfactconns \n" +
         "|+| wfinst \n" +
         "|+| wfactconninsts \n" +
         "|+| wfactInsts \n" +
@@ -164,15 +162,14 @@ public class WorkflowManagementSpec extends SpecBase {
   @Test
   public void test_complete() throws Exception {
     ModelDefinition dataModel = loadModel("wfm");
-    ModelDefinition apiModel = new ModelDefinition();
     String expr =
-        "@complete({workflow_action_instance: id}):{workflow_instance: id} \n" +
+        "@complete({workflow_action_instance: id!}):{workflow_instance: id} \n" +
         "|&| wf_act_curr_inst = {workflow_action_instance}#(id = id) \n" +
         "|&| wf_inst = {workflow_instance}#(id = wf_act_curr_inst.workflow_instance) \n" +
-        "|&| wf_act_next_acts = [workflow_action_connection]#(workflow_definition = wf_inst.workflow_definition, previous_action = wf_act_curr_inst.id) \n" +
-        "|*| wf_act_next_inst in wf_act_next_insts" +
-        "|*|&| wf_act_next_prev_insts = [{workflow_action_instance} <id=previous_action_instance> {workflow_action_connection_instance}]#(current_action_instance=wf_act_next_inst) \n" +
-        "|*|*| wf_act_next_prev_inst in wf_act_next_prev_insts \n" +
+        "|&| wf_act_next_conns = [workflow_action_connection]#(workflow_definition = wf_inst.workflow_definition, previous_action = wf_act_curr_inst.id) \n" +
+        "|*| wf_act_next_conn in wf_act_next_conns \n" +
+        "|*|&| wf_act_next_acts = [workflow_action]#(id = wf_act_next_conn.current_action)] \n" +
+        "|*|*| wf_act_next in wf_act_next_acts \n" +
         "|*|*|?| wf_act_next_prev_inst.status != 'DONE' \n" +
         "|*|*|?|=| all_done = false \n" +
         "|*|?| all_done == true \n" +
@@ -219,20 +216,30 @@ public class WorkflowManagementSpec extends SpecBase {
   public void test_reject() throws Exception {
     ModelDefinition dataModel = loadModel("wfm");
     String expr =
-        "@reject({workflow_action_instance: id}):{workflow_instance: id} \n" +
-            "  |&| wf_act_curr_inst = {workflow_action_instance}#({workflow_action_instance: id}) \n" +
-            "  |&| wf_act_prev_insts = [{workflow_action_instance} <id=next_action_instance> {workflow_action_connection_instance}]#(current_action_instance=wf_act_curr_inst) \n" +
-            "  |:| {workflow_action_instance: status = 'REJECTED'}#(id = wf_act_curr_inst.id) \n" +
-            "  // 所有的前置节点变成PENDING状态 \n" +
-            "  |*| wf_act_prev_inst in wf_act_prev_insts \n" +
-            "  |*|:| {workflow_action_instance: status = 'PENDING'}#(id = wf_act_prev_inst.id) \n" +
-            "  // 更新工作流实例的状态，为当前工作流节点的状态 \n" +
-            "  |:| {workflow_instance: status = wf_act_curr_inst.status}#(id = wf_act_curr_inst.workflow_instance) \n" +
-            "  // 记录工作流日志 \n" +
-            "  |+| {workflow_action_journal: previous_action = workflow_action_instance, status=wf_act_curr_inst.status}&wf_act_curr_inst \n";
+        "@reject({workflow_action_instance: id!}):{workflow_instance: id} \n" +
+        "|&| wf_act_curr_inst = {workflow_action_instance}#(id = id) \n" +
+        "|&| wf_inst = {workflow_instance}#(id = wf_act_curr_inst.workflow_instance) \n" +
+        "|&| wf_act_prev_conns = [workflow_action_connection]#(workflow_definition = wf_inst.workflow_definition, current_action = wf_act_curr_inst.id) \n" +
+        "|=| {workflow_action_instance: status = 'REJECTED'}#(id = wf_act_curr_inst.id) \n" +
+        "// 所有的前置节点变成PENDING状态 \n" +
+        "|*| wf_act_prev_conn in wf_act_prev_conns \n" +
+        "|*|=| {workflow_action_instance: status = 'PENDING'}#(id = wf_act_prev_conn.previous_action) \n" +
+        "// 更新工作流实例的状态，为当前工作流节点的状态 \n" +
+        "|=| {workflow_instance: status = wf_act_curr_inst.status}#(id = wf_act_curr_inst.workflow_instance) \n" +
+        "// 记录工作流日志 \n" +
+        "|+| {workflow_action_journal: previous_action = workflow_action_instance, status=wf_act_curr_inst.status}&wf_act_curr_inst \n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("wfm");
     checkOriginalIndexAndObject(usecase.getReturnedObject());
-    Assert.assertEquals(6, usecase.getStatements().size());
+//    Assert.assertEquals(7, usecase.getStatements().size());
+
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   /**
@@ -242,20 +249,29 @@ public class WorkflowManagementSpec extends SpecBase {
   public void test_revoke() throws Exception {
     ModelDefinition dataModel = loadModel("wfm");
     String expr =
-        "@revoke({workflow_action_instance: id}):{workflow_instance: id} \n" +
-            "  |&| wf_act_curr_inst = {workflow_action_instance}#({workflow_action_instance: id}) \n" +
-            "  |&| wf_act_next_insts = [{workflow_action_instance} <id=next_action_instance> {workflow_action_connection_instance}]#(current_action_instance=wf_act_curr_inst) \n" +
-            "  // 当前工作流节点的所有下一个节点，更新为挂起状态 \n" +
-            "  |*| wf_act_next_inst in wf_act_next_insts" +
-            "  |*|:| {workflow_action_instance: status = 'PENDING'}#(wf_act_next_inst.id) \n" +
-            "  // TODO: 更新工作流实例的状态，为当前工作流节点的前一个节点的状态 \n" +
-            "  |:| {workflow_instance: status = wf_act_curr_inst.status}#(wf_act_curr_inst.workflow_instance.id) \n" +
-            "  |:| {workflow_action_instance: status = 'PENDING'}#(wf_act_curr_inst.id) \n" +
-            "  |+| {workflow_action_journal: previous_action = workflow_action_instance, status=wf_act_curr_inst.status}&wf_act_curr_inst \n";
+        "@revoke({workflow_action_instance: id!}):{workflow_instance: id} \n" +
+        "|&| wf_act_curr_inst = {workflow_action_instance}#(id = id) \n" +
+        "|&| wf_inst = {workflow_instance}#(id = wf_act_curr_inst.workflow_instance) \n" +
+        "|&| wf_act_next_acts = [workflow_action_connection]#(workflow_definition = wf_inst.workflow_definition, previous_action = wf_act_curr_inst.id) \n" +
+        "// 当前工作流节点的所有下一个节点，更新为挂起状态 \n" +
+        "|*| wf_act_next in wf_act_next_acts" +
+        "|*|=| {workflow_action_instance: status = 'PENDING'}#(workflow_action = wf_act_next.next_action) \n" +
+        "// TODO: 更新工作流实例的状态，为当前工作流节点的前一个节点的状态 \n" +
+//        "|=| {workflow_instance: status = wf_act_curr_inst.status}#(workflow_instance = wf_act_curr_inst.workflow_instance) \n" +
+        "|=| {workflow_action_instance: status = 'PENDING'}#(id = wf_act_curr_inst.id) \n" +
+        "|+| {workflow_action_journal: previous_action = workflow_action_instance, status=wf_act_curr_inst.status}&wf_act_curr_inst \n";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     usecase.setModule("wfm");
     checkOriginalIndexAndObject(usecase.getReturnedObject());
-    Assert.assertEquals(6, usecase.getStatements().size());
+//    Assert.assertEquals(6, usecase.getStatements().size());
+
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
 }

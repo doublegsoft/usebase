@@ -6,7 +6,7 @@ export PROJBASE_JAR=/Users/christian/export/opt/projbase/protosys-plugin-projbas
 export OUTPUT_ROOT=out/java
 
 export SPEC="iam"
-export APPNAME=iam
+export APPNAME=demo4j
 export NAMESPACE=biz.doublegsoft
 export MODELBASE_MODEL="src/test/resources/model/$SPEC.modelbase;src/test/resources/model/sms.modelbase"
 export PROJECT_ROOT=$OUTPUT_ROOT/usebase-env-java

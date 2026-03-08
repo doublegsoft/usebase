@@ -30,7 +30,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
 
   private static final String OUTPUT = "out/usebase/iam.modelbase";
 
-  public static final String OUTPUT_DIR = "out/java/usebase-env-java/src/main/java/biz/doublegsoft/iam/service";
+  public static final String OUTPUT_DIR = "out/java/usebase-env-java/src/main/java/biz/doublegsoft/" + PROJ_NAME + "/service";
 
   @BeforeClass
   public static void initialize() throws Exception {

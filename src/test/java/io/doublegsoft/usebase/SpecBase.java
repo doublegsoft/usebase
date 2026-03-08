@@ -20,6 +20,8 @@ import java.util.Map;
 
 public class SpecBase {
 
+  public static final String PROJ_NAME = "demo4j";
+
   public static final String TEMPLATE_ROOT = "java-tx@spring-1.x/src/main/java/$namespace$/$app$";
 
   public static final String TEMPLATE_SERVICE_HELPER = TEMPLATE_ROOT + "/service/helper/$usecase$Helper.java.ftl";
@@ -93,7 +95,7 @@ public class SpecBase {
   protected void printJavaCodeForUsecase(String templateName, UsecaseDefinition usecase, ModelDefinition dataModel, String outputFile) throws IOException {
     StringWriter sw = new StringWriter();
     Map<String,Object> app = new HashMap<>();
-    app.put("name", usecase.getModule());
+    app.put("name", PROJ_NAME);
     Map<String,Object> data = new HashMap<>();
     TemplateOutputWriter writer = new TemplateOutputWriter(sw,
         "../usebase-data",

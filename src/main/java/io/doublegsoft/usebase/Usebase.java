@@ -66,7 +66,9 @@ public class Usebase {
     io.doublegsoft.usebase.UsebaseParser parser = new io.doublegsoft.usebase.UsebaseParser(tokens);
     io.doublegsoft.usebase.UsebaseParser.Usebase_programContext ctxProgram = parser.usebase_program();
     for (io.doublegsoft.usebase.UsebaseParser.Usebase_usecaseContext ctxUsecase : ctxProgram.usebase_usecase()) {
-      retVal.add(createUsecase(ctxUsecase));
+      UsecaseDefinition usecase = createUsecase(ctxUsecase);
+      usecase.setDataModel(dataModel);
+      retVal.add(usecase);
     }
     return retVal;
   }
@@ -204,6 +206,10 @@ public class Usebase {
       retVal.setOperator(ctx.usebase_operator().getText());
       retVal.setItemVar(ctxExpr.item.getText());
       retVal.setArrayVar(ctxExpr.array.getText());
+      VariableDefinition var = usecase.getVariable(ctxExpr.array.getText());
+      retVal.setComponentType((ObjectDefinition) var.getComponentType());
+      retVal.registerVariable(retVal.getItemVar(), var.getComponentType());
+      usecase.registerVariable(retVal.getItemVar(), var.getComponentType());
       retVal.setOriginalText(getOriginalText(ctxExpr));
       return retVal;
     } else if (ctx.usebase_operator().getText().endsWith(".|")) {
