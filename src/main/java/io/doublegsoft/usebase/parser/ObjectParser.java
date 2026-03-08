@@ -29,8 +29,7 @@ public class ObjectParser extends UsebaseParser {
       }
     }
     if (ctx.usebase_source() != null) {
-      ModelbaseHelper.addOptions(owner, "original", "source",
-          ctx.usebase_source().anybase_identifier().getText());
+      getSourceParser().assemble(ctx.usebase_source(), usecase, owner);
     }
     if (ctx.usebase_arguments() != null) {
       getArgumentsParser().assembleOrCreateAndThen(ctx.usebase_arguments(), true, owner, usecase);

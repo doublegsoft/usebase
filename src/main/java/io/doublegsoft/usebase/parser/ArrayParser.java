@@ -52,8 +52,7 @@ public class ArrayParser extends UsebaseParser {
               }
             }
             if (ctx.usebase_source() != null) {
-              ModelbaseHelper.addOptions(owner, "original", "source",
-                  ctx.usebase_source().anybase_identifier().getText());
+              getSourceParser().assemble(ctx.usebase_source(), usecase, owner);
             }
             if (ctx.usebase_arguments() != null) {
               String objName = "$";
@@ -98,8 +97,7 @@ public class ArrayParser extends UsebaseParser {
       }
       attrType.setComponentType(new CustomType(objInDataModel.getName(), objInDataModel));
       if (ctx.usebase_source() != null) {
-        ModelbaseHelper.addOptions(owner, "original", "source",
-            ctx.usebase_source().anybase_identifier().getText());
+        getSourceParser().assemble(ctx.usebase_source(), usecase, owner);
       }
       if (ctx.usebase_arguments() != null) {
         getArgumentsParser().assembleOrCreateAndThen(ctx.usebase_arguments(), owner, usecase);

@@ -27,6 +27,8 @@ public abstract class UsebaseParser {
 
   private ValueParser valueParser;
 
+  private SourceParser sourceParser;
+
   public UsebaseParser(ModelDefinition dataModel) {
     this.dataModel = dataModel;
   }
@@ -135,6 +137,13 @@ public abstract class UsebaseParser {
       valueParser = new ValueParser(dataModel);
     }
     return valueParser;
+  }
+
+  protected SourceParser getSourceParser() {
+    if (sourceParser == null) {
+      sourceParser = new SourceParser(dataModel);
+    }
+    return sourceParser;
   }
 
   public static String getOriginalText(ParserRuleContext ctx) {

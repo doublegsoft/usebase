@@ -68,7 +68,7 @@ public class WorkflowManagementSpec extends SpecBase {
         "|&| wfacts = [workflow_action]#(id = wfactconns.current_action) \n" +
         "|:| wfinst = {workflow_instance: status = 'ST'}&wfdef \n" +
         "|:| wfactInsts = [{workflow_action_instance}]&wfacts \n" +
-        "|:| wfactconninsts = [{workflow_action_connection_instance: current_action_instance = wfactInsts.id}]&wfactconns \n" +
+        "|:| wfactconninsts = [{workflow_action_connection_instance: current_action_instance = wfactInsts.id}]&wfactconns <current_action = workflow_action> wfactInsts \n" +
         "|+| wfinst \n" +
         "|+| wfactconninsts \n" +
         "|+| wfactInsts \n" +

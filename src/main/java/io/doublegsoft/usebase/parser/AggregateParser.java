@@ -57,8 +57,7 @@ public class AggregateParser extends UsebaseParser {
           }
         }
         if (ctxData.usebase_object().usebase_source() != null) {
-          ModelbaseHelper.addOptions(owner, "original", "source",
-              ctxData.usebase_object().usebase_source().anybase_identifier().getText());
+          getSourceParser().assemble(ctxData.usebase_object().usebase_source(), usecase, owner);
         }
         if (ctxData.usebase_object().usebase_arguments() != null) {
           getArgumentsParser().assembleOrCreateAndThen(ctxData.usebase_object().usebase_arguments(), owner, usecase);

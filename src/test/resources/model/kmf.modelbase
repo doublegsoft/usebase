@@ -5,7 +5,7 @@ knowledge<
 
   @persistence(name='kwnlid')
   @name(label='标识')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='kwnlnm')
   @name(label='名称')
@@ -57,7 +57,7 @@ knowledge_category<
 
   @persistence(name='kwnlcatid')
   @name(label='知识类别标识')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='kwnlcatnm')
   @name(label='知识类别名称')
@@ -110,7 +110,7 @@ knowledge_tag<
 
   @persistence(name='kwnltgid')
   @name(label='知识标签标识')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='kwnltgnm')
   @name(label='知识标签名称')
@@ -155,7 +155,7 @@ knowledge_entry<
 
   @persistence(name='knwlentid')
   @name(label='知识ID')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='knwlid')
   @name(label='知识')
@@ -251,7 +251,7 @@ knowledge_entry_meta<
 knowledge_entry_type<
   @persistence(name='knwlenttypid')
   @name(label='标识')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='knwlenttypnm')
   @name(label='名称')
@@ -285,7 +285,7 @@ knowledge_entry_type<
 knowledge_tag<
   @persistence(name='knwltgid')
   @name(label='标识')
-  id!!: id,
+  id!!: long,
 
   @persistence(name='knwltgnm')
   @name(label='名称')
@@ -321,7 +321,7 @@ knowledge_tag<
 @persistence(name='tn_kmf_entry_tag')
 @name(label='知识标签关联')
 @value
-kwnowledge_entry_tag<
+knowledge_entry_tag<
   @persistence(name='entryid')
   @name(label='知识')
   entry!!: &knowledge_entry(id),

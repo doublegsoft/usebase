@@ -5,7 +5,7 @@ import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Aggregate {
+public class TabularArray {
 
   private String mainVariable;
 
