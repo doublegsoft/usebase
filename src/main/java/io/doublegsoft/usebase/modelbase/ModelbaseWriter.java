@@ -129,7 +129,10 @@ public class ModelbaseWriter {
       origObj4Obj = attr.getParent().getLabelledOptions("original").get("object");
     }
     writer.write("  ");
-    if ("id".equals(attr.getName()) || "name".equals(attr.getName())) {
+    if ("id".equals(attr.getName()) ||
+        "name".equals(attr.getName())  ||
+        "type".equals(attr.getName()) ||
+        "code".equals(attr.getName())) {
       if (origObj4Attr != null) {
         writer.write(origObj4Attr + "_" + attr.getName());
       } else if (origObj4Obj != null) {
@@ -143,6 +146,12 @@ public class ModelbaseWriter {
         writer.write(origObj4Obj + "_" + attr.getName());
       } else {
         writer.write(attr.getName());
+      }
+    } else if (attr.getType().isCustom()) {
+      if (attr.getType().getName().equals(attr.getName())) {
+        writer.write(attr.getName() +  "_id");
+      } else {
+        throw new UnsupportedOperationException("还没有支持");
       }
     } else {
       writer.write(attr.getName());
@@ -161,11 +170,11 @@ public class ModelbaseWriter {
     if (type == null) {
       writer.write("string");
     } else if (type instanceof PrimitiveType) {
-      writer.write(type.getName());
+      writer.write(type.getName().toLowerCase());
     } else if (type instanceof CollectionType) {
       writer.write("&" + ((CollectionType) type).getComponentType().getName() + "_info[]");
     } else if (type instanceof CustomType) {
-      writer.write("&" + type.getName() + "_info(id)");
+      writer.write("long");
     } else if (type instanceof DomainType) {
       writer.write("string");
     }

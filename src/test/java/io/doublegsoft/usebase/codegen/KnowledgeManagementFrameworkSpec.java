@@ -20,6 +20,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class KnowledgeManagementFrameworkSpec extends SpecBase {
 
@@ -38,23 +40,12 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
     ModelDefinition dataModel = loadModel("kmf");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
-    ObjectDefinition workflowDefinition = dataModel.findObjectByName("knowledge");
-    ObjectDefinition workflowDefinitionInfo = projBuilder.build(workflowDefinition);
-    ObjectDefinition workflowAction = dataModel.findObjectByName("knowledge_category");
-    ObjectDefinition workflowActionInfo = projBuilder.build(workflowAction);
-    ObjectDefinition workflowActionConnection = dataModel.findObjectByName("knowledge_tag");
-    ObjectDefinition workflowActionConnectionInfo = projBuilder.build(workflowActionConnection);
-    ObjectDefinition workflowInstance = dataModel.findObjectByName("knowledge_entry");
-    ObjectDefinition workflowInstanceInfo = projBuilder.build(workflowInstance);
-    ObjectDefinition workflowActionInstance = dataModel.findObjectByName("knowledge_entry_type");
-    ObjectDefinition workflowActionInstanceInfo = projBuilder.build(workflowActionInstance);
-    ObjectDefinition workflowActionConnectionInstance = dataModel.findObjectByName("knowledge_entry_tag");
-    ObjectDefinition workflowActionConnectionInstanceInfo = projBuilder.build(workflowActionConnectionInstance);
-
-    printModelbaseExtensionByUsecase(OUTPUT, null,
-        workflowDefinitionInfo, workflowActionInfo, workflowActionConnectionInfo,
-        workflowInstanceInfo, workflowActionInstanceInfo, workflowActionConnectionInstanceInfo,
-        workflowActionConnectionInfo);
+    List<ObjectDefinition> infos = new ArrayList<>();
+    for (ObjectDefinition obj : dataModel.getObjects()) {
+      ObjectDefinition objInfo = projBuilder.build(obj);
+      infos.add(objInfo);
+    }
+    printModelbaseExtensionByUsecase(OUTPUT, null, infos.toArray(new ObjectDefinition[0]));
   }
 
   /**

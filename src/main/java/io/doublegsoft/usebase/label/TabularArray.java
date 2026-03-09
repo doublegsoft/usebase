@@ -54,6 +54,31 @@ public class TabularArray {
   }
 
   /**
+   * 收集当前对象（可能是一个查询或过滤器）所涉及的全部变量名。
+   *
+   * <p>返回的列表顺序如下：
+   * <ol>
+   *   <li>首先放入 {@code mainVariable} —— 代表“主变量”。</li>
+   *   <li>随后遍历所有 {@link CompoundCondition} → {@link JoinCondition}，
+   *       将每个非空的右侧变量（{@code cond.getRightVariable()}）加入列表。</li>
+   * </ol>
+   *
+   * @return 包含主变量以及所有右侧变量的 {@link List}&lt;String&gt;，顺序保持遍历顺序。
+   */
+  public List<String> getVariables() {
+    List<String> retVal = new ArrayList<>();
+    retVal.add(mainVariable);
+    for (CompoundCondition compound : compoundConditions) {
+      for (JoinCondition cond : compound.getJoinConditions()) {
+        if (cond.getRightVariable() != null) {
+          retVal.add(cond.getRightVariable());
+        }
+      }
+    }
+    return retVal;
+  }
+
+  /**
    * Returns the {@link ObjectDefinition} that corresponds to the supplied
    * {@code objName}.
    *
@@ -134,5 +159,9 @@ public class TabularArray {
 
   public List<CompoundCondition> getCompoundConditions() {
     return compoundConditions;
+  }
+
+  public boolean hasMoreArrays() {
+    return !compoundConditions.isEmpty();
   }
 }

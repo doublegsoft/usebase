@@ -1,5 +1,6 @@
 package io.doublegsoft.usebase.parser;
 
+import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
@@ -8,6 +9,8 @@ import io.doublegsoft.usebase.label.CompoundCondition;
 import io.doublegsoft.usebase.label.JoinCondition;
 import io.doublegsoft.usebase.label.TabularArray;
 import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
+
+import java.util.List;
 
 public class SourceParser extends UsebaseParser {
 
@@ -29,13 +32,36 @@ public class SourceParser extends UsebaseParser {
         String rightVarName = ctx.anybase_id(i).getText();
         VariableDefinition rightVar = usecase.getVariable(rightVarName);
         String leftExpr = ctxCond.anybase_identifier().getText();
+        ObjectDefinition leftObj = findLeftObject(leftExpr, tabularArray);
+        AttributeDefinition leftAttr = leftObj.getAttribute(leftExpr);
+
         String rightExpr = ctxCond.anybase_value().anybase_identifier().getText();
+        ObjectDefinition rightObj = (ObjectDefinition) rightVar.getComponentType();
+        AttributeDefinition rightAttr = rightObj.getAttribute(rightExpr);
         CompoundCondition compCond = new CompoundCondition();
         JoinCondition joinCond = new JoinCondition();
-        joinCond.setRightObject((ObjectDefinition) rightVar.getComponentType());
+        joinCond.setLeftObject(leftObj);
+        joinCond.setLeftAttribute(leftAttr);
+        joinCond.setRightObject(rightObj);
+        joinCond.setRightAttribute(rightAttr);
+        joinCond.setRightVariable(rightVarName);
         compCond.getJoinConditions().add(joinCond);
+        tabularArray.getCompoundConditions().add(compCond);
+      }
+      owner.setLabelledData("tabular_array", tabularArray);
+    }
+  }
+
+  private ObjectDefinition findLeftObject(String leftExpr, TabularArray tabularArray) {
+    List<ObjectDefinition> leftObjs = tabularArray.getObjects();
+    for (ObjectDefinition leftObj : leftObjs) {
+      for (AttributeDefinition attr : leftObj.getAttributes()) {
+        if (attr.getName().equals(leftExpr)) {
+          return leftObj;
+        }
       }
     }
+    return null;
   }
 
 }

@@ -280,44 +280,6 @@ knowledge_entry_type<
   last_modified_time: now
 >
 
-@persistence(name='tn_kmf_knwltg')
-@name(label='标签')
-knowledge_tag<
-  @persistence(name='knwltgid')
-  @name(label='标识')
-  id!!: long,
-
-  @persistence(name='knwltgnm')
-  @name(label='名称')
-  name!+: string(40),
-
-  @persistence(name='descr')
-  @name(label='说明')
-  description: string(400),
-
-  @persistence(name='sta')
-  @name(label='状态')
-  state: state,
-
-  @persistence(name='modid')
-  @name(label='修改者标识')
-  @reference(value='id', name='modifier')
-  modifier_id: string(64),
-
-  @persistence(name='modtyp')
-  @name(label='修改者类型')
-  @reference(value='type', name='modifier')
-  modifier_type: string(64),
-
-  @persistence(name='crttm')
-  @name(label='创建时间')
-  created_time = now: datetime,
-
-  @persistence(name='lmt')
-  @name(label='最后更新时间')
-  last_modified_time: now
->
-
 @persistence(name='tn_kmf_entry_tag')
 @name(label='知识标签关联')
 @value
