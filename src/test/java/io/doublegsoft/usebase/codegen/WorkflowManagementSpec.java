@@ -100,6 +100,7 @@ public class WorkflowManagementSpec extends SpecBase {
         wfinstObj.getLabelledOption("original", "object"));
     Assert.assertEquals("被赋值的变量的实际数据来源来自wfdef", "wfdef", wfinstObj.getLabelledOptions("original").get("source"));
 
+    // assign.value.arrayValue.attributes[0].value = wfactInsts.id
     assign = (AssignmentDefinition) usecase.getStatements().get(5);
     Assert.assertEquals("被赋值的变量名为wfactconninsts", "wfactconninsts", assign.getAssignee());
     ObjectDefinition wfactconninstsObj = assign.getValue().getArrayValue();
