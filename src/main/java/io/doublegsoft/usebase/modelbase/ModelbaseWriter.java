@@ -151,7 +151,8 @@ public class ModelbaseWriter {
       if (attr.getType().getName().equals(attr.getName())) {
         writer.write(attr.getName() +  "_id");
       } else {
-        throw new UnsupportedOperationException("还没有支持");
+        writer.write(attr.getName());
+//        throw new UnsupportedOperationException("还没有支持");
       }
     } else {
       writer.write(attr.getName());

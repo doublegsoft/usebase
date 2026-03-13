@@ -24,7 +24,7 @@ public class ValueParser extends UsebaseParser {
       value.setString(str.substring(1, str.length() - 1));
     } else if (ctx.anybase_identifier() != null) {
       String str = ctx.anybase_identifier().getText();
-      if ("now".equals(str)) {
+      if ("now".equals(str) || "null".equals(str)) {
         value.setKeyword(str);
       } else if ("true".equals(str) || "false".equals(str)){
         value.setBool(str);
@@ -104,6 +104,8 @@ public class ValueParser extends UsebaseParser {
     } else if (ctx.anybase_identifier() != null) {
       String str = ctx.anybase_identifier().getText();
       if ("now".equals(str)) {
+        value.setKeyword(str);
+      } else if ("null".equals(str)) {
         value.setKeyword(str);
       } else {
         value.setVariable(ctx.anybase_identifier().getText());

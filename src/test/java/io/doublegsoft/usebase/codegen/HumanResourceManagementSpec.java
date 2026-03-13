@@ -7,15 +7,45 @@
 package io.doublegsoft.usebase.codegen;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
+import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
+import io.doublegsoft.usebase.projection.ProjectionBuilder;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 public class HumanResourceManagementSpec extends SpecBase {
+
+  private static final String OUTPUT = "out/usebase/hrm.modelbase";
+
+  public static final String OUTPUT_DIR = "out/java/usebase-env-java/src/main/java/biz/doublegsoft/" + PROJ_NAME + "/service";
+
+  @BeforeClass
+  public static void initialize() throws Exception {
+    new FileOutputStream(OUTPUT).close();
+  }
+
+  @Before
+  public void test_gen_infos() throws Exception {
+    ModelDefinition dataModel = loadModel("hrm", "sms");
+    ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
+
+    List<ObjectDefinition> infos = new ArrayList<>();
+    for (ObjectDefinition obj : dataModel.getObjects()) {
+      ObjectDefinition objInfo = projBuilder.build(obj);
+      infos.add(objInfo);
+    }
+    printModelbaseExtensionByUsecase(OUTPUT, null, infos.toArray(new ObjectDefinition[0]));
+  }
 
   /**
    * 业务场景：
@@ -29,7 +59,7 @@ public class HumanResourceManagementSpec extends SpecBase {
    */
   @Test
   public void test_hrm_hire_employee() throws Exception {
-    ModelDefinition dataModel = loadModel("hrm");
+    ModelDefinition dataModel = loadModel("hrm", "sms");
     String expr =
         "@hire_employee({employee}) \n" +
         "|&| existing = {employee}#({employee: id}) \n" +
@@ -54,7 +84,7 @@ public class HumanResourceManagementSpec extends SpecBase {
    */
   @Test
   public void test_hrm_leave_company() throws Exception {
-    ModelDefinition dataModel = loadModel("hrm");
+    ModelDefinition dataModel = loadModel("hrm", "sms");
     String expr =
         "@leave_company({employee}) \n" +
         "|+| {employee: state = 'D'}#(employee)!'员工不存在' \n" +
@@ -77,30 +107,54 @@ public class HumanResourceManagementSpec extends SpecBase {
    */
   @Test
   public void test_hrm_punch_in() throws Exception {
-    ModelDefinition dataModel = loadModel("hrm");
+    ModelDefinition dataModel = loadModel("hrm", "sms");
     String expr =
         "@punch_in({employee: id}) \n" +
-        "|+| {attendance: check_in_time = now, employee = id}#(id)!'员工不存在' \n";
+        "|:| emp = {employee}#(id = employee_id)!'员工不存在' \n" +
+        "|:| attended = {attendance}#(employee_id = employee_id, work_date = now) \n" +
+        "|?| attended == null \n" +
+        "|?|+| {attendance: check_in_time = now, work_date = now, employee = employee_id} \n";
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
     ParameterizedObjectDefinition paramObj = usecase.getParameterizedObject();
     Assert.assertEquals("employee", paramObj.getLabelledOptions("original").get("object"));
     Assert.assertEquals(1, paramObj.getAttributes().length);
     Assert.assertEquals("employee_id", paramObj.getAttributes()[0].getName());
+
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   @Test
   public void test_hrm_punch_out() throws Exception {
-    ModelDefinition dataModel = loadModel("hrm");
+    ModelDefinition dataModel = loadModel("hrm", "sms");
     String expr =
-        "@punch_out({employee: id}) \n" +
-        "|+| {attendance: check_out_time = now, employee = id}#(id)!'员工不存在' \n";
+        "@punch_out({employee: employee_id}) \n" +
+        "|:| emp = {employee}#(id = employee_id)!'员工不存在'" +
+        "|:| attended = {attendance}#(employee_id = employee_id, work_date = now) \n" +
+        "|?| attended == null \n" +
+        "|?|+| {attendance: check_out_time = now, work_date = now, employee = employee_id} \n" +
+        "|?| attended != null \n" +
+        "|?|=| {attendance: check_out_time = now}#(id = attended.id) \n";
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
     ParameterizedObjectDefinition paramObj = usecase.getParameterizedObject();
     Assert.assertEquals("employee", paramObj.getLabelledOptions("original").get("object"));
     Assert.assertEquals(1, paramObj.getAttributes().length);
     Assert.assertEquals("employee_id", paramObj.getAttributes()[0].getName());
+
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
 }

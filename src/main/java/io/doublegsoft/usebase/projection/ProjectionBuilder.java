@@ -91,9 +91,17 @@ public class ProjectionBuilder {
       if (owner.getAttribute(attrname) == null) {
         ModelbaseHelper.cloneAttribute(attrname, attr, owner);
       }
-      retVal.add(attr);
+      boolean existing = false;
+      for (AttributeDefinition existingAttr : retVal) {
+        if (attr.getName().equals(existingAttr.getName())) {
+          existing = true;
+          break;
+        }
+      }
+      if (!existing) {
+        retVal.add(attr);
+      }
     }
-    // 第二，引用属性
     for (AttributeDefinition attr : obj.getAttributes()) {
       if (!attr.getType().isCustom()) {
         continue;
@@ -107,6 +115,8 @@ public class ProjectionBuilder {
         attrname = attrname + "_id";
       } else if (attrname.startsWith(refObj.getName() + "_")) {
         attrname = attrname + "_id";
+      } else if (attr.isIdentifiable() && "id".equals(attrname)) {
+        attrname = attr.getType().getName() + "_id";
       }
       if (owner.getAttribute(attrname) == null) {
         AttributeDefinition cloningAttr = ModelbaseHelper.cloneAttribute(attrname, attr, owner);
@@ -114,7 +124,18 @@ public class ProjectionBuilder {
         cloningAttr.setType(primType);
       }
       List<AttributeDefinition> attrs = build(attr, refObj, exclusions, inclusions,level + 1, owner);
-      retVal.addAll(attrs);
+      for (AttributeDefinition refObjAttr : attrs) {
+        boolean existing = false;
+        for (AttributeDefinition existingAttr : retVal) {
+          if (refObjAttr.getName().equals(existingAttr.getName())) {
+            existing = true;
+            break;
+          }
+        }
+        if (!existing) {
+          retVal.add(refObjAttr);
+        }
+      }
     }
     return retVal;
   }

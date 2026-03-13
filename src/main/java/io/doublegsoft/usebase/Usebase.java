@@ -237,6 +237,13 @@ public class Usebase {
         if (retVal.getVariable() == null) {
           retVal.setVariable(saveObj.getName());
         }
+        if (ctxExpr.usebase_object().usebase_operator_hash() != null) {
+          argumentsParser.assembleOrCreateAndThen(ctxExpr.usebase_object().usebase_arguments(), true, saveObj, usecase);
+        }
+        if (ctxExpr.usebase_object().msg != null) {
+          String error = ctxExpr.usebase_object().msg.getText();
+          retVal.setError(error);
+        }
         retVal.setSaveObject(saveObj);
       } else if (ctxExpr.var != null) {
         String var = ctxExpr.var.getText();
