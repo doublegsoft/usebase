@@ -36,7 +36,7 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
   }
 
   @Before
-  public void test_gen_infos() throws Exception {
+  public void test_kmf_gen_infos() throws Exception {
     ModelDefinition dataModel = loadModel("kmf");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
@@ -52,7 +52,7 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
    * 保存知识。
    */
   @Test
-  public void test_save_knowledge() throws Exception {
+  public void test_kmf_save_knowledge() throws Exception {
     ModelDefinition dataModel = loadModel("kmf");
     String expr =
         "@save_knowledge({knowledge}):{knowledge: id}";
@@ -78,7 +78,7 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
    * 保存知识条目。
    */
   @Test
-  public void test_save_knowledge_entry() throws Exception {
+  public void test_kmf_save_knowledge_entry() throws Exception {
     ModelDefinition dataModel = loadModel("kmf");
     String expr =
         "@save_knowledge_entry({knowledge_entry: knowledge!, title!}):{knowledge_entry: id}";
@@ -103,4 +103,38 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
     printJavaCodeForUsecase(TEMPLATE_SERVICE,
         usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
+
+//  @Test
+//  public void test_kmf_submit_feedback() throws Exception {
+//    ModelDefinition dataModel = loadModel("kmf");
+//    String expr =
+//        "@submit_feedback({article: article_id!, title!}):{feedback: id} \n" +
+//        "|:| art = {article}#(id = article_id) !'文章不存在' \n" +
+//        "|?| assert(score >= 1 AND score <= 5) !'评分必须在1到5之间' \n" +
+//        "|:| past_fb = {feedback}#(article = article_id, user = user_id) \n" +
+//        "|?| assert(past_fb == null) !error '您已经评价过该文章' \n" +
+//        "|+| {feedback: article = article_id, user = user_id, score = score, comment = comment} \n" +
+//        "|?| score <= 2 \n" +
+//        "|?|:| ";
+//    UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+//    ObjectDefinition objArg = usecase.getParameterizedObject();
+//    Assert.assertEquals("knowledge_entry",
+//        objArg.getLabelledOptions("original").get("object"));
+//    Assert.assertFalse("知识选项不能为空",
+//        objArg.getAttributes()[0].getConstraint().isNullable());
+//    Assert.assertFalse("标题不能为空",
+//        objArg.getAttributes()[1].getConstraint().isNullable());
+//
+//    ObjectDefinition ret = usecase.getReturnedObject();
+//    Assert.assertEquals("knowledge_entry", ret.getAttributes()[0].getLabelledOptions("original").get("object"));
+//    Assert.assertEquals("knowledge_entry_id", ret.getAttributes()[0].getName());
+//
+//    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+//        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+//        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+//        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+//  }
 }

@@ -178,6 +178,10 @@ public class Usebase {
         }
       }
       retVal.setOriginalText(getOriginalText(ctxComp));
+      if (ctxComp.msg != null) {
+        String err = ctxComp.msg.getText();
+        retVal.setError(err.substring(1, err.length() - 1));
+      }
       return retVal;
     } else if (ctxExpr.usebase_assignment() != null) {
       io.doublegsoft.usebase.UsebaseParser.Usebase_assignmentContext ctxAssign = ctxExpr.usebase_assignment();

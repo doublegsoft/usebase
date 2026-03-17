@@ -1,0 +1,220 @@
+@module(name='customer_relations')
+
+// ==========================================
+// 1. 销售线索 (Sales Lead)
+// ==========================================
+@persistence(name='tn_sls_lead')
+@name(label='销售线索', singular='sales_lead', plural='sales_leads')
+sales_lead <
+  @persistence(name='leadid')
+  @name(label='线索标识')
+  id!!: long,
+
+  @persistence(name='leadnm')
+  @name(label='姓名')
+  name: string(100),
+
+  @persistence(name='compnm')
+  @name(label='公司名称')
+  company: string(200),
+
+  @persistence(name='mob')
+  @name(label='手机号')
+  mobile: string(50),
+
+  @persistence(name='src')
+  @name(label='线索来源')
+  source: enum[
+    WEBSITE:官网注册,
+    EVENT:展会活动,
+    COLDCALL:陌拜,
+    REFERRAL:客户推荐
+  ],
+
+  @persistence(name='sta')
+  @name(label='线索状态')
+  state: enum[
+    NEW:新分配,
+    CONTACTING:跟进中,
+    QUALIFIED:已转换,
+    JUNK:无效线索
+  ],
+
+  @persistence(name='ownid')
+  @name(label='负责人(归属销售)')
+  owner: string(64),
+
+  @persistence(name='modid') @name(label='修改者标识') modifier_id: string(64),
+  @persistence(name='crttm') @name(label='创建时间') created_time = now: datetime,
+  @persistence(name='lmt') @name(label='最后更新时间') last_modified_time: now
+>
+
+// ==========================================
+// 2. 企业客户 (Client Account)
+// ==========================================
+@persistence(name='tn_clnt_acct')
+@name(label='企业客户', singular='client_account', plural='client_accounts')
+client_account <
+  @persistence(name='acctid')
+  @name(label='客户标识')
+  id!!: long,
+
+  @persistence(name='acctnm')
+  @name(label='客户名称')
+  name: string(200),
+
+  @persistence(name='indus')
+  @name(label='所属行业')
+  industry: string(100),
+
+  @persistence(name='lvl')
+  @name(label='客户等级')
+  level: enum[VVIP:战略客户, VIP:重点客户, NORMAL:普通客户],
+
+  @persistence(name='ownid')
+  @name(label='负责人(客户经理)')
+  owner: string(64),
+
+  // --- 关系映射 ---
+  @name(label='联系人列表')
+  contacts: &client_contact(account)[],
+
+  @name(label='商机列表')
+  opportunities: &sales_opportunity(account)[],
+
+  @persistence(name='sta') @name(label='状态') state: string(20),
+  @persistence(name='modid') @name(label='修改者标识') modifier_id: string(64),
+  @persistence(name='crttm') @name(label='创建时间') created_time = now: datetime,
+  @persistence(name='lmt') @name(label='最后更新时间') last_modified_time: now
+>
+
+// ==========================================
+// 3. 客户联系人 (Client Contact)
+// ==========================================
+@persistence(name='tn_clnt_cntct')
+@name(label='客户联系人', singular='client_contact', plural='client_contacts')
+client_contact <
+  @persistence(name='cntctid')
+  @name(label='联系人标识')
+  id!!: long,
+
+  @persistence(name='acctid')
+  @name(label='所属客户')
+  account: &client_account(id),
+
+  @persistence(name='cntctnm')
+  @name(label='姓名')
+  name: string(100),
+
+  @persistence(name='title')
+  @name(label='职务')
+  title: string(100),
+
+  @persistence(name='mob')
+  @name(label='手机号')
+  mobile: string(50),
+
+  @persistence(name='key_flg')
+  @name(label='是否关键决策人(KP)')
+  is_key_person: boolean,
+
+  @persistence(name='sta') @name(label='状态') state: string(20),
+  @persistence(name='modid') @name(label='修改者标识') modifier_id: string(64),
+  @persistence(name='crttm') @name(label='创建时间') created_time = now: datetime,
+  @persistence(name='lmt') @name(label='最后更新时间') last_modified_time: now
+>
+
+// ==========================================
+// 4. 销售商机 (Sales Opportunity)
+// ==========================================
+@persistence(name='tn_sls_oppt')
+@name(label='销售商机', singular='sales_opportunity', plural='sales_opportunities')
+sales_opportunity <
+  @persistence(name='opptid')
+  @name(label='商机标识')
+  id!!: long,
+
+  @persistence(name='acctid')
+  @name(label='所属客户')
+  account: &client_account(id),
+
+  @persistence(name='opptnm')
+  @name(label='商机名称')
+  name: string(200),
+
+  @persistence(name='amt')
+  @name(label='预计金额')
+  amount: number(15,2),
+
+  @persistence(name='stg')
+  @name(label='销售阶段(漏斗)', note='需求发现 方案报价 商务谈判 赢单 输单')
+  stage: enum[
+    01:DISCOVERY,
+    02:PROPOSAL,
+    03:NEGOTIATION,
+    04:CLOSED_WON,
+    05:CLOSED_LOST
+  ],
+
+  @persistence(name='prob')
+  @name(label='赢率估算(%)')
+  probability: integer,
+
+  @persistence(name='clsdt')
+  @name(label='预计结单日期')
+  close_date: date,
+
+  @persistence(name='ownid')
+  @name(label='负责人')
+  owner: string(64),
+
+  @persistence(name='sta') @name(label='状态') state: string(20),
+  @persistence(name='modid') @name(label='修改者标识') modifier_id: string(64),
+  @persistence(name='crttm') @name(label='创建时间') created_time = now: datetime,
+  @persistence(name='lmt') @name(label='最后更新时间') last_modified_time: now
+>
+
+// ==========================================
+// 5. 销售跟进记录 (Sales Activity)
+// ==========================================
+@persistence(name='tn_sls_actv')
+@name(label='销售跟进记录', singular='sales_activity', plural='sales_activities')
+sales_activity <
+  @persistence(name='actvid')
+  @name(label='活动标识')
+  id!!: long,
+
+  @persistence(name='actvtyp')
+  @name(label='跟进方式')
+  type: enum[CALL:电话, MEETING:拜访, EMAIL:邮件, SOCIAL:社交软件],
+
+  // --- 多态关联同步更新 ---
+  @persistence(name='objtyp')
+  @name(label='关联业务对象类型')
+  object_type: enum[
+    SALES_LEAD:销售线索,
+    CLIENT_ACCOUNT:企业客户,
+    SALES_OPPORTUNITY:销售商机
+  ],
+
+  @persistence(name='objid')
+  @name(label='关联业务对象ID')
+  object_id: long,
+
+  @persistence(name='cntnt')
+  @name(label='沟通详情')
+  content: text,
+
+  @persistence(name='nxtdt')
+  @name(label='下次跟进时间计划')
+  next_followup_time: datetime,
+
+  @persistence(name='ownid')
+  @name(label='跟进人')
+  owner: string(64),
+
+  @persistence(name='sta') @name(label='状态') state: string(20),
+  @persistence(name='modid') @name(label='修改者标识') modifier_id: string(64),
+  @persistence(name='crttm') @name(label='创建时间') created_time = now: datetime,
+  @persistence(name='lmt') @name(label='最后更新时间') last_modified_time: now
+>

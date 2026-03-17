@@ -72,9 +72,9 @@ employee<
   @name(label='所属部门')
   department: &department(id),
 
-  @persistence(name='posid')
+  @persistence(name='desgid')
   @name(label='当前职位')
-  position: &position(id),
+  designation: &designation(id),
 
   @persistence(name='phoneno')
   @name(label='联系电话')
@@ -149,15 +149,15 @@ department<
 >
 
 @module(name='hrm')
-@persistence(name='tn_hrm_pos')
-@name(label='职位', singular='position', plural='positions')
-position<
+@persistence(name='tn_hrm_desg')
+@name(label='职位', singular='designation', plural='designations')
+designation<
 
-  @persistence(name='posid')
+  @persistence(name='desgid')
   @name(label='职位标识')
   id!!: long,
 
-  @persistence(name='posnm')
+  @persistence(name='desgnm')
   @name(label='职位名称')
   name: string(128),
 
@@ -195,9 +195,9 @@ employment<
   @name(label='员工')
   employee: &employee(id),
 
-  @persistence(name='posid')
+  @persistence(name='desgid')
   @name(label='职位')
-  position: &position(id),
+  designation: &designation(id),
 
   @persistence(name='deptid')
   @name(label='部门')
@@ -213,11 +213,11 @@ employment<
 
   @persistence(name='sta')
   @name(label='状态')
-  state: state,
+  status: string(1),
 
   @persistence(name='descr')
   @name(label='备注')
-  description: text
+  description: string(1000)
 >
 
 @module(name='hrm')
@@ -255,7 +255,7 @@ attendance<
 >
 
 @module(name='hrm')
-@persistence(name='tn_hrm_salary')
+@persistence(name='tn_hrm_sal')
 @name(label='薪资记录', singular='salary', plural='salaries')
 salary<
 
@@ -293,5 +293,112 @@ salary<
 
   @persistence(name='crttm')
   @name(label='创建时间')
+  created_time = now: datetime
+>
+
+@persistence(name='tn_hrm_empsal')
+@name(label='员工薪资', singular='employee_salary', plural='employee_salaries')
+@zipper
+employee_salary<
+
+  @persistence(name='empsalid')
+  @name(label='物理主键')
+  id!!: long,
+
+  @persistence(name='empid')
+  @name(label='所属员工')
+  employee: &employee(id),
+
+  @persistence(name='amt')
+  @name(label='基本工资')
+  amount: number(15, 2),
+
+  @persistence(name='ccy')
+  @name(label='币种')
+  currency: string(3),
+
+  @persistence(name='effstdt')
+  @name(label='生效开始日期')
+  effective_start_date: date,
+
+  @persistence(name='effenddt')
+  @name(label='生效结束日期')
+  effective_end_date: date,
+
+  @persistence(name='iscur')
+  @name(label='是否当前薪资')
+  is_current: boolean,
+
+  @persistence(name='chgrsn')
+  @name(label='调薪原因')
+  change_reason: enum[
+    NH:NEW_HIRE,
+    PR:PROMOTION,
+    AN:ANNUAL,
+    AD:ADJUSTMENT
+  ],
+
+  @persistence(name='credt')
+  @name(label='记录创建时间')
+  created_time = now: datetime
+>
+
+@persistence(name='tn_hrm_jobhist')
+@name(label='员工岗位历史', singular='job_history', plural='job_histories')
+@zipper
+job_history <
+
+  @persistence(name='id')
+  @name(label='物理主键')
+  id!!: long,
+
+  @persistence(name='empid')
+  @name(label='所属员工')
+  employee: &employee(id),
+
+  @persistence(name='deptid')
+  @name(label='所在部门')
+  department: &department(id),
+
+  @persistence(name='desgid')
+  @name(label='担任职位')
+  designation: &designation(id),
+
+  @persistence(name='effstdt')
+  @name(label='生效开始日期')
+  effective_start_date: date,
+
+  @persistence(name='effenddt')
+  @name(label='生效结束日期')
+  effective_end_date: date,
+
+  @persistence(name='iscur')
+  @name(label='是否当前岗位')
+  is_current: boolean,
+
+  @persistence(name='chgtyp') // change_type -> chgtyp
+  @name(label='变动类型')
+  change_type: enum[
+    HIRE:入职,
+    TRANSFER:平级调动,
+    PROMOTION:晋升,
+    DEMOTION:降职,
+    TERMINATION:离职
+  ],
+
+  @persistence(name='chgrsn') // change_reason -> chgrsn
+  @name(label='变动原因描述')
+  change_reason: string(500), // HR 填写的具体原因
+
+  @persistence(name='mgrid') // manager_id -> mgrid
+  @name(label='汇报对象(主管)')
+  manager: &employee(id), // 调岗往往伴随着换主管
+
+  @persistence(name='creby')
+  @name(label='操作人')
+  created_by: long, // 记录是哪个 HR 做的调整
+
+  @persistence(name='credt')
+  @name(label='记录创建时间')
   created_time = now: datetime
 >

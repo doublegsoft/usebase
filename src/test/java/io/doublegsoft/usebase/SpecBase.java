@@ -33,7 +33,7 @@ public class SpecBase {
   protected ModelDefinition loadModel(String... projs) throws Exception {
     String content = "";
     for (String proj : projs) {
-      InputStream input = SpecBase.class.getResourceAsStream("/model/" + proj + ".modelbase");
+      InputStream input = SpecBase.class.getResourceAsStream("/modelbase/" + proj + ".modelbase");
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       byte[] buff = new byte[4096];
       int len = 0;
@@ -102,8 +102,8 @@ public class SpecBase {
         "../usebase-data/java");
     data.put("namespace", "biz.doublegsoft");
     data.put("app", app);
-    data.put("model", dataModel);
-    data.put("usecase", usecase);
+    data.put("modelbase", dataModel);
+    data.put("usebase", usecase);
     data.put("aggregateBuilder", new AggregateBuilder(dataModel));
     data.put("associationBuilder", new AssociationBuilder(dataModel));
     writer.write(templateName, usecase, data);
