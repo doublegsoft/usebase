@@ -1,11 +1,11 @@
-@module(name='customer_relations')
+@module(name='crm')
 
 // ==========================================
 // 1. 销售线索 (Sales Lead)
 // ==========================================
 @persistence(name='tn_sls_lead')
 @name(label='销售线索', singular='sales_lead', plural='sales_leads')
-sales_lead <
+sales_lead<
   @persistence(name='leadid')
   @name(label='线索标识')
   id!!: long,
@@ -191,7 +191,7 @@ sales_activity <
   // --- 多态关联同步更新 ---
   @persistence(name='objtyp')
   @name(label='关联业务对象类型')
-  object_type: enum[
+  target_type: enum[
     SALES_LEAD:销售线索,
     CLIENT_ACCOUNT:企业客户,
     SALES_OPPORTUNITY:销售商机
@@ -199,7 +199,7 @@ sales_activity <
 
   @persistence(name='objid')
   @name(label='关联业务对象ID')
-  object_id: long,
+  target_id: long,
 
   @persistence(name='cntnt')
   @name(label='沟通详情')

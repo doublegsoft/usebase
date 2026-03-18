@@ -1,0 +1,50 @@
+@convert_sales_lead({sales_lead:sales_lead_id!}, {sales_opportunity: name, amount}, create_opportunity!)
+// ==========================================
+// 1. 业务防呆校验 (Validation)
+// ==========================================
+|:| lead = {sales_lead}#(id = lead_id)  !'线索不存在'
+
+// 防止重复转化
+|?| lead.state != 'QUALIFIED' !'该线索已转化，请勿重复操作'
+|?| lead.state != 'JUNK' !'无效线索无法转化'
+
+// ==========================================
+// 2. 数据状态流转 (Mutation)
+// ==========================================
+
+// 2.1 更新线索状态为“已转化”
+|=| {sales_lead: state = 'QUALIFIED'}#(id = sales_lead_id)
+
+// 2.2 裂变：新建企业客户 (Client Account)，自动带入线索中的公司名和负责人
+|+| new_acct = {client_account:
+        name = lead.company,
+        level = 'NORMAL',
+        owner = lead.owner,
+        state = 'ACTIVE'
+    }
+
+// 2.3 裂变：新建客户联系人 (Client Contact)，自动挂载到刚建的客户下
+|+| {client_contact:
+        account = new_acct.id,  // 引用上方新建的客户ID
+        name = lead.name,
+        mobile = lead.mobile,
+        is_key_person = true,   // 转化来的通常是首要联系人(KP)
+        state = 'ACTIVE'
+    }
+
+// 联动参数校验
+|?| sales_opportunity_name != null !'创建商机时，商机名称和预计金额不能为空且大于0'
+|?| amount > 0 !'创建商机时，商机名称和预计金额不能为空且大于0'
+
+// 2.4 裂变(条件)：新建销售商机 (Sales Opportunity)
+|?| create_opportunity == true
+|?|+| {sales_opportunity:
+      account = new_acct.id,
+      name = oppt_name,
+      amount = oppt_amount,
+      stage = '01_DISCOVERY',  // 初始阶段：需求发现
+      probability = 10,        // 初始赢率：10%
+      owner = lead.owner,
+      state = 'OPEN'}
+
+|~| @audit(event='LEAD_CONVERTED', reason='自动转化为客户: ${lead.company}')

@@ -8,7 +8,7 @@ export OUTPUT_ROOT=out/java
 export SPEC="wfm"
 export APPNAME=demo4j
 export NAMESPACE=biz.doublegsoft
-export MODELBASE_MODEL="src/test/resources/model/$SPEC.modelbase"
+export MODELBASE_MODEL="src/test/resources/modelbase/$SPEC.modelbase"
 export PROJECT_ROOT=$OUTPUT_ROOT/usebase-env-java
 ################################################################################
 ##                                                                            ##

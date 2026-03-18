@@ -72,13 +72,7 @@ public class HumanResourceManagementSpec extends SpecBase {
     Assert.assertEquals("employee", paramObj.getLabelledOptions("original").get("object"));
     StatementDefinition stmtSave = usecase.getStatements().get(0);
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
-        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
   /**
@@ -132,20 +126,14 @@ public class HumanResourceManagementSpec extends SpecBase {
     Assert.assertEquals(1, paramObj.getAttributes().length);
     Assert.assertEquals("employee_id", paramObj.getAttributes()[0].getName());
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
-        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
   @Test
   public void test_hrm_adjust_salary() throws Exception {
     ModelDefinition dataModel = loadModel("hrm", "sms");
     String expr =
-        "@adjust_salary.usebase({employee_salary: employee_id, amount!, change_reason, effective_start_date}) \n" +
+        "@adjust_salary({employee_salary: employee_id, amount!, change_reason, effective_start_date}) \n" +
         "|:| emp = {employee}#(id = employee_id)!'员工不存在' \n" +
         "|?| effective_start_date < now !'生效日期不能晚于今天' \n" +
         "|:| future_sal = {employee_salary}#(employee = employee_id, effective_start_date > now) \n" +
@@ -157,13 +145,7 @@ public class HumanResourceManagementSpec extends SpecBase {
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
-        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
   @Test
@@ -185,13 +167,7 @@ public class HumanResourceManagementSpec extends SpecBase {
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
-        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
 }

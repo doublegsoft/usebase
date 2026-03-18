@@ -5,18 +5,18 @@ export PROJBASE_DATA_ROOT=/Users/christian/export/local/works/doublegsoft.io/pro
 export PROJBASE_JAR=/Users/christian/export/opt/projbase/protosys-plugin-projbase-4.5-shaded.jar
 export OUTPUT_ROOT=out/java
 
-export SPEC="aam"
-export APPNAME=aam
+export SPEC="crm"
+export APPNAME=demo4j
 export NAMESPACE=biz.doublegsoft
-export MODELBASE_MODEL="src/test/resources/modelbase/$SPEC.modelbase"
-export PROJECT_ROOT=$OUTPUT_ROOT/$SPEC
+export MODELBASE_MODEL="src/test/resources/modelbase/$SPEC.modelbase;"
+export PROJECT_ROOT=$OUTPUT_ROOT/usebase-env-java
 ################################################################################
 ##                                                                            ##
 ##                                     JAVA                                   ##
 ##                                                                            ##
 ################################################################################
 REPOS=("java-poco@gfc-1.x" "java-util@gfc-1.x" "java-dto@gfc-1.x" "java-orm@mybatis-1.x" "java-orm@rdbms-1.x" \
-"java-tx@spring-1.x")
+"java-tx@spring-1.x" "java-runtime@springboot-1.x")
 
 for repo in "${REPOS[@]}"
 do

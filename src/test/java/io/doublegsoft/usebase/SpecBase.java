@@ -102,8 +102,8 @@ public class SpecBase {
         "../usebase-data/java");
     data.put("namespace", "biz.doublegsoft");
     data.put("app", app);
-    data.put("modelbase", dataModel);
-    data.put("usebase", usecase);
+    data.put("model", dataModel);
+    data.put("usecase", usecase);
     data.put("aggregateBuilder", new AggregateBuilder(dataModel));
     data.put("associationBuilder", new AssociationBuilder(dataModel));
     writer.write(templateName, usecase, data);
@@ -142,5 +142,20 @@ public class SpecBase {
         throw new IllegalArgumentException(attr.getName() + " has no original object annotation.");
       }
     }
+  }
+
+  protected void printSourcesForUsecase(UsecaseDefinition usecase, ModelDefinition dataModel, String usebaseOutput, String projRoot) throws Exception {
+    printModelbaseExtensionByUsecase(usebaseOutput, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, projRoot + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, projRoot + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, projRoot + "/" + toPascalCase(usecase.getName()) + "Service.java");
+  }
+
+  protected String loadUsebaseExpression(String usebasePath) throws Exception {
+    byte[] bytes =  Files.readAllBytes(new File("src/test/resources/usebase/" + usebasePath).toPath());
+    return new String(bytes, StandardCharsets.UTF_8);
   }
 }

@@ -1,0 +1,37 @@
+@log_sales_activity({sales_activity:
+    target_type!,       // 'SALES_LEAD' | 'CLIENT_ACCOUNT' | 'SALES_OPPORTUNITY'
+    target_id!,         // 对应的业务ID
+    sales_activity_type!,     // 'CALL' | 'MEETING'等
+    content!,           // 沟通记录
+    next_followup_time, // 下次跟进时间
+    modifier_id!        // 操作人/当前销售
+})
+
+// 1. 插入跟进记录
+|+| {sales_activity:
+        type = activity_type,
+        target_type = target_type,
+        target_id = target_id,
+        content = content,
+        next_followup_time = next_followup_time,
+        owner = modifier_id
+    }
+
+// 2. 智能分支：如果是线索，且状态为 NEW，自动翻转为 CONTACTING
+|?| if (target_type == 'SALES_LEAD') {
+    |:| lead = {sales_lead}#(id = target_id)
+    |?| if (lead != null AND lead.state == 'NEW') {
+        |~| {sales_lead:
+                id = lead.id,
+                state = 'CONTACTING'
+            }
+    }
+}
+
+// 3. 智能分支：如果是商机，自动刷新商机的“最后跟进时间”(用于防止商机掉入公海)
+|?| if (target_type == 'SALES_OPPORTUNITY') {
+    |~| {sales_opportunity:
+            id = target_id,
+            last_modified_time = now  // 触碰商机活跃时间
+        }
+}

@@ -42,24 +42,30 @@ public class CustomerRelationshipManagementSpec extends SpecBase {
   }
 
   @Test
-  public void test_hrm_onboard_new_employee() throws Exception {
+  public void test_crm_convert_sales_lead() throws Exception {
     ModelDefinition dataModel = loadModel("crm", "sms");
-//    String expr =
-//        "@onboard_new_employee({employee}) \n" +
-//            "|&| existing = {employee}#(name = employee_name, national_id = national_id) \n" +
-//            "|?| existing == null \n" +
-//            "|?|+| {employee}#(employee_name, national_id) \n" +
-//            "|+| {employment: employee = employee_id, start_date = now, status = 'E'} \n";
-//    Usebase usebase = new Usebase(dataModel);
-//    UsecaseDefinition usecase = usebase.parse(expr).get(0);
-//
-//    printModelbaseExtensionByUsecase(OUTPUT, usecase);
-//    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
-//        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-//    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-//        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-//    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-//        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+    String expr = loadUsebaseExpression("crm/convert_sales_lead.usebase");
+    Usebase usebase = new Usebase(dataModel);
+    UsecaseDefinition usecase = usebase.parse(expr).get(0);
+    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
+  }
+
+  @Test
+  public void test_crm_log_sales_activity() throws Exception {
+    ModelDefinition dataModel = loadModel("crm", "sms");
+    String expr = loadUsebaseExpression("crm/log_sales_activity.usebase");
+    Usebase usebase = new Usebase(dataModel);
+    UsecaseDefinition usecase = usebase.parse(expr).get(0);
+    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
+  }
+
+  @Test
+  public void test_crm_win_opportunity() throws Exception {
+    ModelDefinition dataModel = loadModel("crm", "sms");
+    String expr = loadUsebaseExpression("crm/win_opportunity.usebase");
+    Usebase usebase = new Usebase(dataModel);
+    UsecaseDefinition usecase = usebase.parse(expr).get(0);
+    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
 
