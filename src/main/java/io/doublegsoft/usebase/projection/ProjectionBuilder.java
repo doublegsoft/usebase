@@ -24,13 +24,13 @@ public class ProjectionBuilder {
   }
 
   public ObjectDefinition build(ObjectDefinition obj, Set<String> exclusions) {
-    ObjectDefinition retVal = new ObjectDefinition(obj.getName() + "_info", DUMMY);
+    ObjectDefinition retVal = new ObjectDefinition(obj.getName() + "_row", DUMMY);
     build(null, obj, exclusions, new ArrayList<>(), 0, retVal);
     return retVal;
   }
 
   public ObjectDefinition build(ObjectDefinition obj, List<AttributeDefinition> inclusions) {
-    ObjectDefinition retVal = new ObjectDefinition(obj.getName() + "_info", DUMMY);
+    ObjectDefinition retVal = new ObjectDefinition(obj.getName() + "_row", DUMMY);
     build(null, obj, new HashSet<>(), inclusions, 0, retVal);
     return retVal;
   }

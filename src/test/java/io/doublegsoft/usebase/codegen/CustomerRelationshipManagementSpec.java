@@ -35,8 +35,8 @@ public class CustomerRelationshipManagementSpec extends SpecBase {
 
     List<ObjectDefinition> infos = new ArrayList<>();
     for (ObjectDefinition obj : dataModel.getObjects()) {
-      ObjectDefinition objInfo = projBuilder.build(obj);
-      infos.add(objInfo);
+      ObjectDefinition rowObj = projBuilder.build(obj);
+      infos.add(rowObj);
     }
     printModelbaseExtensionByUsecase(OUTPUT, null, infos.toArray(new ObjectDefinition[0]));
   }

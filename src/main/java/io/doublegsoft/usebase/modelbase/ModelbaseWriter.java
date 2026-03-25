@@ -79,7 +79,7 @@ public class ModelbaseWriter {
     if (obj == null) {
       return this;
     }
-    writer.write("@info\n");
+    writer.write("@row\n");
     String name = obj.getName();
     writer.write(name);
     writer.write("<\n\n");
@@ -173,7 +173,7 @@ public class ModelbaseWriter {
     } else if (type instanceof PrimitiveType) {
       writer.write(type.getName().toLowerCase());
     } else if (type instanceof CollectionType) {
-      writer.write("&" + ((CollectionType) type).getComponentType().getName() + "_info[]");
+      writer.write("&" + ((CollectionType) type).getComponentType().getName() + "_row[]");
     } else if (type instanceof CustomType) {
       writer.write("long");
     } else if (type instanceof DomainType) {

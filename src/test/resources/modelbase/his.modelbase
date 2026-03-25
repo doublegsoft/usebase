@@ -1,0 +1,294 @@
+// ==========================================
+// 1.1 患者基础信息 (Patient)
+// ==========================================
+@persistence(name='tn_his_pat')
+@name(label='患者信息', singular='patient', plural='patients')
+patient <
+  @persistence(name='patid')
+  @name(label='患者标识')
+  id!!: long,
+
+  @persistence(name='patnm')
+  @name(label='姓名')
+  name: string(100),
+
+  @persistence(name='idcard')
+  @name(label='身份证号')
+  id_card: string(18),
+
+  @persistence(name='gender')
+  @name(label='性别')
+  gender: enum[M:男, F:女, U:未知],
+
+  @persistence(name='brth')
+  @name(label='出生日期')
+  birthday: date,
+
+  @persistence(name='mob')
+  @name(label='手机号')
+  mobile: string(50),
+
+  @persistence(name='crttm') @name(label='创建时间') created_time = now: datetime,
+  @persistence(name='modid') @name(label='最后操作员') operator_id: string(64)
+>
+
+// ==========================================
+// 1.2 收费项目与药品字典 (Charge Items)
+// ==========================================
+@persistence(name='tn_his_itm')
+@name(label='收费项字典', singular='charge_item', plural='charge_items')
+charge_item <
+  @persistence(name='itmid')
+  @name(label='项目标识')
+  id!!: long,
+
+  @persistence(name='itmnm')
+  @name(label='名称')
+  name: string(200),
+
+  @persistence(name='spec')
+  @name(label='规格')
+  specification: string(100),
+
+  @persistence(name='unit')
+  @name(label='单位')
+  unit: string(20),
+
+  @persistence(name='prc')
+  @name(label='标准单价')
+  price: number(14,4),
+
+  @persistence(name='cat')
+  @name(label='项目类别')
+  category: enum[DRUG:药品, LAB:化验, EXAM:检查, TREAT:治疗, MAT:材料]
+>
+
+// ==========================================
+// 2.1 医生排班 (Schedule)
+// ==========================================
+@persistence(name='tn_his_sch')
+@name(label='医生排班', singular='schedule', plural='schedules')
+schedule <
+  @persistence(name='schid')
+  @name(label='排班标识')
+  id!!: long,
+
+  @persistence(name='deptid')
+  @name(label='科室标识')
+  dept_id: string(64),
+
+  @persistence(name='docid')
+  @name(label='医生标识')
+  doctor_id: string(64),
+
+  @persistence(name='schdt')
+  @name(label='出诊日期')
+  work_date: date,
+
+  @persistence(name='slot')
+  @name(label='午别')
+  time_slot: enum[AM:上午, PM:下午, EV:晚上],
+
+  @persistence(name='limit')
+  @name(label='号源限额')
+  max_quota: int,
+
+  @persistence(name='used')
+  @name(label='已挂人数')
+  used_quota: int = 0
+>
+
+// ==========================================
+// 2.2 挂号流水记录 (Registration Record)
+// ==========================================
+@persistence(name='tn_his_reg')
+@name(label='挂号记录', singular='registration', plural='registrations')
+registration <
+  @persistence(name='regid')
+  @name(label='挂号流水号')
+  id!!: long,
+
+  @persistence(name='patid')
+  @name(label='患者ID')
+  patient_id: long,
+
+  @persistence(name='schid')
+  @name(label='排班ID')
+  schedule_id: long,
+
+  @persistence(name='sta')
+  @name(label='就诊状态')
+  state: enum[WAIT:候诊, DONE:已诊, CANCEL:已退号],
+
+  @persistence(name='regfee')
+  @name(label='挂号费')
+  reg_fee: number(10,2),
+
+  @persistence(name='crttm')
+  @name(label='挂号时间')
+  created_time = now: datetime,
+
+  // 关系映射
+  @name(label='关联患者')
+  patient: &patient(patient_id)
+>
+
+// ==========================================
+// 3.1 结算主表 (Fee Master)
+// ==========================================
+@persistence(name='tn_his_fee_m')
+@name(label='收费结算单', singular='fee_master', plural='fee_masters')
+fee_master <
+
+  @persistence(name='invno')
+  @name(label='结算标识/发票号')
+  id!!: long,
+
+  @persistence(name='patid')
+  @name(label='患者标识')
+  patient_id: long,
+
+  @persistence(name='ttlamt')
+  @name(label='总金额')
+  total_amount: number(14,2),
+
+  @persistence(name='paymth')
+  @name(label='支付方式')
+  pay_method: enum[CASH:现金, WX:微信, ALI:支付宝, CARD:医保卡],
+
+  @persistence(name='sta')
+  @name(label='结算状态')
+  state: enum[PAID:已收费, REFUND:已退费],
+
+  @persistence(name='crttm')
+  @name(label='收费时间')
+  created_time = now: datetime,
+
+  // 关系映射
+  @name(label='明细列表')
+  details: &fee_detail(master_id)[]
+>
+
+// ==========================================
+// 3.2 费用明细 (Fee Detail)
+// ==========================================
+@persistence(name='tn_his_fee_d')
+@name(label='费用明细', singular='fee_detail', plural='fee_details')
+fee_detail <
+  @persistence(name='detid')
+  @name(label='明细标识')
+  id!!: long,
+
+  @persistence(name='mstid')
+  @name(label='结算主单标识')
+  master_id: long,
+
+  @persistence(name='itmid')
+  @name(label='项目标识')
+  item_id: long,
+
+  @persistence(name='qty')
+  @name(label='数量')
+  quantity: number(10,2),
+
+  @persistence(name='uprc')
+  @name(label='发生单价')
+  unit_price: number(14,4),
+
+  @persistence(name='subttl')
+  @name(label='小计金额')
+  subtotal: number(14,2)
+>
+
+// ==========================================
+// 4.1 药房库存 (Drug Stock)
+// ==========================================
+@persistence(name='tn_his_stock')
+@name(label='药房库存', singular='stock', plural='stocks')
+stock <
+  @persistence(name='stkid')
+  @name(label='库存标识')
+  id!!: long,
+
+  @persistence(name='itmid')
+  @name(label='药品标识')
+  item_id: long,
+
+  @persistence(name='batch')
+  @name(label='批次号')
+  batch_no: string(50),
+
+  @persistence(name='qty')
+  @name(label='当前库存量')
+  quantity: number(14,2),
+
+  @persistence(name='expdt')
+  @name(label='有效期')
+  expire_date: date,
+
+  @persistence(name='lmt')
+  @name(label='更新时间')
+  last_modified_time: now
+>
+
+// ==========================================
+// 4.2 处方记录 (Prescription)
+// ==========================================
+@persistence(name='tn_his_pres')
+@name(label='处方记录', singular='prescription', plural='prescriptions')
+prescription<
+  @persistence(name='presid')
+  @name(label='处方标识')
+  id!!: long,
+
+  @persistence(name='patid')
+  @name(label='患者标识')
+  patient_id: long,
+
+  @persistence(name='docid')
+  @name(label='开方医生标识')
+  doctor_id: string(64),
+
+  @persistence(name='paysta')
+  @name(label='缴费状态')
+  pay_state: enum[UNPAID:未缴费, PAID:已缴费],
+
+  @persistence(name='dispsta')
+  @name(label='发药状态')
+  dispense_state: enum[WAIT:待发, DONE:已发, RTN:已退],
+
+  @persistence(name='crttm')
+  @name(label='开方时间')
+  created_time = now: datetime,
+
+  @name(label='药品明细')
+  items: &prescription_item(prescription_id)[]
+>
+
+// ==========================================
+// 4.3 处方药品明细 (Prescription Item)
+// ==========================================
+@persistence(name='tn_his_pres_itm')
+@name(label='处方药品明细', singular='prescription_item', plural='prescription_items')
+prescription_item<
+
+  @persistence(name='itmid')
+  @name(label='明细标识')
+  id!!: long,
+
+  @persistence(name='presid')
+  @name(label='处方标识')
+  prescription_id: long,
+
+  @persistence(name='drgid')
+  @name(label='药品项目ID')
+  drug_id: long,
+
+  @persistence(name='qty')
+  @name(label='开单总量')
+  total_quantity: number(10,2),
+
+  @persistence(name='usage')
+  @name(label='用法用量')
+  usage_instruction: string(200) // 如：一日三次，饭后口服
+>
