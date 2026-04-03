@@ -68,5 +68,4 @@ public class CustomerRelationshipManagementSpec extends SpecBase {
     printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
-
 }

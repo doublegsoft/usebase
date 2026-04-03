@@ -1,41 +1,41 @@
 @win_opportunity({sales_opportunity:
     sales_opportunity_id!,           // 赢单的商机ID
-    modifier_id!        // 提交人
+    owner!        // 提交人
 })
 
 // 1. 防呆与权限校验
-|:| oppt = {sales_opportunity}#(id = oppt_id) !require '商机不存在'
+|:| oppt = {sales_opportunity}#(id = sales_opportunity_id) !'商机不存在'
 
 // 必须是商机负责人或者销售总监才能操作赢单
-|?| assert(oppt.owner == operator_id OR current_user.role == 'SALES_DIRECTOR') !error '只有商机负责人可以操作赢单'
+|?| oppt.owner == owner !'只有商机负责人可以操作赢单'
 
 // 不能是已经结单的状态
-|?| assert(oppt.stage != '04_CLOSED_WON' AND oppt.stage != '05_CLOSED_LOST') !error '商机已关闭，无需重复操作'
+|?| oppt.stage != '04_CLOSED_WON' !'商机已关闭，无需重复操作'
+|?| oppt.stage != '05_CLOSED_LOST' !'商机已关闭，无需重复操作'
 
 // 赢单前必须有金额
-|?| assert(oppt.amount > 0) !error '商机金额必须大于0才能赢单'
+|?| oppt.amount > 0 !'商机金额必须大于0才能赢单'
 
 
 // 2. 状态流转
-|~| {sales_opportunity:
-        id = oppt.id,
+|=| {sales_opportunity:
         stage = '04_CLOSED_WON',   // 推进到赢单阶段
         probability = 100,         // 赢率设为 100%
-        close_date = today         // 自动填入结单日期为今天
-    }
+        close_date = now         // 自动填入结单日期为今天
+    }#(sales_opportunity_id)
 
 
 // 3. 副作用与跨系统交互 (Palantir 理念落地)
 // 3.1 给公司销售群发送喜报 (通知)
-@notify(channel='enterprise_wechat', to='sales_group', template='oppt_won_cheer', params={name: oppt.name, amount: oppt.amount})
+// |@| @notify(channel='enterprise_wechat', to='sales_group', template='oppt_won_cheer', params={name: oppt.name, amount: oppt.amount})
 
 // 3.2 回写：通过 Webhook 通知订单/财务系统，自动生成一张“待处理的合同/订单” (跨系统边界)
-@webhook(url='https://erp-internal/api/orders/create', payload={
-    crm_oppt_id: oppt.id,
-    client_account_id: oppt.account,
-    total_amount: oppt.amount,
-    sales_rep: oppt.owner
-})
+// |@| @webhook(url='https://erp-internal/api/orders/create', payload={
+//     crm_oppt_id: oppt.id,
+//     client_account_id: oppt.account,
+//     total_amount: oppt.amount,
+//     sales_rep: oppt.owner
+// })
 
 // 3.3 审计日志
-@audit(event='OPPT_CLOSED_WON', reason='商机赢单，金额: ${oppt.amount}')
+// |@| @audit(event='OPPT_CLOSED_WON', reason='商机赢单，金额: ${oppt.amount}')

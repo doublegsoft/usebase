@@ -163,6 +163,10 @@ public class Usebase {
       retVal.setValue(value);
       retVal.setComparand(ctxComp.usebase_comparison_part(0).comparand.getText());
       retVal.setComparator(ctxComp.usebase_comparison_part(0).usebase_comparator().getText());
+      // 根据值，重新对操作书注册类型
+      if (!retVal.getComparand().contains(".")) {
+        registerVariable(usecase, retVal.getComparand(), value);
+      }
       for (int i = 1; i < ctxComp.usebase_comparison_part().size(); i++) {
         io.doublegsoft.usebase.UsebaseParser.Usebase_comparison_partContext ctxPart = ctxComp.usebase_comparison_part(i);
         String conj = ctxComp.usebase_comparison_conj(i - 1).getText();
@@ -186,14 +190,15 @@ public class Usebase {
       return retVal;
     } else if (ctxExpr.usebase_assignment() != null) {
       io.doublegsoft.usebase.UsebaseParser.Usebase_assignmentContext ctxAssign = ctxExpr.usebase_assignment();
-      AssignmentDefinition retVal = new AssignmentDefinition();
-      retVal.setOperator(ctx.usebase_operator().getText());
-      String op = retVal.getOperator().substring(retVal.getOperator().length() - 2);
+      String fullOperator = ctx.usebase_operator().getText();
+      String op = fullOperator.substring(fullOperator.length() - 2);
       if (!"&|".equals(op) && !"=|".equals(op) &&
           !":|".equals(op) && !"#|".equals(op) &&
           !"+|".equals(op)) {
         throw new RuntimeException("\"" + getOriginalText(ctx) + "\" not allowed to have assignment rule");
       }
+      AssignmentDefinition retVal = new AssignmentDefinition();
+      retVal.setOperator(fullOperator);
       ValueDefinition value = new ValueDefinition();
       valueParser.assemble(ctxAssign.usebase_value(), "#" + ctxAssign.variable.getText(), value, usecase);
       retVal.setValue(value);
@@ -232,57 +237,7 @@ public class Usebase {
       return retVal;
     } else if (ctx.usebase_operator().getText().endsWith("+|") || ctx.usebase_operator().getText().endsWith("=|")) {
       // SAVE: CREATE AND UPDATE
-      SaveDefinition retVal = new SaveDefinition();
-      retVal.setOperator(ctx.usebase_operator().getText());
-      if (ctxExpr.usebase_object() != null) {
-        io.doublegsoft.usebase.UsebaseParser.Usebase_objectContext ctxObj = ctxExpr.usebase_object();
-        ObjectDefinition saveObj = new ObjectDefinition(ctxObj.name.getText(), usecase.getContextModel());
-        objectParser.assemble(ctxObj, saveObj, usecase);
-        if (ctxObj.alias != null) {
-          retVal.setVariable(ctxObj.alias.getText());
-        }
-        if (retVal.getVariable() == null) {
-          retVal.setVariable(saveObj.getName());
-        }
-        if (ctxExpr.usebase_object().usebase_operator_hash() != null) {
-          argumentsParser.assembleOrCreateAndThen(ctxExpr.usebase_object().usebase_arguments(), true, saveObj, usecase);
-        }
-        if (ctxExpr.usebase_object().msg != null) {
-          String error = ctxExpr.usebase_object().msg.getText();
-          retVal.setError(error);
-        }
-        retVal.setSaveObject(saveObj);
-      } else if (ctxExpr.var != null) {
-        String var = ctxExpr.var.getText();
-        VariableDefinition varDef = usecase.getVariable(var);
-        if (varDef == null) {
-          throw new IllegalArgumentException("there is no \"" + var + "\" variable in usecase context");
-        }
-        retVal.setVariableObject(varDef);
-      } else if (ctxExpr.usebase_array() != null) {
-        io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctxArr = ctxExpr.usebase_array();
-        String saveObjName = "null";
-        if (ctxArr.name != null) {
-          saveObjName = ctxArr.name.getText();
-        } else if (ctxArr.usebase_aggregate() != null) {
-          if (ctxArr.usebase_aggregate().usebase_data().size() == 1) {
-            io.doublegsoft.usebase.UsebaseParser.Usebase_dataContext ctxData = ctxArr.usebase_aggregate().usebase_data(0);
-            saveObjName = ctxData.usebase_object().name.getText();
-          } else {
-            throw new IllegalArgumentException("为什么在此处你的聚合对象定义包含多个数据对象。");
-          }
-        }
-        ObjectDefinition saveObj = new ObjectDefinition(saveObjName, usecase.getContextModel());
-        if (ctxArr.usebase_aggregate() != null) {
-          aggregateParser.assemble(ctxArr.usebase_aggregate(), saveObj, usecase);
-        }
-        retVal.setArray(true);
-        if (retVal.getVariable() == null) {
-          retVal.setVariable(Inflector.getInstance().pluralize(saveObj.getName()));
-        }
-        retVal.setSaveObject(saveObj);
-      }
-      return retVal;
+      return createSaveDefinition(ctx.usebase_operator().getText(), ctxExpr, usecase);
     } else if (ctxExpr.usebase_invoke() != null) {
       io.doublegsoft.usebase.UsebaseParser.Usebase_invokeContext ctxInvoke = ctxExpr.usebase_invoke();
       StatementDefinition retVal = new StatementDefinition();
@@ -330,5 +285,66 @@ public class Usebase {
     } else if (value.getBool() != null) {
       usecase.registerVariable(name, new PrimitiveType("bool"));
     }
+    if (usecase.getParameterizedObject() != null) {
+      for (AttributeDefinition attr : usecase.getParameterizedObject().getAttributes()) {
+        if (attr.getName().equals(name)) {
+          attr.setType(usecase.getVariable(name).getType());
+        }
+      }
+    }
+  }
+
+  private SaveDefinition createSaveDefinition(String op, io.doublegsoft.usebase.UsebaseParser.Usebase_expressionContext ctxExpr, UsecaseDefinition usecase) {
+    SaveDefinition retVal = new SaveDefinition();
+    retVal.setOperator(op);
+    if (ctxExpr.usebase_object() != null) {
+      io.doublegsoft.usebase.UsebaseParser.Usebase_objectContext ctxObj = ctxExpr.usebase_object();
+      ObjectDefinition saveObj = new ObjectDefinition(ctxObj.name.getText(), usecase.getContextModel());
+      objectParser.assemble(ctxObj, saveObj, usecase);
+      if (ctxObj.alias != null) {
+        retVal.setVariable(ctxObj.alias.getText());
+      }
+      if (retVal.getVariable() == null) {
+        retVal.setVariable(saveObj.getName());
+      }
+      if (ctxExpr.usebase_object().usebase_operator_hash() != null) {
+        argumentsParser.assembleOrCreateAndThen(ctxExpr.usebase_object().usebase_arguments(), true, saveObj, usecase);
+      }
+      if (ctxExpr.usebase_object().msg != null) {
+        String error = ctxExpr.usebase_object().msg.getText();
+        retVal.setError(error);
+      }
+      retVal.setSaveObject(saveObj);
+    } else if (ctxExpr.var != null) {
+      String var = ctxExpr.var.getText();
+      VariableDefinition varDef = usecase.getVariable(var);
+      if (varDef == null) {
+        throw new IllegalArgumentException("there is no \"" + var + "\" variable in usecase context");
+      }
+      retVal.setVariableObject(varDef);
+    } else if (ctxExpr.usebase_array() != null) {
+      io.doublegsoft.usebase.UsebaseParser.Usebase_arrayContext ctxArr = ctxExpr.usebase_array();
+      String saveObjName = "null";
+      if (ctxArr.name != null) {
+        saveObjName = ctxArr.name.getText();
+      } else if (ctxArr.usebase_aggregate() != null) {
+        if (ctxArr.usebase_aggregate().usebase_data().size() == 1) {
+          io.doublegsoft.usebase.UsebaseParser.Usebase_dataContext ctxData = ctxArr.usebase_aggregate().usebase_data(0);
+          saveObjName = ctxData.usebase_object().name.getText();
+        } else {
+          throw new IllegalArgumentException("为什么在此处你的聚合对象定义包含多个数据对象。");
+        }
+      }
+      ObjectDefinition saveObj = new ObjectDefinition(saveObjName, usecase.getContextModel());
+      if (ctxArr.usebase_aggregate() != null) {
+        aggregateParser.assemble(ctxArr.usebase_aggregate(), saveObj, usecase);
+      }
+      retVal.setArray(true);
+      if (retVal.getVariable() == null) {
+        retVal.setVariable(Inflector.getInstance().pluralize(saveObj.getName()));
+      }
+      retVal.setSaveObject(saveObj);
+    }
+    return retVal;
   }
 }

@@ -33,15 +33,15 @@
     }
 
 // 联动参数校验
-|?| sales_opportunity_name != null !'创建商机时，商机名称和预计金额不能为空且大于0'
-|?| amount > 0 !'创建商机时，商机名称和预计金额不能为空且大于0'
+|?| sales_opportunity_name != null !'创建商机时，商机名称不能为空'
+|?| amount > 0 !'创建商机时，预计金额不能为空且大于0'
 
 // 2.4 裂变(条件)：新建销售商机 (Sales Opportunity)
 |?| create_opportunity == true
 |?|+| {sales_opportunity:
       account = new_acct.id,
-      name = oppt_name,
-      amount = oppt_amount,
+      name = sales_opportunity_name,
+      amount = amount,
       stage = '01_DISCOVERY',  // 初始阶段：需求发现
       probability = 10,        // 初始赢率：10%
       owner = lead.owner,
