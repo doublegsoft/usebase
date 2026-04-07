@@ -15,7 +15,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,7 +165,32 @@ public class WorkflowManagementSpec extends SpecBase {
     printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE,
         usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
     bash("env/java/gen-wfm.sh");
-    bash("cd out/java/wfm && java -jar target/wfm-1.0.jar");
+
+    new Thread(() -> {
+      bash("cd out/java/wfm && java -jar target/wfm-1.0.jar");
+    }).start();
+    // 准备插入数据
+//    Class.forName("org.h2.Driver");
+//    Connection conn = DriverManager.getConnection("jdbc:h2:mem:test;MODE=MYSQL;DB_CLOSE_DELAY=-1");
+//    Statement stmt = conn.createStatement();
+//    File dir = new File("src/test/resources/testdata/wfm/");
+//    for (File f : dir.listFiles()) {
+//      if (!f.getName().endsWith(".sql")) {
+//        continue;
+//      }
+//      List<String> lines = Files.readAllLines(f.toPath());
+//      lines.stream().forEach(l -> {
+//        try {
+//          stmt.execute(l);
+//        } catch (SQLException e) {
+//          throw new RuntimeException(e);
+//        }
+//      });
+//    }
+
+    // TODO: run client test
+    Thread.sleep(1000 * 20);
+    bash("ps aux | grep \"[w]fm-1.0.jar\" | awk '{print $2}' | xargs kill -9");
   }
 
   /**
