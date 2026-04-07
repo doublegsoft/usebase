@@ -23,7 +23,7 @@ public class WorkflowManagementSpec extends SpecBase {
 
   private static final String OUTPUT = "out/usebase/wfm.modelbase";
 
-  public static final String OUTPUT_DIR = "out/java/usebase-env-java/src/main/java/biz/doublegsoft/" + PROJ_NAME + "/service";
+  public static final String OUTPUT_DIR = "out/java/wfm/src/main/java/biz/doublegsoft/wfm/service";
 
   @BeforeClass
   public static void initialize() throws Exception {
@@ -149,13 +149,17 @@ public class WorkflowManagementSpec extends SpecBase {
 //    Assert.assertEquals("workflow_definition", wfactconnsArgsObj.getAttributes()[0]
 //        .getLabelledOptions("original").get("object"));
 
+    String root = "out/java/wfm";
+    rm(root);
     printModelbaseExtensionByUsecase(OUTPUT, usecase);
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE_IMPL,
         usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE,
         usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+    bash("env/java/gen-wfm.sh");
+    bash("cd out/java/wfm && java -jar target/wfm-1.0.jar");
   }
 
   /**

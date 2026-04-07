@@ -52,7 +52,11 @@ public class SourceParser extends UsebaseParser {
         joinCond.setLeftAttribute(leftAttr);
         joinCond.setRightObject(rightObj);
         joinCond.setRightAttribute(rightAttr);
-        joinCond.setRightVariable(rightVarName);
+        if (rightAlias != null) {
+          joinCond.setRightVariable(rightAlias);
+        } else {
+          joinCond.setRightVariable(rightVarName);
+        }
         compCond.getJoinConditions().add(joinCond);
         tabularArray.getCompoundConditions().add(compCond);
       }

@@ -6,17 +6,17 @@ export PROJBASE_JAR=/Users/christian/export/opt/projbase/protosys-plugin-projbas
 export OUTPUT_ROOT=out/java
 
 export SPEC="wfm"
-export APPNAME=demo4j
+export APPNAME=wfm
 export NAMESPACE=biz.doublegsoft
 export MODELBASE_MODEL="src/test/resources/modelbase/$SPEC.modelbase"
-export PROJECT_ROOT=$OUTPUT_ROOT/usebase-env-java
+export PROJECT_ROOT=$OUTPUT_ROOT/wfm
 ################################################################################
 ##                                                                            ##
 ##                                     JAVA                                   ##
 ##                                                                            ##
 ################################################################################
-REPOS=("java-poco@gfc-1.x" "java-util@gfc-1.x" "java-dto@gfc-1.x" "java-orm@mybatis-1.x" "java-orm@rdbms-1.x" \
-"java-tx@spring-1.x" "java-runtime@springboot-1.x")
+REPOS=("java-poco@gfc-1.x" "java-util@gfc-1.x" "java-dto@gfc-1.x" "java-dtokit@gfc-1.x" "java-orm@mybatis-1.x" \
+"java-orm@rdbms-1.x" "java-tx@spring-1.x" "java-mvc@spring-1.x" "java-test@postman-1.x")
 
 for repo in "${REPOS[@]}"
 do
@@ -79,5 +79,32 @@ java -jar $MODELBASE_JAR \
 \} 2>&1
 done
 
-cp -f env/java/pom.xml $PROJECT_ROOT/pom.xml
+################################################################################
+##                                                                            ##
+##                              SPRINGBOOT (JAVA)                             ##
+##                                                                            ##
+################################################################################
+export TEMPLATE_ROOT=$PROJBASE_DATA_ROOT/java/java-backend@springboot-1.x
+
+java -jar $PROJBASE_JAR \
+--model=$MOBELBASE_MODEL \
+--template-root=$TEMPLATE_ROOT \
+--output-root=$PROJECT_ROOT \
+--license=env/LICENSE \
+--globals=\
+\{\
+\"application\":\"$APPNAME\",\
+\"namespace\":\"$NAMESPACE\",\
+\"artifact\":\"$APPNAME\",\
+\"version\":\"1.0.0\",\
+\"description\":\"\",\
+\"naming\":\"com.doublegsoft.jcommons.programming.java.JavaConventions\",\
+\"globalNamingConvention\":\"com.doublegsoft.jcommons.programming.java.JavaNamingConvention\",\
+\"language\":\"java\",\
+\"imports\":\
+\[\],\
+\"dependencies\":\
+\[\]\
+\} 2>&1
+
 mvn clean package -f $PROJECT_ROOT/pom.xml -DskipTests

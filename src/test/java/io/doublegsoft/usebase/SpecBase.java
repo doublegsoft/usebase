@@ -13,10 +13,13 @@ import io.doublegsoft.usebase.aggregate.AggregateBuilder;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class SpecBase {
 
@@ -93,9 +96,13 @@ public class SpecBase {
   }
 
   protected void printJavaCodeForUsecase(String templateName, UsecaseDefinition usecase, ModelDefinition dataModel, String outputFile) throws IOException {
+    printJavaCodeForUsecase(PROJ_NAME, templateName, usecase, dataModel, outputFile);
+  }
+
+  protected void printJavaCodeForUsecase(String projName, String templateName, UsecaseDefinition usecase, ModelDefinition dataModel, String outputFile) throws IOException {
     StringWriter sw = new StringWriter();
     Map<String,Object> app = new HashMap<>();
-    app.put("name", PROJ_NAME);
+    app.put("name", projName);
     Map<String,Object> data = new HashMap<>();
     TemplateOutputWriter writer = new TemplateOutputWriter(sw,
         "../usebase-data",
@@ -157,5 +164,158 @@ public class SpecBase {
   protected String loadUsebaseExpression(String usebasePath) throws Exception {
     byte[] bytes =  Files.readAllBytes(new File("src/test/resources/usebase/" + usebasePath).toPath());
     return new String(bytes, StandardCharsets.UTF_8);
+  }
+
+  protected static void rm(String pathStr) {
+    Path path = Paths.get(pathStr);
+
+    if (!Files.exists(path)) {
+      System.out.println("目录不存在: " + pathStr);
+      return;
+    }
+
+    try {
+      System.out.println("开始删除目录: " + pathStr);
+
+      Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+          Files.delete(file);                    // 删除文件
+          System.out.println("   删除文件: " + file);
+          return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+          Files.delete(dir);                     // 删除空目录
+          System.out.println("   删除目录: " + dir);
+          return FileVisitResult.CONTINUE;
+        }
+      });
+
+      System.out.println("目录删除完成: " + pathStr);
+
+    } catch (IOException e) {
+      System.err.println("删除失败: " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
+  protected static void mvn(String workingDir, String... commands) {
+    try {
+      // 构建命令
+      ProcessBuilder processBuilder = new ProcessBuilder();
+      processBuilder.directory(new File(workingDir));  // 设置工作目录
+
+      // 命令列表（支持 Windows 和 Mac/Linux）
+      if (System.getProperty("os.name").toLowerCase().contains("win")) {
+        processBuilder.command("cmd.exe", "/c", "mvn", String.join(" ", commands));
+      } else {
+        List<String> cmds = new ArrayList<>();
+        cmds.add("mvn");
+        for (String cmd : commands) {
+          cmds.add(cmd);
+        }
+        processBuilder.command(cmds);
+      }
+
+      // 合并错误流和输出流
+      processBuilder.redirectErrorStream(true);
+
+      System.out.println("开始执行: mvn " + String.join(" ", commands));
+
+      Process process = processBuilder.start();
+
+      // 实时打印 Maven 输出
+      try (BufferedReader reader = new BufferedReader(
+          new InputStreamReader(process.getInputStream()))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+          System.out.println(line);
+        }
+      }
+
+      // 等待命令执行完成（可设置超时）
+      boolean finished = process.waitFor(30, TimeUnit.MINUTES);  // 最长等 30 分钟
+
+      if (finished) {
+        int exitCode = process.exitValue();
+        if (exitCode == 0) {
+          System.out.println("mvn " + String.join(" ", commands) + " 执行成功！");
+          // 这里可以继续调用你之前的 java -jar
+//          runJarAfterBuild(workingDir);
+        } else {
+          System.err.println("Maven 执行失败，退出码: " + exitCode);
+        }
+      } else {
+        System.err.println("Maven 执行超时！");
+        process.destroyForcibly();
+      }
+
+    } catch (IOException | InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
+
+  protected static void runJarAfterBuild(String projectDir) {
+    String jarPath = projectDir + "/target/my-test-app.jar";  // 修改成你的 JAR 名
+    File jarFile = new File(jarPath);
+
+    if (jarFile.exists()) {
+      System.out.println("找到 JAR 文件，开始执行测试...");
+      try {
+        ProcessBuilder pb = new ProcessBuilder("java", "-jar", jarPath);
+        pb.directory(new File(projectDir));
+        pb.inheritIO();           // 让 JAR 的输出直接在当前控制台显示
+        Process p = pb.start();
+        p.waitFor();              // 等待测试执行完自动停止
+        System.out.println("测试执行完毕，JVM 已自动停止！");
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    } else {
+      System.err.println("未找到 JAR 文件: " + jarPath);
+    }
+  }
+
+  public static boolean bash(String command) {
+    try {
+      ProcessBuilder processBuilder = new ProcessBuilder();
+      if (System.getProperty("os.name").toLowerCase().contains("win")) {
+        processBuilder.command("cmd.exe", "/c", command);
+      } else {
+        processBuilder.command("sh", "-c", command);
+      }
+      processBuilder.redirectErrorStream(true);
+      Process process = processBuilder.start();
+      try (BufferedReader reader = new BufferedReader(
+          new InputStreamReader(process.getInputStream()))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+          System.out.println("   " + line);
+        }
+      }
+      boolean finished = process.waitFor(10, TimeUnit.MINUTES);
+
+      if (finished) {
+        int exitCode = process.exitValue();
+        if (exitCode == 0) {
+          System.out.println("Shell 命令执行成功！");
+          return true;
+        } else {
+          System.err.println("Shell 命令执行失败，退出码: " + exitCode);
+          return false;
+        }
+      } else {
+        System.err.println("Shell 命令执行超时！");
+        process.destroyForcibly();
+        return false;
+      }
+
+    } catch (IOException | InterruptedException e) {
+      System.err.println("执行 Shell 时发生异常: " + e.getMessage());
+      e.printStackTrace();
+      return false;
+    }
   }
 }
