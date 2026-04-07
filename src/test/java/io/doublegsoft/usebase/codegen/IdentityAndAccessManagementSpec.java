@@ -22,6 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -39,22 +40,15 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("iam");
+    ModelDefinition dataModel = loadModel("crm", "sms");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
-    ObjectDefinition user = dataModel.findObjectByName("user");
-    ObjectDefinition userInfo = projBuilder.build(user);
-    ObjectDefinition userRole = dataModel.findObjectByName("user_role");
-    ObjectDefinition userRoleInfo = projBuilder.build(userRole);
-    ObjectDefinition permission = dataModel.findObjectByName("permission");
-    ObjectDefinition permissionInfo = projBuilder.build(permission);
-    ObjectDefinition role = dataModel.findObjectByName("role");
-    ObjectDefinition roleInfo = projBuilder.build(role);
-    ObjectDefinition policy = dataModel.findObjectByName("policy");
-    ObjectDefinition policyInfo = projBuilder.build(policy);
-
-    printModelbaseExtensionByUsecase(OUTPUT, null,
-        userInfo, userRoleInfo, permissionInfo, roleInfo, policyInfo);
+    List<ObjectDefinition> infos = new ArrayList<>();
+    for (ObjectDefinition obj : dataModel.getObjects()) {
+      ObjectDefinition rowObj = projBuilder.build(obj);
+      infos.add(rowObj);
+    }
+    printModelbaseExtensionByUsecase(OUTPUT, null, infos.toArray(new ObjectDefinition[0]));
   }
 
   /**

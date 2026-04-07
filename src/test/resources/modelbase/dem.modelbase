@@ -1,4 +1,4 @@
-@module(name='dem')
+@module(name='dem', text='data entitlement management')
 
 @persistence(name='tn_dem_datast')
 @name(label='数据资产', plural='data_assets')
@@ -74,14 +74,14 @@ row_scope_definition<
   @persistence(name='filttyp')
   @name(label='过滤类型')
   type: enum[
-    STATIC_EXPR:静态表达式,
-    DYNAMIC_VAR:动态变量,
-    CUSTOM_SQL:自定义SQL
+    EXP:EXPRESSION('静态表达式'),
+    VAR:VARIABLE('动态变量'),
+    SQL:CUSTOM_SQL('自定义SQL')
   ],
 
   @persistence(name='expr')
   @name(label='过滤表达式')
-  expression: text
+  expression: string(1000)
 >
 
 // ==========================================

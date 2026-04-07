@@ -7,6 +7,8 @@ import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
+import io.doublegsoft.usebase.association.AssociationBuilder;
+import io.doublegsoft.usebase.association.AssociationChain;
 import io.doublegsoft.usebase.projection.ProjectionBuilder;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,6 +16,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WorkflowManagementSpec extends SpecBase {
 
@@ -28,30 +32,39 @@ public class WorkflowManagementSpec extends SpecBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("wfm");
+    ModelDefinition dataModel = loadModel("crm", "sms");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
-    ObjectDefinition workflowDefinition = dataModel.findObjectByName("workflow_definition");
-    ObjectDefinition workflowDefinitionInfo = projBuilder.build(workflowDefinition);
-    ObjectDefinition workflowAction = dataModel.findObjectByName("workflow_action");
-    ObjectDefinition workflowActionInfo = projBuilder.build(workflowAction);
-    ObjectDefinition workflowActionConnection = dataModel.findObjectByName("workflow_action_connection");
-    ObjectDefinition workflowActionConnectionInfo = projBuilder.build(workflowActionConnection);
-    ObjectDefinition workflowInstance = dataModel.findObjectByName("workflow_instance");
-    ObjectDefinition workflowInstanceInfo = projBuilder.build(workflowInstance);
-    ObjectDefinition workflowActionInstance = dataModel.findObjectByName("workflow_action_instance");
-    ObjectDefinition workflowActionInstanceInfo = projBuilder.build(workflowActionInstance);
-    ObjectDefinition workflowActionConnectionInstance = dataModel.findObjectByName("workflow_action_connection_instance");
-    ObjectDefinition workflowActionConnectionInstanceInfo = projBuilder.build(workflowActionConnectionInstance);
-    ObjectDefinition workflowActionTodo = dataModel.findObjectByName("workflow_action_todo");
-    ObjectDefinition workflowActionTodoInfo = projBuilder.build(workflowActionTodo);
-    ObjectDefinition workflowActionJournal = dataModel.findObjectByName("workflow_action_journal");
-    ObjectDefinition workflowActionJournalInfo = projBuilder.build(workflowActionJournal);
+    List<ObjectDefinition> infos = new ArrayList<>();
+    for (ObjectDefinition obj : dataModel.getObjects()) {
+      ObjectDefinition rowObj = projBuilder.build(obj);
+      infos.add(rowObj);
+    }
+    printModelbaseExtensionByUsecase(OUTPUT, null, infos.toArray(new ObjectDefinition[0]));
+  }
 
-    printModelbaseExtensionByUsecase(OUTPUT, null,
-        workflowDefinitionInfo, workflowActionInfo, workflowActionConnectionInfo,
-        workflowInstanceInfo, workflowActionInstanceInfo, workflowActionConnectionInstanceInfo,
-        workflowActionTodoInfo, workflowActionConnectionInfo);
+  /**
+   * 如果想通过usebase定义来个提供modelbase已经提供了的查询工作流定义列表的API，可能不行，
+   * 因为usebase的参数在查询中是准确匹配的参数，无法做到模糊查询，所以不建议。
+   */
+  @Test
+  public void test_find_workflow_definitions() throws Exception {
+    ModelDefinition dataModel = loadModel("wfm");
+    String expr =
+        "@find_workflow_definitions({workflow_definition: name}):[{workflow_definition}]";
+    UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("wfm");
+    checkOriginalIndexAndObject(usecase.getReturnedObject());
+
+    AssociationBuilder assocBuilder = new AssociationBuilder(dataModel);
+    AssociationChain assocChain = assocBuilder.build(usecase.getParameterizedObject(), usecase.getReturnedObject());
+    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   /**
@@ -61,20 +74,7 @@ public class WorkflowManagementSpec extends SpecBase {
   public void test_instantiate() throws Exception {
     ModelDefinition dataModel = loadModel("wfm");
     // 如何确定开始节点？这是个难点
-    String expr =
-        "@instantiate({workflow_definition: id!}, {workflow_instance: reference_id, reference_type}):{workflow_instance: id} \n" +
-        "|&| wfdef = {workflow_definition}#(id = id) \n" +
-        "|&| wfactconns = [workflow_action_connection]#(workflow_definition = id, previous_action = 0) \n" +
-        "|&| wfacts = [workflow_action]#(id = wfactconns.current_action) \n" +
-        "|:| wfinst = {workflow_instance: status = 'ST'}&wfdef \n" +
-        "|:| wfactInsts = [{workflow_action_instance}]&wfacts \n" +
-        "|:| wfactconninsts = [{workflow_action_connection_instance: current_action_instance = wfactInsts.id, workflow_instance = wfinst.id \n" +
-            "}]&wfactconns <current_action = workflow_action> wfactInsts \n" +
-        "|+| wfinst \n" +
-        "|+| wfactconninsts \n" +
-        "|+| wfactInsts \n" +
-//      "|=| {workflow_action_instance: status = 'CP'}#(workflow_action) // TODO: 更新当前的操作实例状态（未实现）\n" +
-        "|.| wfinst";
+    String expr = loadUsebaseExpression("wfm/instantiate_workflow.usebase");
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     usecase.setModule("wfm");
     checkOriginalIndexAndObject(usecase.getReturnedObject());

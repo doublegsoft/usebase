@@ -1,10 +1,8 @@
-@module(name='bpe')
+@module(name='bpe', text='business policy engine')
 
-@persistence(name='tn_bpe_bizpoldef')
-@name(label='流程定义', plural='business_policy_definitions')
-@entity
-@revision
-business_policy_definition<
+@persistence(name='tn_bpe_bizpol')
+@name(label='流程定义', plural='business_policies')
+business_policy<
 
   @name(label='标识')
   @persistence(name='bizpoldefid')
@@ -54,57 +52,65 @@ business_policy_definition<
   nodes: &business_policy_node(id)[]
 >
 
-@persistence(name='tn_bpe_bizpolnd')
-@name(label='流程节点', singular='business_policy_node', plural='business_policy_nodes')
-business_policy_node<
+@persistence(name='tn_bpe_bizpolcond')
+@name(label='策略条件')
+@entity
+business_policy_condition<
 
   @name(label='标识')
-  @persistence(name='bizpolndid')
+  @persistence(name='bizpolcondid')
   id!!: long,
 
-  @name(label='流程')
-  @persistence(name='bizpoldefid')
-  business_policy_definition: &business_policy_definition(id),
+  @name(label='策略')
+  @persistence(name='bizpolid')
+  business_policy: &business_policy(id),
 
-  @name(label='名称')
-  @persistence(name='bizpolndnm')
-  name: string(100),
+  @name(label='字段')
+  @persistence(name='fld')
+  field: string(64),
 
-  @name(label='节点类型')
-  @persistence(name='bizpolndtyp')
-  type: enum[
-    ST:开始,
-    AT:执行,
-    DC:判断,
-    ND:结束
-  ],
+  @name(label='操作符')
+  @persistence(name='opr')
+  operator: string(16),
 
-  @name(label='计算表达式')
-  @persistence(name='expr')
-  expression: string(200),
+  @name(label='值')
+  @persistence(name='val')
+  value: string(256),
 
-  @name(label='流出连线', singular='transition')
-  transitions: &business_policy_transition(source)[]
+  @name(label='逻辑关系')
+  @persistence(name='lgc')
+  logic: string(8),          // AND / OR
+
+  @name(label='顺序')
+  @persistence(name='ordpos')
+  ordinal_position: integer
 >
 
-@persistence(name='tv_bpe_bizpoltrnsn')
-@name(label='流转连线', plural='business_policy_transitions')
-@value
-business_policy_transition<
+@persistence(name='tn_bpe_bizpolact')
+@name(label='策略动作')
+business_policy_action<
 
-  @persistence(name='bizpolndsrcid')
-  source!!: &business_policy_node(id),
+  @name(label='标识')
+  @persistence(name='bizpolactid')
+  id!!: long,
 
-  @persistence(name='bizpolndtgtid')
-  target!!: &business_policy_node(id),
+  @name(label='策略')
+  @persistence(name='bizpolid')
+  business_policy: &business_policy(id),
 
-  // 核心：跳转条件表达式 (DSL)
-  // 例如: "context.amount > 10000 && context.risk_score < 60"
-  @name(label='条件表达式')
-  @persistence(name='condexpr')
-  condition_expression: string(500),
+  @name(label='动作类型')
+  @persistence(name='bizpolacttyp')
+  type: string(32),   // ALLOW / DENY / FILTER / MASK / ROUTE / COMPUTE
 
-  @name(label='优先级')
-  @persistence(name='prio')
-  priority: integer
+  @name(label='目标字段')
+  @persistence(name='tgt')
+  target: string(64),
+
+  @name(label='表达式')
+  @persistence(name='expr')
+  expression: string(1000),  // SQL / DSL
+
+  @name(label='顺序')
+  @persistence(name='ordpos')
+  ordinal_position: integer
 >

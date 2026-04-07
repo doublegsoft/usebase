@@ -27,10 +27,18 @@ public class SourceParser extends UsebaseParser {
       TabularArray tabularArray = new TabularArray();
       tabularArray.setMainVariable(varname);
       tabularArray.setMainObject(varObj);
-      for (int i = 1; i < ctx.anybase_id().size(); i++) {
-        io.doublegsoft.usebase.UsebaseParser.Usebase_conditionContext ctxCond = ctx.usebase_condition(i - 1);
-        String rightVarName = ctx.anybase_id(i).getText();
+      for (int i = 0; i < ctx.usebase_source_var().size(); i++) {
+        io.doublegsoft.usebase.UsebaseParser.Usebase_conditionContext ctxCond = ctx.usebase_condition(i);
+        String rightVarName = ctx.usebase_source_var(i).name.getText();
+        String rightAlias = null;
+        if (ctx.usebase_source_var(i).alias != null) {
+          rightAlias = ctx.usebase_source_var(i).alias.getText();
+        }
         VariableDefinition rightVar = usecase.getVariable(rightVarName);
+        if (rightAlias != null) {
+          // 同时把name作为别名
+          usecase.registerVariable(rightAlias, rightVar.getType(), rightVarName);
+        }
         String leftExpr = ctxCond.anybase_identifier().getText();
         ObjectDefinition leftObj = findLeftObject(leftExpr, tabularArray);
         AttributeDefinition leftAttr = leftObj.getAttribute(leftExpr);

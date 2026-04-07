@@ -1,0 +1,178 @@
+@persistence(name='tn_log_bizlog')
+@name(label='业务日志', plural='biz_logs')
+@entity
+biz_log<
+
+  @name(label='标识')
+  @persistence(name='logid')
+  id!!: long,
+
+  // ================= 谁 =================
+  @name(label='操作人ID')
+  @persistence(name='oprid')
+  operator_id!: long,
+
+  @name(label='操作人名称')
+  @persistence(name='oprnm')
+  operator_name: string(100),
+
+  // ================= 做了什么 =================
+  @name(label='操作类型')
+  @persistence(name='act')
+  action!+: string(50),
+
+  // ================= 对什么 =================
+  @name(label='实体类型')
+  @persistence(name='enttp')
+  entity_type!+: string(50),
+
+  @name(label='实体ID')
+  @persistence(name='entid')
+  entity_id!: string(64),
+
+  // ================= 业务上下文 =================
+  @name(label='模块')
+  @persistence(name='mdl')
+  module: string(50),
+
+  @name(label='场景')
+  @persistence(name='scn')
+  scene: string(50),
+
+  // ================= 数据变化（核心） =================
+  @name(label='变更前数据')
+  @persistence(name='befdat')
+  before_data: clob,
+
+  @name(label='变更后数据')
+  @persistence(name='aftdat')
+  after_data: clob,
+
+  // ================= 结果 =================
+  @name(label='执行结果')
+  @persistence(name='res')
+  result: string(20),
+
+  @name(label='错误信息')
+  @persistence(name='errmsg')
+  error_message: string(1000),
+
+  // ================= 链路追踪 =================
+  @name(label='Trace ID')
+  @persistence(name='trcid')
+  trace_id: string(64),
+
+  @name(label='Request ID')
+  @persistence(name='reqid')
+  request_id: string(64),
+
+  // ================= 扩展 =================
+  @name(label='扩展数据')
+  @persistence(name='ext')
+  ext_data: clob,
+
+  // ================= 时间 =================
+  @name(label='创建时间')
+  @persistence(name='crttm')
+  created_time = now: datetime
+>
+
+@persistence(name='tn_log_bizevt')
+@name(label='业务事件日志', plural='biz_events')
+@entity
+biz_event<
+
+  @name(label='标识')
+  @persistence(name='evid')
+  id!!: long,
+
+  // ================= 事件模型 =================
+  @name(label='事件类型')
+  @persistence(name='evt')
+  event_type!+: string(50), // ORDER_CREATED / NODE_EXECUTED / POLICY_HIT
+
+  @name(label='事件类别')
+  @persistence(name='evcat')
+  event_category: string(50), // workflow / policy / dataset / billing
+
+  // ================= 关联主体 =================
+  @name(label='主体类型')
+  @persistence(name='subjtp')
+  subject_type: string(50),
+
+  @name(label='主体ID')
+  @persistence(name='subjid')
+  subject_id: string(64),
+
+  // ================= 操作人 =================
+  @name(label='操作人ID')
+  @persistence(name='oprid')
+  operator_id: long,
+
+  @name(label='操作人名称')
+  @persistence(name='oprnm')
+  operator_name: string(100),
+
+  // ================= 业务上下文 =================
+  @name(label='流程实例ID')
+  @persistence(name='wfinstid')
+  workflow_instance_id: long,
+
+  @name(label='节点实例ID')
+  @persistence(name='nodeinstid')
+  node_instance_id: long,
+
+  @name(label='策略ID')
+  @persistence(name='polid')
+  policy_id: long,
+
+  // ================= 数据变化 =================
+  @name(label='输入数据')
+  @persistence(name='input')
+  input_data: clob,
+
+  @name(label='输出数据')
+  @persistence(name='output')
+  output_data: clob,
+
+  @name(label='变更前')
+  @persistence(name='befdat')
+  before_data: clob,
+
+  @name(label='变更后')
+  @persistence(name='aftdat')
+  after_data: clob,
+
+  // ================= 执行结果 =================
+  @name(label='执行状态')
+  @persistence(name='status')
+  status: string(20), // SUCCESS / FAIL
+
+  @name(label='错误信息')
+  @persistence(name='errmsg')
+  error_message: string(1000),
+
+  // ================= 链路 =================
+  @name(label='Trace ID')
+  @persistence(name='trcid')
+  trace_id: string(64),
+
+  @name(label='Span ID')
+  @persistence(name='spnid')
+  span_id: string(64),
+
+  @name(label='父Span ID')
+  @persistence(name='pspnid')
+  parent_span_id: string(64),
+
+  // ================= 扩展 =================
+  @name(label='扩展数据')
+  @persistence(name='ext')
+  ext_data: clob,
+
+  // ================= 时间 =================
+  @name(label='创建时间')
+  @persistence(name='crttm')
+  created_time = now: datetime
+>
+
