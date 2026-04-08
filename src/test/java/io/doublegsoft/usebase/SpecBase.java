@@ -10,8 +10,13 @@ import io.doublegsoft.usebase.association.AssociationBuilder;
 import io.doublegsoft.usebase.modelbase.ModelbaseWriter;
 import io.doublegsoft.usebase.output.TemplateOutputWriter;
 import io.doublegsoft.usebase.aggregate.AggregateBuilder;
+import org.junit.Assert;
 
 import java.io.*;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -317,5 +322,18 @@ public class SpecBase {
       e.printStackTrace();
       return false;
     }
+  }
+
+  protected void installData(String path, String json) throws IOException, InterruptedException {
+    HttpClient client = HttpClient.newHttpClient();
+
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create("http://localhost:8810/wfm" + path))
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString(json))
+        .build();
+    HttpResponse<String> response =
+        client.send(request, HttpResponse.BodyHandlers.ofString());
+    Assert.assertEquals(200, response.statusCode());
   }
 }

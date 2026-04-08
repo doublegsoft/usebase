@@ -2,9 +2,14 @@ package io.doublegsoft.usebase.codegen;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
+import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metamodel.AssignmentDefinition;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.ToNumberPolicy;
+import com.google.gson.reflect.TypeToken;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
 import io.doublegsoft.usebase.association.AssociationBuilder;
@@ -17,6 +22,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,6 +31,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class WorkflowManagementSpec extends SpecBase {
 
@@ -138,22 +146,6 @@ public class WorkflowManagementSpec extends SpecBase {
 
     ObjectDefinition wfdefArgsObj = usecase.getContextModel().findObjectByName("$wfdef");
     Assert.assertNotNull(wfdefArgsObj);
-    // FIXME: 丰富下面测试用例
-//    Assert.assertEquals("id", wfdefArgsObj.getAttributes()[0].getName());
-//    Assert.assertEquals("workflow_definition", wfdefArgsObj.getAttributes()[0]
-//        .getLabelledOptions("original").get("object"));
-
-//    ObjectDefinition wfactconnsObj = usecase.getContextModel().findObjectByName("#wfdef");
-//    Assert.assertNotNull(wfactconnsObj);
-//    Assert.assertEquals("workflow_action_connections", wfactconnsObj.getAttributes()[0].getName());
-//    Assert.assertEquals("workflow_action_connection", ((CollectionType) wfactconnsObj.getAttributes()[0].getType())
-//        .getComponentType().getName());
-
-//    ObjectDefinition wfactconnsArgsObj = usecase.getContextModel().findObjectByName("$wfactconns");
-//    Assert.assertNotNull(wfactconnsArgsObj);
-//    Assert.assertEquals("workflow_definition_id", wfactconnsArgsObj.getAttributes()[0].getName());
-//    Assert.assertEquals("workflow_definition", wfactconnsArgsObj.getAttributes()[0]
-//        .getLabelledOptions("original").get("object"));
 
     String root = "out/java/wfm";
     rm(root);
@@ -169,27 +161,30 @@ public class WorkflowManagementSpec extends SpecBase {
     new Thread(() -> {
       bash("cd out/java/wfm && java -jar target/wfm-1.0.jar");
     }).start();
+    // 等待启动完毕
+    Thread.sleep(1000 * 10);
     // 准备插入数据
-//    Class.forName("org.h2.Driver");
-//    Connection conn = DriverManager.getConnection("jdbc:h2:mem:test;MODE=MYSQL;DB_CLOSE_DELAY=-1");
-//    Statement stmt = conn.createStatement();
-//    File dir = new File("src/test/resources/testdata/wfm/");
-//    for (File f : dir.listFiles()) {
-//      if (!f.getName().endsWith(".sql")) {
-//        continue;
-//      }
-//      List<String> lines = Files.readAllLines(f.toPath());
-//      lines.stream().forEach(l -> {
-//        try {
-//          stmt.execute(l);
-//        } catch (SQLException e) {
-//          throw new RuntimeException(e);
-//        }
-//      });
-//    }
+    byte[] bytes = Files.readAllBytes(new File("src/test/resources/testjson/wfm/123((45)6)78.json").toPath());
+    String content = new String(bytes, StandardCharsets.UTF_8);
 
+    Gson gson = new GsonBuilder()
+        .setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
+        .create();
+    Type type = new TypeToken<Map<String, Object>>() {}.getType();
+    Map<String, Object> data = gson.fromJson(content, type);
+
+    Map<String,Object> wf = (Map<String,Object>) data.get("workflowDefinition");
+    List<Map<String,Object>> wacs = (List<Map<String,Object>>) data.get("workflowActionConnections");
+    List<Map<String,Object>> was = (List<Map<String,Object>>) data.get("workflowActions");
+    installData("/workflow_definition/save", gson.toJson(wf));
+    for (Map<String,Object> wa : was) {
+      installData("/workflow_action/save", gson.toJson(wa));
+    }
+    for (Map<String,Object> wac : wacs) {
+      installData("/workflow_action/save", gson.toJson(wac));
+    }
     // TODO: run client test
-    Thread.sleep(1000 * 20);
+    Thread.sleep(1000 * 5);
     bash("ps aux | grep \"[w]fm-1.0.jar\" | awk '{print $2}' | xargs kill -9");
   }
 

@@ -7,8 +7,7 @@
     "referenceId": "LEAVE",
     "referenceType": "BUSINESS",
     "note": "复杂审批流程（含条件+并行+汇聚）",
-    "state": "A",
-    "lastModifiedTime": "CURRENT_TIMESTAMP"
+    "state": "A"
   },
 
   "workflowActions": [
