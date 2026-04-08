@@ -1,0 +1,98 @@
+{
+  "workflowDefinition": {
+    "workflowDefinitionId": 1,
+    "workflowDefinitionCode": "LEAVE_FLOW",
+    "workflowDefinitionName": "请假流程",
+    "workflowDefinitionType": "LEAVE",
+    "referenceId": "LEAVE",
+    "referenceType": "BUSINESS",
+    "note": "简单请假流程",
+    "state": "A"
+  },
+
+  "workflowActions": [
+    {
+      "actionId": 1,
+      "actionName": "提交申请",
+      "actionType": "NODE",
+      "roleName": "员工",
+      "operationType": "PROC",
+      "dynamicType": "SEQU",
+      "roleId": "EMP",
+      "roleType": "ROLE",
+      "required": true,
+      "optional": "1",
+      "statusValue": "SUB"
+    },
+    {
+      "actionId": 2,
+      "actionName": "直属领导审批",
+      "actionType": "NODE",
+      "roleName": "领导",
+      "operationType": "PROC",
+      "dynamicType": "SEQU",
+      "roleId": "LEADER",
+      "roleType": "ROLE",
+      "required": true,
+      "optional": "1",
+      "statusValue": "APR1"
+    },
+    {
+      "actionId": 3,
+      "actionName": "HR审批",
+      "actionType": "NODE",
+      "roleName": "HR",
+      "operationType": "PROC",
+      "dynamicType": "SEQU",
+      "roleId": "HR",
+      "roleType": "ROLE",
+      "required": true,
+      "optional": "1",
+      "statusValue": "APR2"
+    },
+    {
+      "actionId": 4,
+      "actionName": "结束",
+      "actionType": "NODE",
+      "roleName": "系统",
+      "operationType": "PROC",
+      "dynamicType": "SEQU",
+      "roleId": "SYS",
+      "roleType": "ROLE",
+      "required": true,
+      "optional": "1",
+      "statusValue": "END"
+    }
+  ],
+
+  "workflowActionConnections": [
+    {
+      "currentActionId": 1,
+      "previousActionId": 0,
+      "nextActionId": 2,
+      "triggeringCondition": null,
+      "optional": "1"
+    },
+    {
+      "currentActionId": 2,
+      "previousActionId": 1,
+      "nextActionId": 3,
+      "triggeringCondition": null,
+      "optional": "1"
+    },
+    {
+      "currentActionId": 3,
+      "previousActionId": 2,
+      "nextActionId": 4,
+      "triggeringCondition": null,
+      "optional": "1"
+    },
+    {
+      "currentActionId": 4,
+      "previousActionId": 3,
+      "nextActionId": null,
+      "triggeringCondition": null,
+      "optional": "1"
+    }
+  ]
+}

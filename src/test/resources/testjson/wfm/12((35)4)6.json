@@ -1,0 +1,145 @@
+{
+  "workflowDefinition": {
+    "workflowDefinitionId": 2,
+    "workflowDefinitionCode": "LEAVE_FLOW_PAR",
+    "workflowDefinitionName": "请假流程-并行",
+    "workflowDefinitionType": "LEAVE",
+    "referenceId": "LEAVE",
+    "referenceType": "BUSINESS",
+    "note": "并行审批流程",
+    "state": "A"
+  },
+
+  "workflowActions": [
+    {
+      "actionId": 11,
+      "actionName": "提交申请",
+      "actionType": "NODE",
+      "roleName": "员工",
+      "operationType": "PROC",
+      "dynamicType": "SEQU",
+      "roleId": "EMP",
+      "roleType": "ROLE",
+      "required": true,
+      "optional": "1",
+      "statusValue": "SUB"
+    },
+    {
+      "actionId": 12,
+      "actionName": "领导审批",
+      "actionType": "NODE",
+      "roleName": "领导",
+      "operationType": "PROC",
+      "dynamicType": "SEQU",
+      "roleId": "LEADER",
+      "roleType": "ROLE",
+      "required": true,
+      "optional": "1",
+      "statusValue": "APR1"
+    },
+    {
+      "actionId": 13,
+      "actionName": "财务审批",
+      "actionType": "NODE",
+      "roleName": "财务",
+      "operationType": "PROC",
+      "dynamicType": "PARA",
+      "roleId": "FIN",
+      "roleType": "ROLE",
+      "required": true,
+      "optional": "*",
+      "statusValue": "APR2"
+    },
+    {
+      "actionId": 14,
+      "actionName": "HR审批",
+      "actionType": "NODE",
+      "roleName": "HR",
+      "operationType": "PROC",
+      "dynamicType": "PARA",
+      "roleId": "HR",
+      "roleType": "ROLE",
+      "required": true,
+      "optional": "*",
+      "statusValue": "APR3"
+    },
+    {
+      "actionId": 15,
+      "actionName": "汇总处理",
+      "actionType": "NODE",
+      "roleName": "系统",
+      "operationType": "PROC",
+      "dynamicType": "SEQU",
+      "roleId": "SYS",
+      "roleType": "ROLE",
+      "required": true,
+      "optional": "1",
+      "statusValue": "MERGE"
+    },
+    {
+      "actionId": 16,
+      "actionName": "结束",
+      "actionType": "NODE",
+      "roleName": "系统",
+      "operationType": "PROC",
+      "dynamicType": "SEQU",
+      "roleId": "SYS",
+      "roleType": "ROLE",
+      "required": true,
+      "optional": "1",
+      "statusValue": "END"
+    }
+  ],
+
+  "workflowActionConnections": [
+    {
+      "currentActionId": 11,
+      "previousActionId": 0,
+      "nextActionId": 12,
+      "triggeringCondition": null,
+      "optional": "1"
+    },
+    {
+      "currentActionId": 12,
+      "previousActionId": 11,
+      "nextActionId": 13,
+      "triggeringCondition": null,
+      "optional": "*"
+    },
+    {
+      "currentActionId": 12,
+      "previousActionId": 11,
+      "nextActionId": 14,
+      "triggeringCondition": null,
+      "optional": "*"
+    },
+    {
+      "currentActionId": 13,
+      "previousActionId": 12,
+      "nextActionId": 15,
+      "triggeringCondition": null,
+      "optional": "1"
+    },
+    {
+      "currentActionId": 15,
+      "previousActionId": 13,
+      "nextActionId": 16,
+      "triggeringCondition": null,
+      "optional": "1"
+    },
+    {
+      "currentActionId": 14,
+      "previousActionId": 12,
+      "nextActionId": 16,
+      "triggeringCondition": null,
+      "optional": "1"
+    },
+    {
+      "currentActionId": 16,
+      "previousActionId": 15,
+      "nextActionId": null,
+      "triggeringCondition": null,
+      "optional": "1"
+    }
+  ]
+}
