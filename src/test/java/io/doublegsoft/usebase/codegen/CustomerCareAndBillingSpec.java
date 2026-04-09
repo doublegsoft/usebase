@@ -160,7 +160,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
       System.out.println(objInChain.getName());
     }
     printModelbaseExtensionByUsecase(OUTPUT, usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_TX_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test
@@ -180,7 +180,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
       System.out.println(objInChain.getName());
     }
     printModelbaseExtensionByUsecase(OUTPUT, usecase);
-    printJavaCodeForUsecase(TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
+    printJavaCodeForUsecase(TEMPLATE_TX_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl", usecase, dataModel);
   }
 
   @Test

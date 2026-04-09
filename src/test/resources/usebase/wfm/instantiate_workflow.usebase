@@ -1,9 +1,14 @@
 @instantiate_workflow({workflow_definition: id!}, {workflow_instance: reference_id, reference_type}):{workflow_instance: id}
 |&| wfdef = {workflow_definition}#(id = id)
-|&| wfactconns = [workflow_action_connection]#(workflow_definition = id, previous_action = 0)
+|&| wfactconns = [workflow_action_connection]#(workflow_definition = id)
 |&| wfacts = [workflow_action]#(id = wfactconns.current_action)
-|:| wfinst = {workflow_instance: status = 'ST'}&wfdef
-|:| wfactInsts = [{workflow_action_instance}]&wfacts
+|:| wfinst = {workflow_instance: status = 'ST', name = wfdef.name,
+    workflow_definition = wfdef.id,
+    reference_id = reference_id,
+    reference_type = reference_type}&wfdef
+|:| wfactInsts = [{workflow_action_instance:
+     workflow_instance = wfinst.id,
+     name = wfacts.name}]&wfacts
 |:| wfactconninsts = [{
       workflow_action_connection_instance: workflow_instance = wfinst.id,
       current_action_instance = curr.id,

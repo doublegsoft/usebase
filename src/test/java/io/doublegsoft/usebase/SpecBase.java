@@ -30,13 +30,17 @@ public class SpecBase {
 
   public static final String PROJ_NAME = "demo4j";
 
-  public static final String TEMPLATE_ROOT = "java-tx@spring-1.x/src/main/java/$namespace$/$app$";
+  public static final String TEMPLATE_TX_ROOT = "java-tx@spring-1.x/src/main/java/$namespace$/$app$";
 
-  public static final String TEMPLATE_SERVICE_HELPER = TEMPLATE_ROOT + "/service/helper/$usecase$Helper.java.ftl";
+  public static final String TEMPLATE_MVC_ROOT = "java-mvc@spring-1.x/src/main/java/$namespace$/$app$";
 
-  public static final String TEMPLATE_SERVICE_IMPL = TEMPLATE_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl";
+  public static final String TEMPLATE_SERVICE_HELPER = TEMPLATE_TX_ROOT + "/service/helper/$usecase$Helper.java.ftl";
 
-  public static final String TEMPLATE_SERVICE = TEMPLATE_ROOT + "/service/$usecase$Service.java.ftl";
+  public static final String TEMPLATE_SERVICE_IMPL = TEMPLATE_TX_ROOT + "/service/impl/$usecase$ServiceImpl.java.ftl";
+
+  public static final String TEMPLATE_SERVICE = TEMPLATE_TX_ROOT + "/service/$usecase$Service.java.ftl";
+
+  public static final String TEMPLATE_CONTROLLER = TEMPLATE_MVC_ROOT + "/mvc/$usecase$Controller.java.ftl";
 
   protected ModelDefinition loadModel(String... projs) throws Exception {
     String content = "";
@@ -181,25 +185,19 @@ public class SpecBase {
 
     try {
       System.out.println("开始删除目录: " + pathStr);
-
       Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-          Files.delete(file);                    // 删除文件
-          System.out.println("   删除文件: " + file);
+          Files.delete(file);
           return FileVisitResult.CONTINUE;
         }
 
         @Override
         public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
           Files.delete(dir);                     // 删除空目录
-          System.out.println("   删除目录: " + dir);
           return FileVisitResult.CONTINUE;
         }
       });
-
-      System.out.println("目录删除完成: " + pathStr);
-
     } catch (IOException e) {
       System.err.println("删除失败: " + e.getMessage());
       e.printStackTrace();
@@ -324,16 +322,28 @@ public class SpecBase {
     }
   }
 
-  protected void installData(String path, String json) throws IOException, InterruptedException {
+  protected void postData(String path, String json) throws IOException, InterruptedException {
     HttpClient client = HttpClient.newHttpClient();
 
     HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create("http://localhost:8810/wfm" + path))
+        .uri(URI.create("http://localhost:8810/api" + path))
         .header("Content-Type", "application/json")
         .POST(HttpRequest.BodyPublishers.ofString(json))
         .build();
     HttpResponse<String> response =
         client.send(request, HttpResponse.BodyHandlers.ofString());
     Assert.assertEquals(200, response.statusCode());
+  }
+
+  protected void generateCode(String usebsaseOutFile, String codeOutDir, UsecaseDefinition usecase, ModelDefinition dataModel) throws IOException {
+    printModelbaseExtensionByUsecase(usebsaseOutFile, usecase);
+    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, codeOutDir + "/service/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, codeOutDir + "/service/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE,
+        usecase, dataModel, codeOutDir + "/service/" + toPascalCase(usecase.getName()) + "Service.java");
+    printJavaCodeForUsecase("wfm", TEMPLATE_CONTROLLER,
+        usecase, dataModel, codeOutDir + "/mvc/" + toPascalCase(usecase.getName()) + "Controller.java");
   }
 }

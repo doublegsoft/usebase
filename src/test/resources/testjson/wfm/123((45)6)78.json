@@ -12,9 +12,9 @@
 
   "workflowActions": [
     {
-      "actionId": 21,
-      "actionName": "提交申请",
-      "actionType": "NODE",
+      "workflowActionId": 21,
+      "workflowActionName": "提交申请",
+      "workflowActionType": "NODE",
       "roleName": "员工",
       "operationType": "PROC",
       "dynamicType": "SEQU",
@@ -25,9 +25,9 @@
       "statusValue": "SUB"
     },
     {
-      "actionId": 22,
-      "actionName": "直属领导审批",
-      "actionType": "NODE",
+      "workflowActionId": 22,
+      "workflowActionName": "直属领导审批",
+      "workflowActionType": "NODE",
       "roleName": "领导",
       "operationType": "PROC",
       "dynamicType": "SEQU",
@@ -38,9 +38,9 @@
       "statusValue": "APR1"
     },
     {
-      "actionId": 23,
-      "actionName": "金额判断",
-      "actionType": "NODE",
+      "workflowActionId": 23,
+      "workflowActionName": "金额判断",
+      "workflowActionType": "NODE",
       "roleName": "系统",
       "operationType": "COND",
       "dynamicType": "SEQU",
@@ -51,9 +51,9 @@
       "statusValue": "COND"
     },
     {
-      "actionId": 24,
-      "actionName": "财务审批",
-      "actionType": "NODE",
+      "workflowActionId": 24,
+      "workflowActionName": "财务审批",
+      "workflowActionType": "NODE",
       "roleName": "财务",
       "operationType": "PROC",
       "dynamicType": "PARA",
@@ -64,9 +64,9 @@
       "statusValue": "APR2"
     },
     {
-      "actionId": 25,
-      "actionName": "总监审批",
-      "actionType": "NODE",
+      "workflowActionId": 25,
+      "workflowActionName": "总监审批",
+      "workflowActionType": "NODE",
       "roleName": "总监",
       "operationType": "PROC",
       "dynamicType": "SEQU",
@@ -77,9 +77,9 @@
       "statusValue": "APR3"
     },
     {
-      "actionId": 26,
-      "actionName": "HR审批",
-      "actionType": "NODE",
+      "workflowActionId": 26,
+      "workflowActionName": "HR审批",
+      "workflowActionType": "NODE",
       "roleName": "HR",
       "operationType": "PROC",
       "dynamicType": "PARA",
@@ -90,9 +90,9 @@
       "statusValue": "APR4"
     },
     {
-      "actionId": 27,
-      "actionName": "汇聚处理",
-      "actionType": "NODE",
+      "workflowActionId": 27,
+      "workflowActionName": "汇聚处理",
+      "workflowActionType": "NODE",
       "roleName": "系统",
       "operationType": "PROC",
       "dynamicType": "SEQU",
@@ -103,9 +103,9 @@
       "statusValue": "MERGE"
     },
     {
-      "actionId": 28,
-      "actionName": "结束",
-      "actionType": "NODE",
+      "workflowActionId": 28,
+      "workflowActionName": "结束",
+      "workflowActionType": "NODE",
       "roleName": "系统",
       "operationType": "PROC",
       "dynamicType": "SEQU",
@@ -119,72 +119,82 @@
 
   "workflowActionConnections": [
     {
-      "currentActionId": 21,
-      "previousActionId": 0,
-      "nextActionId": 22,
+      "workflowDefinitionId": 3,
+      "currentActionWorkflowActionId": 21,
+      "previousActionWorkflowActionId": 0,
+      "nextActionWorkflowActionId": 22,
       "triggeringCondition": null,
       "optional": "1"
     },
     {
-      "currentActionId": 22,
-      "previousActionId": 21,
-      "nextActionId": 23,
+      "workflowDefinitionId": 3,
+      "currentActionWorkflowActionId": 22,
+      "previousActionWorkflowActionId": 21,
+      "nextActionWorkflowActionId": 23,
       "triggeringCondition": null,
       "optional": "1"
     },
     {
-      "currentActionId": 23,
-      "previousActionId": 22,
-      "nextActionId": 24,
+      "workflowDefinitionId": 3,
+      "currentActionWorkflowActionId": 23,
+      "previousActionWorkflowActionId": 22,
+      "nextActionWorkflowActionId": 24,
       "triggeringCondition": "amount > 5000",
       "optional": "*"
     },
     {
-      "currentActionId": 23,
-      "previousActionId": 22,
-      "nextActionId": 26,
+      "workflowDefinitionId": 3,
+      "currentActionWorkflowActionId": 23,
+      "previousActionWorkflowActionId": 22,
+      "nextActionWorkflowActionId": 26,
       "triggeringCondition": "amount <= 5000",
       "optional": "*"
     },
     {
-      "currentActionId": 24,
-      "previousActionId": 23,
-      "nextActionId": 25,
+      "workflowDefinitionId": 3,
+      "currentActionWorkflowActionId": 24,
+      "previousActionWorkflowActionId": 23,
+      "nextActionWorkflowActionId": 25,
       "triggeringCondition": null,
       "optional": "1"
     },
     {
-      "currentActionId": 25,
-      "previousActionId": 24,
-      "nextActionId": 27,
+      "workflowDefinitionId": 3,
+      "currentActionWorkflowActionId": 25,
+      "previousActionWorkflowActionId": 24,
+      "nextActionWorkflowActionId": 27,
       "triggeringCondition": null,
       "optional": "1"
     },
     {
-      "currentActionId": 26,
-      "previousActionId": 23,
-      "nextActionId": 27,
+      "workflowDefinitionId": 3,
+      "currentActionWorkflowActionId": 26,
+      "previousActionWorkflowActionId": 23,
+      "nextActionWorkflowActionId": 27,
       "triggeringCondition": null,
       "optional": "1"
     },
     {
-      "currentActionId": 27,
-      "previousActionId": 25,
-      "nextActionId": 28,
+      "workflowDefinitionId": 3,
+      "currentActionWorkflowActionId": 27,
+      "previousActionWorkflowActionId": 25,
+      "nextActionWorkflowActionId": 28,
       "triggeringCondition": null,
       "optional": "1"
     },
     {
-      "currentActionId": 27,
-      "previousActionId": 26,
-      "nextActionId": 28,
+      "workflowDefinitionId": 3,
+      "currentActionWorkflowActionId": 27,
+      "previousActionWorkflowActionId": 26,
+      "nextActionWorkflowActionId": 28,
       "triggeringCondition": null,
       "optional": "1"
     },
     {
-      "currentActionId": 28,
-      "previousActionId": 27,
-      "nextActionId": null,
+      "workflowDefinitionId": 3,
+      "currentActionWorkflowActionId": 28,
+      "previousActionWorkflowActionId": 27,
+      "nextActionWorkflowActionId": null,
       "triggeringCondition": null,
       "optional": "1"
     }

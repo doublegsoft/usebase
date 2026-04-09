@@ -2,9 +2,7 @@ package io.doublegsoft.usebase.codegen;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metamodel.AssignmentDefinition;
-import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,13 +20,10 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +33,8 @@ public class WorkflowManagementSpec extends SpecBase {
   private static final String OUTPUT = "out/usebase/wfm.modelbase";
 
   public static final String OUTPUT_DIR = "out/java/wfm/src/main/java/biz/doublegsoft/wfm/service";
+
+  public static final String OUTPUT_ROOT = "out/java/wfm/src/main/java/biz/doublegsoft/wfm";
 
   @BeforeClass
   public static void initialize() throws Exception {
@@ -148,41 +145,23 @@ public class WorkflowManagementSpec extends SpecBase {
     Assert.assertNotNull(wfdefArgsObj);
 
     String root = "out/java/wfm";
+    // 清空输出文件夹
     rm(root);
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
-    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE_HELPER,
-        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE_IMPL,
-        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE,
-        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+    // 用例代码生成
+    generateCode(OUTPUT, OUTPUT_ROOT, usecase, dataModel);
+    // 项目代码生成并编译
     bash("env/java/gen-wfm.sh");
 
+    // 启动服务器
     new Thread(() -> {
       bash("cd out/java/wfm && java -jar target/wfm-1.0.jar");
     }).start();
     // 等待启动完毕
     Thread.sleep(1000 * 10);
-    // 准备插入数据
-    byte[] bytes = Files.readAllBytes(new File("src/test/resources/testjson/wfm/123((45)6)78.json").toPath());
-    String content = new String(bytes, StandardCharsets.UTF_8);
-
-    Gson gson = new GsonBuilder()
-        .setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
-        .create();
-    Type type = new TypeToken<Map<String, Object>>() {}.getType();
-    Map<String, Object> data = gson.fromJson(content, type);
-
-    Map<String,Object> wf = (Map<String,Object>) data.get("workflowDefinition");
-    List<Map<String,Object>> wacs = (List<Map<String,Object>>) data.get("workflowActionConnections");
-    List<Map<String,Object>> was = (List<Map<String,Object>>) data.get("workflowActions");
-    installData("/workflow_definition/save", gson.toJson(wf));
-    for (Map<String,Object> wa : was) {
-      installData("/workflow_action/save", gson.toJson(wa));
-    }
-    for (Map<String,Object> wac : wacs) {
-      installData("/workflow_action/save", gson.toJson(wac));
-    }
+    // 插入测试数据
+    installWfmData();
+    // 启动一个工作流
+    instantiateWorkflow();
     // TODO: run client test
     Thread.sleep(1000 * 5);
     bash("ps aux | grep \"[w]fm-1.0.jar\" | awk '{print $2}' | xargs kill -9");
@@ -306,4 +285,33 @@ public class WorkflowManagementSpec extends SpecBase {
         usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
+  private void installWfmData() throws IOException, InterruptedException {
+    byte[] bytes = Files.readAllBytes(new File("src/test/resources/testjson/wfm/123((45)6)78.json").toPath());
+    String content = new String(bytes, StandardCharsets.UTF_8);
+
+    Gson gson = new GsonBuilder()
+        .setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
+        .create();
+    Type type = new TypeToken<Map<String, Object>>() {}.getType();
+    Map<String, Object> data = gson.fromJson(content, type);
+
+    Map<String,Object> wf = (Map<String,Object>) data.get("workflowDefinition");
+    List<Map<String,Object>> wacs = (List<Map<String,Object>>) data.get("workflowActionConnections");
+    List<Map<String,Object>> was = (List<Map<String,Object>>) data.get("workflowActions");
+    postData("/wfm/workflow_definition/save", gson.toJson(wf));
+    for (Map<String,Object> wa : was) {
+      postData("/wfm/workflow_action/save", gson.toJson(wa));
+    }
+    for (Map<String,Object> wac : wacs) {
+      postData("/wfm/workflow_action_connection/save", gson.toJson(wac));
+    }
+  }
+
+  private void instantiateWorkflow() throws IOException, InterruptedException {
+    postData("/wfm/instantiate_workflow", "{" +
+      "\"workflowDefinitionId\":3," +
+      "\"referenceId\":\"B\"," +
+      "\"referenceType\":\"1\"" +
+    "}");
+  }
 }

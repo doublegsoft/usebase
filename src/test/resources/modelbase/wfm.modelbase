@@ -164,11 +164,11 @@ workflow_action_connection<
 
   @comment(text='工作流前置动作')
   @persistence(name='prevactid')
-  previous_action!!: &workflow_action(id),
+  previous_action!! = 0: &workflow_action(id),
 
   @comment(text='工作流后续动作')
   @persistence(name='nxtactid')
-  next_action!!: &workflow_action(id),
+  next_action!! = 0: &workflow_action(id),
 
   @comment(text='工作流退回到某一步的动作')
   @persistence(name='rxactid')
@@ -199,12 +199,12 @@ workflow_instance<
   @persistence(name='wfdefid')
   workflow_definition!: &workflow_definition(id),
 
-  @name(label='工作流实例关联标识')
+  @name(label='工作流实例实际业务关联标识')
   @persistence(name='refid')
   @reference(value='id', name='reference')
   reference_id!: string(64),
 
-  @name(label='工作流实例关联类型')
+  @name(label='工作流实例实际业务关联类型')
   @persistence(name='reftyp')
   @reference(value='type', name='reference')
   reference_type!: string(64),
@@ -251,11 +251,11 @@ workflow_action_instance<
   @persistence(name='wfactinstid', text='工作流实例操作标识')
   id!!: long,
 
-  @name(label='工作流操作标识')
+  @name(label='工作流实例标识')
   @persistence(name='wfinstid')
   workflow_instance!: &workflow_instance(id),
 
-  @name(label='工作流操作标识')
+  @name(label='工作流操作原型标识')
   @persistence(name='wfactid')
   workflow_action!: &workflow_action(id),
 
@@ -263,7 +263,7 @@ workflow_action_instance<
   @persistence(name='srcid')
   source: &workflow_action_instance(id),
 
-  @name(label='工作流实例操作名称')
+  @name(label='工作流操作实例名称')
   @persistence(name='wfactinstnm')
   name!: name,
 
@@ -273,11 +273,11 @@ workflow_action_instance<
 
   @name(label='工作流节点实例关联标识')
   @persistence(name='refid')
-  reference_id!: string(64),
+  reference_id: string(64),
 
   @name(label='工作流节点实例关联类型')
   @persistence(name='reftyp')
-  reference_type!: string(64),
+  reference_type: string(64),
 
   @name(label='工作流处理过程类型', query='[]')
   @persistence(name='optyp')
@@ -361,11 +361,11 @@ workflow_action_connection_instance<
 
   @name(label='工作流实例前置动作')
   @persistence(name='prevactinstid')
-  previous_action_instance!!: &workflow_action_instance(id),
+  previous_action_instance!! = 0: &workflow_action_instance(id),
 
   @name(label='工作流实例后续动作')
   @persistence(name='nxtactinstid')
-  next_action_instance!!: &workflow_action_instance(id),
+  next_action_instance!! = 0: &workflow_action_instance(id),
 
   @name(label='工作流实例回滚动作')
   @persistence(name='rxactinstid')
