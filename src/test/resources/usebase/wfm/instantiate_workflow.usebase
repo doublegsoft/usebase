@@ -20,6 +20,4 @@
 |+| wfinst
 |+| wfactconninsts
 |+| wfactInsts
-// 如何找到workflow的第一个节点
-// |=| {workflow_action_instance: status = 'CP'}#(workflow_action)
 |.| wfinst

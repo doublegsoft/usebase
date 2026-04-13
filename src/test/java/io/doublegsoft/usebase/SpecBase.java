@@ -322,7 +322,7 @@ public class SpecBase {
     }
   }
 
-  protected void postData(String path, String json) throws IOException, InterruptedException {
+  protected String postData(String path, String json) throws IOException, InterruptedException {
     HttpClient client = HttpClient.newHttpClient();
 
     HttpRequest request = HttpRequest.newBuilder()
@@ -333,6 +333,7 @@ public class SpecBase {
     HttpResponse<String> response =
         client.send(request, HttpResponse.BodyHandlers.ofString());
     Assert.assertEquals(200, response.statusCode());
+    return response.body();
   }
 
   protected void generateCode(String usebsaseOutFile, String codeOutDir, UsecaseDefinition usecase, ModelDefinition dataModel) throws IOException {
@@ -346,4 +347,5 @@ public class SpecBase {
     printJavaCodeForUsecase("wfm", TEMPLATE_CONTROLLER,
         usecase, dataModel, codeOutDir + "/mvc/" + toPascalCase(usecase.getName()) + "Controller.java");
   }
+
 }

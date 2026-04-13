@@ -4,6 +4,7 @@ import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.AssignmentDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
+import com.doublegsoft.jcommons.utils.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.ToNumberPolicy;
@@ -82,7 +83,7 @@ public class WorkflowManagementSpec extends SpecBase {
    * 实例化一个工作流，通常用于启动工作流。
    */
   @Test
-  public void test_instantiate() throws Exception {
+  public void test_instantiate_workflow() throws Exception {
     ModelDefinition dataModel = loadModel("wfm");
     // 如何确定开始节点？这是个难点
     String expr = loadUsebaseExpression("wfm/instantiate_workflow.usebase");
@@ -144,55 +145,26 @@ public class WorkflowManagementSpec extends SpecBase {
     ObjectDefinition wfdefArgsObj = usecase.getContextModel().findObjectByName("$wfdef");
     Assert.assertNotNull(wfdefArgsObj);
 
-    String root = "out/java/wfm";
-    // 清空输出文件夹
-    rm(root);
-    // 用例代码生成
-    generateCode(OUTPUT, OUTPUT_ROOT, usecase, dataModel);
-    // 项目代码生成并编译
-    bash("env/java/gen-wfm.sh");
+    // E2E测试
 
-    // 启动服务器
-    new Thread(() -> {
-      bash("cd out/java/wfm && java -jar target/wfm-1.0.jar");
-    }).start();
-    // 等待启动完毕
-    Thread.sleep(1000 * 10);
-    // 插入测试数据
-    installWfmData();
-    // 启动一个工作流
-    instantiateWorkflow();
-    // TODO: run client test
-    Thread.sleep(1000 * 5);
-    bash("ps aux | grep \"[w]fm-1.0.jar\" | awk '{print $2}' | xargs kill -9");
+
+    generateAndRun(dataModel, usecase);
+    String res = postData("/wfm/workflow_instance/find", "{" +
+        "\"workflowDefinitionId\":3" +
+        "}");
+    // 1. 能够查询到这个用户实例
+    Assert.assertFalse(Strings.isEmpty(res));
+    System.out.println(res);
+    killServer();
   }
 
   /**
    * 在当前节点的通过操作。
    */
   @Test
-  public void test_complete() throws Exception {
+  public void test_step_workflow() throws Exception {
     ModelDefinition dataModel = loadModel("wfm");
-    String expr =
-        "@complete({workflow_action_instance: id!}):{workflow_instance: id} \n" +
-        "|&| wf_act_curr_inst = {workflow_action_instance}#(id = id) \n" +
-        "|&| wf_inst = {workflow_instance}#(id = wf_act_curr_inst.workflow_instance) \n" +
-        "|&| wf_act_next_conns = [workflow_action_connection]#(workflow_definition = wf_inst.workflow_definition, previous_action = wf_act_curr_inst.id) \n" +
-        "|*| wf_act_next_conn in wf_act_next_conns \n" +
-        "|*|&| wf_act_next_acts = [workflow_action]#(id = wf_act_next_conn.current_action)] \n" +
-        "|*|*| wf_act_next in wf_act_next_acts \n" +
-        "|*|*|?| wf_act_next_prev_inst.status != 'DONE' \n" +
-        "|*|*|?|=| all_done = false \n" +
-        "|*|?| all_done == true \n" +
-        "        // 当前工作流节点的下一个节点（前置节点全部完成），则更新为挂起状态 \n" +
-        "|*|?|=| {workflow_action_instance: status = 'PENDING'}#(id = wf_act_next_inst.id) \n" +
-        "        // 创建工作流待办 \n" +
-        "|*|?|+| {workflow_action_todo: workflow_action_instance = wf_act_next_inst, workflow_instance = wf_act_next_inst.workflow_instance} \n" +
-        "    // 更新工作流实例的状态，为当前工作流节点的状态 \n" +
-        "|=| {workflow_instance: status = wf_act_curr_inst.status}#(id = wf_act_curr_inst.workflow_instance) \n" +
-        "|=| {workflow_action_instance: status = 'COMPLETED'}#(id = wf_act_curr_inst.id) \n" +
-        "    // 记录工作流日志 \n" +
-        "|+| {workflow_action_journal: previous_action = workflow_action_instance, status = wf_act_curr_inst.status}&wf_act_curr_inst \n";
+    String expr = loadUsebaseExpression("wfm/step_workflow.usebase");
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     usecase.setModule("wfm");
     checkOriginalIndexAndObject(usecase.getReturnedObject());
@@ -204,20 +176,24 @@ public class WorkflowManagementSpec extends SpecBase {
     Assert.assertEquals("workflow_instance", ret.getAttributes()[0].getLabelledOptions("original").get("object"));
     Assert.assertEquals("workflow_instance_id", ret.getAttributes()[0].getName());
 
-    // 打印代码结构
-    // printStatements(usecase.getStatements());
+    expr = loadUsebaseExpression("wfm/instantiate_workflow.usebase");
+    UsecaseDefinition instantiateWorkflow = new Usebase(dataModel).parse(expr).get(0);
+    generateAndRun(dataModel, instantiateWorkflow, usecase);
+    String res = postData("/wfm/workflow_instance/find", "{" +
+        "\"workflowDefinitionId\":3" +
+        "}");
+    Map<String,Object> resp = new Gson().fromJson(res, Map.class);
+    Map<String,Object> row = ((List<Map<String,Object>>)resp.get("data")).get(0);
+    res = postData("/wfm/step_workflow", "{" +
+        "\"workflowInstanceId\":" + row.get("workflowInstanceId") +
+        "}");
 
-//    StatementDefinition stmt2 = usecase.getStatements().get(2);
-//    Assert.assertEquals(3, stmt2.getStatements().size());
-//    Assert.assertEquals(6, usecase.getStatements().size());
+    killServer();
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
-        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+    Assert.assertFalse(Strings.isEmpty(res));
+    resp = new Gson().fromJson(res, Map.class);
+    Assert.assertEquals(200, ((Number)resp.get("code")).intValue());
+    System.out.println(res);
   }
 
   /**
@@ -276,13 +252,16 @@ public class WorkflowManagementSpec extends SpecBase {
     checkOriginalIndexAndObject(usecase.getReturnedObject());
 //    Assert.assertEquals(6, usecase.getStatements().size());
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
-        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+    expr = loadUsebaseExpression("wfm/instantiate_workflow.usebase");
+    UsecaseDefinition instantiateWorkflow = new Usebase(dataModel).parse(expr).get(0);
+    generateAndRun(dataModel, usecase, instantiateWorkflow);
+    String res = postData("/wfm/workflow_instance/find", "{" +
+        "\"workflowDefinitionId\":3" +
+        "}");
+    // 1. 能够查询到这个用户实例
+    Assert.assertFalse(Strings.isEmpty(res));
+    System.out.println(res);
+    killServer();
   }
 
   private void installWfmData() throws IOException, InterruptedException {
@@ -313,5 +292,34 @@ public class WorkflowManagementSpec extends SpecBase {
       "\"referenceId\":\"B\"," +
       "\"referenceType\":\"1\"" +
     "}");
+  }
+
+  private void generateAndRun(ModelDefinition dataModel, UsecaseDefinition... usecases) throws Exception {
+    String root = "out/java/wfm";
+    // 清空输出文件夹
+    rm(root);
+    // 用例代码生成
+    for (UsecaseDefinition usecase : usecases) {
+      generateCode(OUTPUT, OUTPUT_ROOT, usecase, dataModel);
+    }
+    // 项目代码生成并编译
+    Assert.assertTrue(bash("env/java/gen-wfm.sh"));
+
+    // 启动服务器
+    new Thread(() -> {
+      bash("cd out/java/wfm && java -jar target/wfm-1.0.jar");
+      Assert.assertTrue(false);
+    }).start();
+    // 等待启动完毕
+    Thread.sleep(1000 * 10);
+    // 插入测试数据
+    installWfmData();
+    // 启动一个工作流
+    instantiateWorkflow();
+  }
+
+  private void killServer() throws Exception {
+    Thread.sleep(1000 * 5);
+    bash("ps aux | grep \"[w]fm-1.0.jar\" | awk '{print $2}' | xargs kill -9");
   }
 }

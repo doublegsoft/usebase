@@ -1,0 +1,19 @@
+@step_workflow({workflow_action_instance: id!}):{workflow_instance: id}
+|&| wf_act_curr_inst = {workflow_action_instance}#(id = id)
+|&| wf_inst = {workflow_instance}#(id = wf_act_curr_inst.workflow_instance)
+|&| wf_act_next_conns = [workflow_action_connection]#(workflow_definition = wf_inst.workflow_definition, previous_action = wf_act_curr_inst.id)
+|*| wf_act_next_conn in wf_act_next_conns
+|*|&| wf_act_next_acts = [workflow_action]#(id = wf_act_next_conn.current_action)]
+|*|*| wf_act_next in wf_act_next_acts
+|*|*|?| wf_act_next_prev_inst.status != 'DONE'
+|*|*|?|=| all_done = false
+|*|?| all_done == true
+        // 当前工作流节点的下一个节点（前置节点全部完成），则更新为挂起状态
+|*|?|=| {workflow_action_instance: status = 'PENDING'}#(id = wf_act_next_inst.id)
+        // 创建工作流待办
+|*|?|+| {workflow_action_todo: workflow_action_instance = wf_act_next_inst, workflow_instance = wf_act_next_inst.workflow_instance}
+    // 更新工作流实例的状态，为当前工作流节点的状态
+|=| {workflow_instance: status = wf_act_curr_inst.status}#(id = wf_act_curr_inst.workflow_instance)
+|=| {workflow_action_instance: status = 'COMPLETED'}#(id = wf_act_curr_inst.id)
+    // 记录工作流日志
+|+| {workflow_action_journal: previous_action = workflow_action_instance, status = wf_act_curr_inst.status}&wf_act_curr_inst \n";
