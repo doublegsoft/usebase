@@ -45,7 +45,11 @@ public class SpecBase {
   protected ModelDefinition loadModel(String... projs) throws Exception {
     String content = "";
     for (String proj : projs) {
-      InputStream input = SpecBase.class.getResourceAsStream("/modelbase/" + proj + ".modelbase");
+      InputStream input = null;
+      input = SpecBase.class.getResourceAsStream("/modelbase/" + proj + ".modelbase");
+      if (input == null) {
+        input = new FileInputStream(proj);
+      }
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       byte[] buff = new byte[4096];
       int len = 0;
@@ -108,15 +112,13 @@ public class SpecBase {
     printJavaCodeForUsecase(PROJ_NAME, templateName, usecase, dataModel, outputFile);
   }
 
-  protected void printJavaCodeForUsecase(String projName, String templateName, UsecaseDefinition usecase, ModelDefinition dataModel, String outputFile) throws IOException {
+  protected void printJavaCodeForUsecase(String projName, Map<String,Object> data, String templateName, UsecaseDefinition usecase, ModelDefinition dataModel, String outputFile) throws IOException {
     StringWriter sw = new StringWriter();
     Map<String,Object> app = new HashMap<>();
     app.put("name", projName);
-    Map<String,Object> data = new HashMap<>();
     TemplateOutputWriter writer = new TemplateOutputWriter(sw,
         "../usebase-data",
         "../usebase-data/java");
-    data.put("namespace", "biz.doublegsoft");
     data.put("app", app);
     data.put("model", dataModel);
     data.put("usecase", usecase);
@@ -130,6 +132,12 @@ public class SpecBase {
       f.createNewFile();
       Files.write(f.toPath(), sw.toString().getBytes(StandardCharsets.UTF_8));
     }
+  }
+
+  protected void printJavaCodeForUsecase(String projName, String templateName, UsecaseDefinition usecase, ModelDefinition dataModel, String outputFile) throws IOException {
+    Map<String,Object> data = new HashMap<>();
+    data.put("namespace", "biz.doublegsoft");
+    printJavaCodeForUsecase(projName, data, templateName, usecase, dataModel, outputFile);
   }
 
   public static String toPascalCase(String input) {
@@ -171,7 +179,13 @@ public class SpecBase {
   }
 
   protected String loadUsebaseExpression(String usebasePath) throws Exception {
-    byte[] bytes =  Files.readAllBytes(new File("src/test/resources/usebase/" + usebasePath).toPath());
+    try {
+      byte[] bytes = Files.readAllBytes(new File("src/test/resources/usebase/" + usebasePath).toPath());
+      return new String(bytes, StandardCharsets.UTF_8);
+    } catch (IOException ignored) {
+
+    }
+    byte[] bytes = Files.readAllBytes(new File(usebasePath).toPath());
     return new String(bytes, StandardCharsets.UTF_8);
   }
 
@@ -336,15 +350,32 @@ public class SpecBase {
     return response.body();
   }
 
-  protected void generateCode(String usebsaseOutFile, String codeOutDir, UsecaseDefinition usecase, ModelDefinition dataModel) throws IOException {
+  protected void generateCode(String projname,
+                              String usebsaseOutFile, String codeOutDir,
+                              UsecaseDefinition usecase, ModelDefinition dataModel) throws IOException {
     printModelbaseExtensionByUsecase(usebsaseOutFile, usecase);
-    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE_HELPER,
+    printJavaCodeForUsecase(projname, TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, codeOutDir + "/service/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE_IMPL,
+    printJavaCodeForUsecase(projname, TEMPLATE_SERVICE_IMPL,
         usecase, dataModel, codeOutDir + "/service/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase("wfm", TEMPLATE_SERVICE,
+    printJavaCodeForUsecase(projname, TEMPLATE_SERVICE,
         usecase, dataModel, codeOutDir + "/service/" + toPascalCase(usecase.getName()) + "Service.java");
-    printJavaCodeForUsecase("wfm", TEMPLATE_CONTROLLER,
+    printJavaCodeForUsecase(projname, TEMPLATE_CONTROLLER,
+        usecase, dataModel, codeOutDir + "/mvc/" + toPascalCase(usecase.getName()) + "Controller.java");
+  }
+
+  protected void generateCode(String projname, Map<String,Object> data,
+                              String usebsaseOutFile, String codeOutDir,
+                              UsecaseDefinition usecase, ModelDefinition dataModel) throws IOException {
+    printModelbaseExtensionByUsecase(usebsaseOutFile, usecase);
+
+    printJavaCodeForUsecase(projname, data, TEMPLATE_SERVICE_HELPER,
+        usecase, dataModel, codeOutDir + "/service/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+    printJavaCodeForUsecase(projname, data, TEMPLATE_SERVICE_IMPL,
+        usecase, dataModel, codeOutDir + "/service/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+    printJavaCodeForUsecase(projname, data, TEMPLATE_SERVICE,
+        usecase, dataModel, codeOutDir + "/service/" + toPascalCase(usecase.getName()) + "Service.java");
+    printJavaCodeForUsecase(projname, data, TEMPLATE_CONTROLLER,
         usecase, dataModel, codeOutDir + "/mvc/" + toPascalCase(usecase.getName()) + "Controller.java");
   }
 

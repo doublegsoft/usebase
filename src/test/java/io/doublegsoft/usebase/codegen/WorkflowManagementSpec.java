@@ -146,8 +146,6 @@ public class WorkflowManagementSpec extends SpecBase {
     Assert.assertNotNull(wfdefArgsObj);
 
     // E2E测试
-
-
     generateAndRun(dataModel, usecase);
     String res = postData("/wfm/workflow_instance/find", "{" +
         "\"workflowDefinitionId\":3" +
@@ -300,7 +298,7 @@ public class WorkflowManagementSpec extends SpecBase {
     rm(root);
     // 用例代码生成
     for (UsecaseDefinition usecase : usecases) {
-      generateCode(OUTPUT, OUTPUT_ROOT, usecase, dataModel);
+      generateCode("wfm", OUTPUT, OUTPUT_ROOT, usecase, dataModel);
     }
     // 项目代码生成并编译
     Assert.assertTrue(bash("env/java/gen-wfm.sh"));

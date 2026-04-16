@@ -1,5 +1,5 @@
 export MODELBASE_DATA_ROOT=/Users/christian/export/local/works/doublegsoft.io/modelbase/03.Development/modelbase-data
-export USEBAS_DATA_ROOT=/Users/christian/export/local/works/doublegsoft.io/usebase/03.Development/usebase-data
+export USEBASE_DATA_ROOT=/Users/christian/export/local/works/doublegsoft.io/usebase/03.Development/usebase-data
 export MODELBASE_JAR=/Users/christian/export/opt/modelbase/protosys-plugin-modelbase-7.0-shaded.jar
 export PROJBASE_DATA_ROOT=/Users/christian/export/local/works/doublegsoft.io/projbase/03.Development/projbase-data
 export PROJBASE_JAR=/Users/christian/export/opt/projbase/protosys-plugin-projbase-7.0-shaded.jar
@@ -51,11 +51,11 @@ done
 ################################################################################
 REPOS=("java-dto@gfc-1.x")
 
-export MODELBASE_MODEL=out/usebase/"$SPEC".modelbase
+export MODELBASE_MODEL=$MODELBASE_MODEL;out/usebase/"$SPEC".modelbase
 
 for repo in "${REPOS[@]}"
 do
-export TEMPLATE_ROOT=$USEBAS_DATA_ROOT/java/$repo
+export TEMPLATE_ROOT=$USEBASE_DATA_ROOT/java/$repo
 
 java -jar $MODELBASE_JAR \
 --model=$MODELBASE_MODEL \
