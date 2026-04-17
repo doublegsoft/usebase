@@ -147,11 +147,10 @@ public class AggregateParser extends UsebaseParser {
         }
         attrDeri.setLabelledOption("original", "index", String.valueOf(i));
       }
-    }
-    // 单独处理关联关系
-    for (int i = 0; i < ctx.usebase_conditions().size(); i++) {
-      io.doublegsoft.usebase.UsebaseParser.Usebase_conditionsContext ctxConds = ctx.usebase_conditions(i);
-      getConditionsParser().assemble(ctxConds, owner, i);
+      if (i > 0) {
+        io.doublegsoft.usebase.UsebaseParser.Usebase_conjunctionContext ctxConj = ctx.usebase_conjunction(i - 1);
+        getConditionsParser().assemble(ctxConj.usebase_conditions(), owner, i);
+      }
     }
   }
 }

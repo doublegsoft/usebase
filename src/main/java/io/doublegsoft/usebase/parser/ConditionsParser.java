@@ -41,17 +41,72 @@ public class ConditionsParser extends UsebaseParser {
    */
   public void assemble(io.doublegsoft.usebase.UsebaseParser.Usebase_conditionsContext ctx,
                        ObjectDefinition owner, int conditionsIndex) {
+    List<AttributeDefinition> previousGroupingAttributes = new ArrayList<>();
+    List<AttributeDefinition> currentGroupingAttributes = new ArrayList<>();
     if (ctx == null) {
+      String lastObjName = "";
+      List<ObjectDefinition> dataObjs = new ArrayList<>();
+      Set<String> addedObjs = new HashSet<>();
+      for (AttributeDefinition attr : owner.getAttributes()) {
+        String origObjName = attr.getLabelledOption("original", "object");
+        if (!addedObjs.contains(origObjName)) {
+          dataObjs.add(dataModel.findObjectByName(origObjName));
+          addedObjs.add(origObjName);
+        }
+        lastObjName = origObjName;
+      }
+      Map<String, String> conjunction = new HashMap<>();
+      ObjectDefinition lastObj = dataObjs.get(dataObjs.size() - 1);
+      for (int i = 0; i < dataObjs.size() - 1; i++) {
+        ObjectDefinition prevObj = dataObjs.get(i);
+        for (AttributeDefinition lastObjAttr : lastObj.getAttributes()) {
+          if (lastObjAttr.getType().isCustom() && lastObjAttr.getType().getName().equals(prevObj.getName())) {
+            String sourceObject = prevObj.getName();
+            String sourceAttribute = prevObj.getIdentifiableAttribute().getName();
+            String taregetObject = lastObj.getName();
+            String targetAttribute = lastObjAttr.getName();
+            conjunction.put("target_object", sourceObject);
+            conjunction.put("target_attribute", sourceAttribute);
+            conjunction.put("source_object", taregetObject);
+            conjunction.put("source_attribute", targetAttribute);
+            break;
+          }
+        }
+        if (!conjunction.isEmpty()) {
+          break;
+        }
+        for (AttributeDefinition prevObjAttr : prevObj.getAttributes()) {
+          if (prevObjAttr.getType().isCustom() && prevObjAttr.getType().getName().equals(lastObj.getName())) {
+            String sourceObject = prevObj.getName();
+            String sourceAttribute = prevObjAttr.getName();
+            String taregetObject = lastObj.getName();
+            String targetAttribute = lastObj.getIdentifiableAttribute().getName();
+            // FIXME: WHY THIS? 一定要搞懂逻辑
+            conjunction.put("target_object", sourceObject);
+            conjunction.put("target_attribute", sourceAttribute);
+            conjunction.put("source_object", taregetObject);
+            conjunction.put("source_attribute", targetAttribute);
+            break;
+          }
+        }
+        if (!conjunction.isEmpty()) {
+          break;
+        }
+      }
+      for (AttributeDefinition attr : owner.getAttributes()) {
+        String origObjName = attr.getLabelledOption("original", "object");
+        if (origObjName.equals(lastObjName)) {
+          attr.setLabelledOptions("conjunction", conjunction);
+        }
+      }
       return;
     }
-    List<AttributeDefinition> previousGroupingAttributes = new ArrayList<>();
-    List<AttributeDefinition> presentGroupingAttributes = new ArrayList<>();
     for (AttributeDefinition attr : owner.getAttributes()) {
       int index = Integer.parseInt(attr.getLabelledOption("original", "index"));
       if (index <= conditionsIndex) {
         previousGroupingAttributes.add(attr);
       } else if (index == conditionsIndex + 1){
-        presentGroupingAttributes.add(attr);
+        currentGroupingAttributes.add(attr);
       }
     }
     for (int i = 0; i < ctx.usebase_condition().size(); i++) {
@@ -83,7 +138,7 @@ public class ConditionsParser extends UsebaseParser {
         //******************************************//
         // 如果<...>中的如果不是连接对象，那就必须是明确的属性 //
         //******************************************//
-        AttributeDefinition rightAttrInOwner = presentGroupingAttributes.get(presentGroupingAttributes.size() - 1);
+        AttributeDefinition rightAttrInOwner = currentGroupingAttributes.get(currentGroupingAttributes.size() - 1);
         ObjectDefinition rightObj = dataModel.findObjectByName(rightAttrInOwner.getLabelledOption("original", "object"));
         // 注意此处
         leftSideAttrInDataObj = findLeftAttributeInDataModel(leftSide, owner, conditionsIndex);
@@ -99,7 +154,7 @@ public class ConditionsParser extends UsebaseParser {
             break;
           }
         }
-        for (AttributeDefinition attr : presentGroupingAttributes) {
+        for (AttributeDefinition attr : currentGroupingAttributes) {
           String origObjName = attr.getLabelledOption("original", "object");
           String origAttrName = attr.getLabelledOption("original", "attribute");
           if (rightSideAttrInDataObj != null && origObjName.equals(rightSideAttrInDataObj.getParent().getName())) {
@@ -122,7 +177,7 @@ public class ConditionsParser extends UsebaseParser {
           }
         }
         for (AttributeDefinition conjAttr : conjObj.getAttributes()) {
-          for (AttributeDefinition attr : presentGroupingAttributes) {
+          for (AttributeDefinition attr : currentGroupingAttributes) {
             String origObjName = attr.getLabelledOption("original", "object");
             if (conjAttr.getType().getName().equals(origObjName)) {
               rightObjectAlias = attr.getLabelledOption("alias", "object");
@@ -145,7 +200,7 @@ public class ConditionsParser extends UsebaseParser {
       if (rightSideAttrInDataObj == null && (rightSide == null || !rightSide.contains("'"))) {
         throw new IllegalArgumentException("'" + getOriginalText(ctxCond) + "'中的右侧变量'" + rightSide + "'在数据模型中没有找到。");
       }
-      for (AttributeDefinition attr : presentGroupingAttributes) {
+      for (AttributeDefinition attr : currentGroupingAttributes) {
         String origObjName = attr.getLabelledOption("original", "object");
         Map<String, String> conjunction = new HashMap<>();
         if (conjObj != null) {
