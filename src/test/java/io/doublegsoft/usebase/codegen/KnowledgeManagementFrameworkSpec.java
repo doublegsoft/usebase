@@ -45,7 +45,7 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
       ObjectDefinition objInfo = projBuilder.build(obj);
       infos.add(objInfo);
     }
-    printModelbaseExtensionByUsecase(OUTPUT, null, infos.toArray(new ObjectDefinition[0]));
+    printModelbaseExtensionByUsecase(OUTPUT, null, dataModel, infos.toArray(new ObjectDefinition[0]));
   }
 
   /**
@@ -65,7 +65,7 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
       System.out.println(attr.getName());
     }
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
@@ -95,7 +95,7 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
     Assert.assertEquals("knowledge_entry", ret.getAttributes()[0].getLabelledOptions("original").get("object"));
     Assert.assertEquals("knowledge_entry_id", ret.getAttributes()[0].getName());
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,

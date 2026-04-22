@@ -71,11 +71,10 @@ public class SpecBase {
     }
   }
 
-  protected void printModelbaseExtensionByUsecase(UsecaseDefinition usecase, ObjectDefinition... objs) throws IOException {
+  protected void printModelbaseExtensionByUsecase(UsecaseDefinition usecase, ModelDefinition dataModel, ObjectDefinition... objs) throws IOException {
     StringWriter sw = new StringWriter();
-    ModelbaseWriter writer = new ModelbaseWriter(sw);
+    ModelbaseWriter writer = new ModelbaseWriter(sw, dataModel);
     writer.write(usecase.getParameterizedObject());
-    // TODO
     writer.write(usecase.getReturnedObject());
     if (objs != null) {
       for (ObjectDefinition obj : objs) {
@@ -85,9 +84,11 @@ public class SpecBase {
     System.out.println(sw);
   }
 
-  protected void printModelbaseExtensionByUsecase(String filePath, UsecaseDefinition usecase, ObjectDefinition... objs) throws IOException {
+  protected void printModelbaseExtensionByUsecase(String filePath, UsecaseDefinition usecase,
+                                                  ModelDefinition dataModel,
+                                                  ObjectDefinition... objs) throws IOException {
     StringWriter sw = new StringWriter();
-    ModelbaseWriter writer = new ModelbaseWriter(sw);
+    ModelbaseWriter writer = new ModelbaseWriter(sw, dataModel);
     if (usecase != null) {
       writer.write(usecase.getParameterizedObject());
       if (usecase.getReturnedObject() != null) {
@@ -169,7 +170,7 @@ public class SpecBase {
   }
 
   protected void printSourcesForUsecase(UsecaseDefinition usecase, ModelDefinition dataModel, String usebaseOutput, String projRoot) throws Exception {
-    printModelbaseExtensionByUsecase(usebaseOutput, usecase);
+    printModelbaseExtensionByUsecase(usebaseOutput, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, projRoot + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
@@ -353,7 +354,7 @@ public class SpecBase {
   protected void generateCode(String projname,
                               String usebsaseOutFile, String codeOutDir,
                               UsecaseDefinition usecase, ModelDefinition dataModel) throws IOException {
-    printModelbaseExtensionByUsecase(usebsaseOutFile, usecase);
+    printModelbaseExtensionByUsecase(usebsaseOutFile, usecase, dataModel);
     printJavaCodeForUsecase(projname, TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, codeOutDir + "/service/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(projname, TEMPLATE_SERVICE_IMPL,
@@ -367,7 +368,7 @@ public class SpecBase {
   protected void generateCode(String projname, Map<String,Object> data,
                               String usebsaseOutFile, String codeOutDir,
                               UsecaseDefinition usecase, ModelDefinition dataModel) throws IOException {
-    printModelbaseExtensionByUsecase(usebsaseOutFile, usecase);
+    printModelbaseExtensionByUsecase(usebsaseOutFile, usecase, dataModel);
 
     printJavaCodeForUsecase(projname, data, TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, codeOutDir + "/service/helper/" + toPascalCase(usecase.getName()) + "Helper.java");

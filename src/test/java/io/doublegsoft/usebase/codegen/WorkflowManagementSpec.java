@@ -52,7 +52,7 @@ public class WorkflowManagementSpec extends SpecBase {
       ObjectDefinition rowObj = projBuilder.build(obj);
       infos.add(rowObj);
     }
-    printModelbaseExtensionByUsecase(OUTPUT, null, infos.toArray(new ObjectDefinition[0]));
+    printModelbaseExtensionByUsecase(OUTPUT, null, dataModel, infos.toArray(new ObjectDefinition[0]));
   }
 
   /**
@@ -70,7 +70,7 @@ public class WorkflowManagementSpec extends SpecBase {
 
     AssociationBuilder assocBuilder = new AssociationBuilder(dataModel);
     AssociationChain assocChain = assocBuilder.build(usecase.getParameterizedObject(), usecase.getReturnedObject());
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
@@ -218,7 +218,7 @@ public class WorkflowManagementSpec extends SpecBase {
     checkOriginalIndexAndObject(usecase.getReturnedObject());
 //    Assert.assertEquals(7, usecase.getStatements().size());
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,

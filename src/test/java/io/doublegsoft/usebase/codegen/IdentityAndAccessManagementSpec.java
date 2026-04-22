@@ -48,7 +48,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
       ObjectDefinition rowObj = projBuilder.build(obj);
       infos.add(rowObj);
     }
-    printModelbaseExtensionByUsecase(OUTPUT, null, infos.toArray(new ObjectDefinition[0]));
+    printModelbaseExtensionByUsecase(OUTPUT, null, dataModel, infos.toArray(new ObjectDefinition[0]));
   }
 
   /**
@@ -73,7 +73,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     Assert.assertEquals("username", ret.getAttributes()[1].getName());
     Assert.assertEquals("email", ret.getAttributes()[2].getName());
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
@@ -113,7 +113,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
       System.out.println(rel);
     }
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
@@ -143,7 +143,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ObjectDefinition ret = usecase.getReturnedObject();
     Assert.assertEquals("user_id", ret.getAttributes()[0].getName());
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
@@ -167,7 +167,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("status", obj.getAttributes()[0].getName());
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
@@ -191,7 +191,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     ObjectDefinition obj = usecase.getParameterizedObject();
     Assert.assertEquals("status", obj.getAttributes()[0].getName());
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
@@ -246,7 +246,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     AssignmentDefinition assign = (AssignmentDefinition) stmt;
     Assert.assertEquals("encrypted_password", assign.getAssignee());
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
@@ -272,7 +272,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     obj = usecase.getReturnedObject();
     Assert.assertNull("没有返回值的定义才是正确的", obj);
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
@@ -302,7 +302,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
     usecase.setModule("iam");
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,

@@ -36,7 +36,7 @@ public class BillingAndRevenueSystemSpec extends SpecBase {
       ObjectDefinition rowObj = projBuilder.build(obj);
       infos.add(rowObj);
     }
-    printModelbaseExtensionByUsecase(BNR_ROOT + "/doc/bnr4u.modelbase", null, infos.toArray(new ObjectDefinition[0]));
+    printModelbaseExtensionByUsecase(BNR_ROOT + "/doc/bnr4u.modelbase", null, dataModel, infos.toArray(new ObjectDefinition[0]));
   }
 
   @Test

@@ -44,7 +44,7 @@ public class HumanResourceManagementSpec extends SpecBase {
       ObjectDefinition objInfo = projBuilder.build(obj);
       infos.add(objInfo);
     }
-    printModelbaseExtensionByUsecase(OUTPUT, null, infos.toArray(new ObjectDefinition[0]));
+    printModelbaseExtensionByUsecase(OUTPUT, null, dataModel, infos.toArray(new ObjectDefinition[0]));
   }
 
   /**
@@ -97,7 +97,7 @@ public class HumanResourceManagementSpec extends SpecBase {
     Assert.assertEquals("employee", paramObj.getLabelledOptions("original").get("object"));
     StatementDefinition stmtSave = usecase.getStatements().get(0);
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase);
+    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
     printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
         usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
     printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,

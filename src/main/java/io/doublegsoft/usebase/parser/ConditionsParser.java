@@ -61,14 +61,15 @@ public class ConditionsParser extends UsebaseParser {
         ObjectDefinition prevObj = dataObjs.get(i);
         for (AttributeDefinition lastObjAttr : lastObj.getAttributes()) {
           if (lastObjAttr.getType().isCustom() && lastObjAttr.getType().getName().equals(prevObj.getName())) {
-            String sourceObject = prevObj.getName();
-            String sourceAttribute = prevObj.getIdentifiableAttribute().getName();
-            String taregetObject = lastObj.getName();
-            String targetAttribute = lastObjAttr.getName();
-            conjunction.put("target_object", sourceObject);
-            conjunction.put("target_attribute", sourceAttribute);
-            conjunction.put("source_object", taregetObject);
-            conjunction.put("source_attribute", targetAttribute);
+            // 记住：之前的都是target，当前的都是source
+            String targetObject = prevObj.getName();
+            String targetAttribute = prevObj.getIdentifiableAttribute().getName();
+            String sourceObject = lastObj.getName();
+            String sourceAttribute = lastObjAttr.getName();
+            conjunction.put("target_object", targetObject);
+            conjunction.put("target_attribute", targetAttribute);
+            conjunction.put("source_object", sourceObject);
+            conjunction.put("source_attribute", sourceAttribute);
             break;
           }
         }
@@ -77,15 +78,15 @@ public class ConditionsParser extends UsebaseParser {
         }
         for (AttributeDefinition prevObjAttr : prevObj.getAttributes()) {
           if (prevObjAttr.getType().isCustom() && prevObjAttr.getType().getName().equals(lastObj.getName())) {
-            String sourceObject = prevObj.getName();
-            String sourceAttribute = prevObjAttr.getName();
-            String taregetObject = lastObj.getName();
-            String targetAttribute = lastObj.getIdentifiableAttribute().getName();
-            // FIXME: WHY THIS? 一定要搞懂逻辑
-            conjunction.put("target_object", sourceObject);
-            conjunction.put("target_attribute", sourceAttribute);
-            conjunction.put("source_object", taregetObject);
-            conjunction.put("source_attribute", targetAttribute);
+            // 记住：之前的都是target，当前的都是source
+            String targetObject = prevObj.getName();
+            String targetAttribute = prevObjAttr.getName();
+            String sourceObject = lastObj.getName();
+            String sourceAttribute = lastObj.getIdentifiableAttribute().getName();
+            conjunction.put("target_object", targetObject);
+            conjunction.put("target_attribute", targetAttribute);
+            conjunction.put("source_object", sourceObject);
+            conjunction.put("source_attribute", sourceAttribute);
             break;
           }
         }
