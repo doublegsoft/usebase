@@ -2,8 +2,7 @@ package io.doublegsoft.usebase.codegen;
 
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
-import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metamodel.JoinConditionDefinition;
+import com.doublegsoft.jcommons.metamodel.dataset.JoinPredicateDefinition;
 import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
@@ -17,7 +16,6 @@ import io.doublegsoft.usebase.projection.ProjectionBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,18 +66,18 @@ public class AbpmsSpec extends SpecBase {
           targetAttribute + ")");
     }
 
-    Set<JoinConditionDefinition> mergedConds = new HashSet<>();
+    Set<JoinPredicateDefinition> mergedConds = new HashSet<>();
     for (AttributeDefinition currAttr : usecase.getReturnedObject().getAttributes()) {
-      List<JoinConditionDefinition> conds = ModelbaseHelper.createJoinConditions(currAttr, dataModel);
+      List<JoinPredicateDefinition> conds = ModelbaseHelper.createJoinPredicates(currAttr, dataModel);
       mergedConds.addAll(conds);
     }
-    for (JoinConditionDefinition cond : mergedConds) {
+    for (JoinPredicateDefinition cond : mergedConds) {
       System.out.println(cond);
     }
 
     AttributeDefinition bitemId = usecase.getReturnedObject().getAttributes()[0];
 
-    List<JoinConditionDefinition> joinConds = ModelbaseHelper.createJoinConditions(bitemId, dataModel);
+    List<JoinPredicateDefinition> joinConds = ModelbaseHelper.createJoinPredicates(bitemId, dataModel);
     Assert.assertEquals(1, joinConds.size());
     Assert.assertEquals("返回的结果集属性应该有七个", 7, usecase.getReturnedObject().getAttributes().length);
   }
@@ -115,18 +113,18 @@ public class AbpmsSpec extends SpecBase {
           targetAttribute + ")");
     }
 
-    Set<JoinConditionDefinition> mergedConds = new HashSet<>();
+    Set<JoinPredicateDefinition> mergedConds = new HashSet<>();
     for (AttributeDefinition currAttr : usecase.getReturnedObject().getAttributes()) {
-      List<JoinConditionDefinition> conds = ModelbaseHelper.createJoinConditions(currAttr, dataModel);
+      List<JoinPredicateDefinition> conds = ModelbaseHelper.createJoinPredicates(currAttr, dataModel);
       mergedConds.addAll(conds);
     }
-    for (JoinConditionDefinition cond : mergedConds) {
+    for (JoinPredicateDefinition cond : mergedConds) {
       System.out.println(cond);
     }
 
     AttributeDefinition bitemId = usecase.getReturnedObject().getAttributes()[0];
 
-    List<JoinConditionDefinition> joinConds = ModelbaseHelper.createJoinConditions(bitemId, dataModel);
+    List<JoinPredicateDefinition> joinConds = ModelbaseHelper.createJoinPredicates(bitemId, dataModel);
     Assert.assertEquals(1, joinConds.size());
     Assert.assertEquals("返回的结果集属性应该有十个", 10, usecase.getReturnedObject().getAttributes().length);
   }

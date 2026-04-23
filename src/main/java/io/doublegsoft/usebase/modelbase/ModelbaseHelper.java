@@ -15,10 +15,8 @@ import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metabean.type.CustomType;
 import com.doublegsoft.jcommons.metabean.type.DomainType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
-import com.doublegsoft.jcommons.metamodel.JoinConditionDefinition;
-import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
-import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
-import com.doublegsoft.jcommons.metamodel.ValuedAttributeDefinition;
+import com.doublegsoft.jcommons.metamodel.*;
+import com.doublegsoft.jcommons.metamodel.dataset.JoinPredicateDefinition;
 import com.doublegsoft.jcommons.utils.Strings;
 
 import java.util.*;
@@ -290,26 +288,26 @@ public final class ModelbaseHelper {
     return attrName;
   }
 
-  public static List<JoinConditionDefinition> createJoinConditions(AttributeDefinition anyone,
+  public static List<JoinPredicateDefinition> createJoinPredicates(AttributeDefinition anyone,
                                                                    ModelDefinition dataModel) {
-    List<JoinConditionDefinition> retVal = new ArrayList<>();
+    List<JoinPredicateDefinition> retVal = new ArrayList<>();
     if (!anyone.isLabelled("conjunction")) {
       return retVal;
     }
-    JoinConditionDefinition joinCond = createJoinCondition(anyone.getLabelledOptions("conjunction"), dataModel);
+    JoinPredicateDefinition joinCond = createJoinPredicate(anyone.getLabelledOptions("conjunction"), dataModel);
     retVal.add(joinCond);
 
     for (int i = 1; i < 10; i++) {
       if (!anyone.isLabelled("conjunction_" + i)) {
         return retVal;
       }
-      joinCond = createJoinCondition(anyone.getLabelledOptions("conjunction_" + i), dataModel);
+      joinCond = createJoinPredicate(anyone.getLabelledOptions("conjunction_" + i), dataModel);
       retVal.add(joinCond);
     }
     return retVal;
   }
 
-  public static JoinConditionDefinition createJoinCondition(Map<String, String> anyoneConj,
+  public static JoinPredicateDefinition createJoinPredicate(Map<String, String> anyoneConj,
                                                             ModelDefinition dataModel) {
     String anyoneSourceObjName = anyoneConj.get("source_object");
     String anyoneSourceAttrName = anyoneConj.get("source_attribute");
@@ -327,7 +325,7 @@ public final class ModelbaseHelper {
     if (anyoneAttr == null) {
       throw new IllegalArgumentException("没有在'" + anyoneSourceObjName + "'对象中找到'" + anyoneSourceAttrName + "'，请检查模型文件。");
     }
-    JoinConditionDefinition retVal = new JoinConditionDefinition();
+    JoinPredicateDefinition retVal = new JoinPredicateDefinition();
     retVal.setLeftObjectAlias(anyoneSourceAlias);
     retVal.setLeftObject(anyoneObj);
     retVal.setLeftAttribute(anyoneAttr);
