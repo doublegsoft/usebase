@@ -1,9 +1,12 @@
-package io.doublegsoft.usebase.aggregate;
+package io.doublegsoft.usebase.ir;
 
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
+import com.doublegsoft.jcommons.metamodel.root.AggregateRootDefinition;
+import io.doublegsoft.usebase.aggregate.AggregateRelationshipChain;
+import io.doublegsoft.usebase.aggregate.Relationship;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -129,6 +132,14 @@ public class AggregateBuilder {
         }
       }
     }
+    return retVal;
+  }
+
+  public AggregateRootDefinition buildAggregateRoot(ObjectDefinition usebaseObject) {
+    AttributeDefinition firstAttr = usebaseObject.getAttributes()[0];
+    String origObjName = firstAttr.getLabelledOption("original", "object");
+    ObjectDefinition root = dataModel.findObjectByName(origObjName);
+    AggregateRootDefinition retVal = new AggregateRootDefinition(root);
     return retVal;
   }
 }

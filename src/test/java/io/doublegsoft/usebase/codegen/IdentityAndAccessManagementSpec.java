@@ -9,11 +9,10 @@ import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
-import io.doublegsoft.usebase.aggregate.AggregateBuilder;
+import io.doublegsoft.usebase.ir.AggregateBuilder;
 import io.doublegsoft.usebase.aggregate.AggregateRelationshipChain;
-import io.doublegsoft.usebase.aggregate.ObjectRelationships;
 import io.doublegsoft.usebase.aggregate.Relationship;
-import io.doublegsoft.usebase.association.AssociationBuilder;
+import io.doublegsoft.usebase.ir.AssociationBuilder;
 import io.doublegsoft.usebase.association.AssociationChain;
 import io.doublegsoft.usebase.projection.ProjectionBuilder;
 import org.junit.Assert;
@@ -23,8 +22,6 @@ import org.junit.Test;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 public class IdentityAndAccessManagementSpec extends SpecBase {

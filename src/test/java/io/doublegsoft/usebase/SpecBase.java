@@ -6,10 +6,10 @@ import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.modelbase.Modelbase;
-import io.doublegsoft.usebase.association.AssociationBuilder;
+import io.doublegsoft.usebase.ir.AssociationBuilder;
 import io.doublegsoft.usebase.modelbase.ModelbaseWriter;
 import io.doublegsoft.usebase.output.TemplateOutputWriter;
-import io.doublegsoft.usebase.aggregate.AggregateBuilder;
+import io.doublegsoft.usebase.ir.AggregateBuilder;
 import org.junit.Assert;
 
 import java.io.*;

@@ -1,11 +1,10 @@
-package io.doublegsoft.usebase.association;
+package io.doublegsoft.usebase.ir;
 
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
-import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
-import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
+import io.doublegsoft.usebase.association.AssociationChain;
 
 import java.util.*;
 

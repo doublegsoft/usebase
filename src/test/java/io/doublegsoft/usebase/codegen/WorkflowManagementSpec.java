@@ -11,7 +11,7 @@ import com.google.gson.ToNumberPolicy;
 import com.google.gson.reflect.TypeToken;
 import io.doublegsoft.usebase.SpecBase;
 import io.doublegsoft.usebase.Usebase;
-import io.doublegsoft.usebase.association.AssociationBuilder;
+import io.doublegsoft.usebase.ir.AssociationBuilder;
 import io.doublegsoft.usebase.association.AssociationChain;
 import io.doublegsoft.usebase.projection.ProjectionBuilder;
 import org.junit.Assert;
