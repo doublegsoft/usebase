@@ -28,7 +28,8 @@ public class AggregateLikeTest extends TestBase {
     Assert.assertEquals("amount", stmtIf.getComparand().getAttribute("amount").getName());
     Assert.assertEquals("30", stmtIf.getValue().getNumber().toString());
 
-    Assert.assertEquals("total_amount", stmtCalc.getAssignee());
+    Assert.assertEquals("total_amount", stmtCalc.getAssignee().getName());
+    Assert.assertEquals("number", stmtCalc.getAssignee().getType().getName());
     CalcExprDefinition calcExpr = stmtCalc.getValue().getCalcExpr();
     Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
     Assert.assertEquals("*", calcExpr.getOperator());

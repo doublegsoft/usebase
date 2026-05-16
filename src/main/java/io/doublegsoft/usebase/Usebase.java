@@ -9,23 +9,15 @@ package io.doublegsoft.usebase;
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metabean.type.CollectionType;
-import com.doublegsoft.jcommons.metabean.type.CustomType;
-import com.doublegsoft.jcommons.metabean.type.DomainType;
-import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
+import com.doublegsoft.jcommons.metabean.type.*;
 import com.doublegsoft.jcommons.metamodel.*;
 import com.doublegsoft.jcommons.utils.Inflector;
 import com.doublegsoft.jcommons.utils.Strings;
-import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
 import io.doublegsoft.usebase.parser.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.misc.Interval;
 
-import javax.annotation.processing.SupportedOptions;
-import java.math.BigDecimal;
 import java.util.*;
 
 import static io.doublegsoft.usebase.parser.UsebaseParser.getOriginalText;
@@ -207,11 +199,11 @@ public class Usebase {
       retVal.setOperator(fullOperator);
       ValueDefinition value = new ValueDefinition();
       valueParser.assemble(ctxAssign.usebase_value(), "#" + ctxAssign.variable.getText(), value, usecase);
+      VariableDefinition var = registerVariable(usecase, ctxAssign.variable.getText(), value);
       retVal.setValue(value);
-      retVal.setAssignee(ctxAssign.variable.getText());
+      retVal.setAssignee(var);
       retVal.setAssignOp(ctxAssign.usebase_assignop().getText());
       // 注册变量
-      registerVariable(usecase, retVal.getAssignee(), value);
       if (ctx.usebase_remote() != null) {
         ValueDefinition remote = new ValueDefinition();
         valueParser.assemble(ctx.usebase_remote(), remote);
@@ -275,22 +267,27 @@ public class Usebase {
     }
   }
 
-  private void registerVariable(UsecaseDefinition usecase, String name, ValueDefinition value) {
-    if (value.getObjectValue() != null) {
-      String origObjName = value.getObjectValue().getLabelledOption("original", "object");
-      ObjectDefinition obj = dataModel.findObjectByName(origObjName);
-      usecase.registerVariable(name, obj);
-    } else if (value.getArrayValue() != null) {
-      String origObjName = value.getArrayValue().getLabelledOption("original", "object");
-      ObjectDefinition componentObj = dataModel.findObjectByName(origObjName);
-      usecase.registerVariable(name, componentObj, true);
-    } else if (value.getString() != null) {
-      usecase.registerVariable(name, new PrimitiveType("string"));
-    } else if (value.getNumber() != null) {
-      usecase.registerVariable(name, new PrimitiveType("number"));
-    } else if (value.getBool() != null) {
-      usecase.registerVariable(name, new PrimitiveType("bool"));
-    }
+  private VariableDefinition registerVariable(UsecaseDefinition usecase, String name, ValueDefinition value) {
+//    if (value.getObjectValue() != null) {
+//      String origObjName = value.getObjectValue().getLabelledOption("original", "object");
+//      ObjectDefinition obj = dataModel.findObjectByName(origObjName);
+//      usecase.registerVariable(name, obj);
+//    } else if (value.getArrayValue() != null) {
+//      String origObjName = value.getArrayValue().getLabelledOption("original", "object");
+//      ObjectDefinition componentObj = dataModel.findObjectByName(origObjName);
+//      usecase.registerVariable(name, componentObj, true);
+//    } else if (value.getString() != null) {
+//      usecase.registerVariable(name, new PrimitiveType("string"));
+//    } else if (value.getNumber() != null) {
+//      usecase.registerVariable(name, new PrimitiveType("number"));
+//    } else if (value.getBool() != null) {
+//      usecase.registerVariable(name, new PrimitiveType("bool"));
+//    } else {
+//      // TODO: GET TYPE FROM EXPRESSION
+//      usecase.registerVariable(name, new PrimitiveType("unknown"));
+//    }
+    ObjectType type = guessVariableType(value);
+    usecase.registerVariable(name, type);
     if (usecase.getParameterizedObject() != null) {
       for (AttributeDefinition attr : usecase.getParameterizedObject().getAttributes()) {
         if (attr.getName().equals(name)) {
@@ -298,6 +295,7 @@ public class Usebase {
         }
       }
     }
+    return usecase.getVariable(name);
   }
 
   private SaveDefinition createSaveDefinition(String op, io.doublegsoft.usebase.UsebaseParser.Usebase_expressionContext ctxExpr, UsecaseDefinition usecase) {
@@ -373,4 +371,41 @@ public class Usebase {
       return var;
     }
   }
+
+  private ObjectType guessVariableType(ValueDefinition value) {
+    if (value.getObjectValue() != null) {
+      String origObjName = value.getObjectValue().getLabelledOption("original", "object");
+      return dataModel.findObjectByName(origObjName);
+    } else if (value.getArrayValue() != null) {
+      String origObjName = value.getArrayValue().getLabelledOption("original", "object");
+      return dataModel.findObjectByName(origObjName);
+    } else if (value.getString() != null) {
+      return new PrimitiveType("string");
+    } else if (value.getNumber() != null) {
+      return new PrimitiveType("number");
+    } else if (value.getBool() != null) {
+      return new PrimitiveType("bool");
+    } else if (value.getCalcExpr() != null) {
+      CalcExprDefinition calcExpr = value.getCalcExpr();
+      ObjectType retVal = null;
+      if (calcExpr.getLeftOperand() != null) {
+        retVal = guessVariableType(calcExpr.getLeftOperand().getValue());
+      }
+      if (retVal != null) {
+        return retVal;
+      }
+      if (calcExpr.getRightOperand() != null) {
+        retVal = guessVariableType(calcExpr.getRightOperand().getValue());
+      }
+      if (retVal != null) {
+        return retVal;
+      }
+      if (calcExpr.getValue() != null) {
+        retVal = guessVariableType(calcExpr.getValue());
+      }
+      return retVal;
+    }
+    return null;
+  }
+
 }
