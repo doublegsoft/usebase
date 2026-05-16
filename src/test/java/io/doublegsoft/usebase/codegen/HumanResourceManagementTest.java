@@ -11,7 +11,7 @@ import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
-import io.doublegsoft.usebase.SpecBase;
+import io.doublegsoft.usebase.TestBase;
 import io.doublegsoft.usebase.Usebase;
 import io.doublegsoft.usebase.projection.ProjectionBuilder;
 import org.junit.Assert;
@@ -23,7 +23,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HumanResourceManagementSpec extends SpecBase {
+public class HumanResourceManagementTest extends TestBase {
 
   private static final String OUTPUT = "out/usebase/hrm.modelbase";
 
@@ -36,7 +36,7 @@ public class HumanResourceManagementSpec extends SpecBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("hrm", "sms");
+    ModelDefinition dataModel = loadModel("business/hrm", "business/sms");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     List<ObjectDefinition> infos = new ArrayList<>();
@@ -59,7 +59,7 @@ public class HumanResourceManagementSpec extends SpecBase {
    */
   @Test
   public void test_hrm_onboard_new_employee() throws Exception {
-    ModelDefinition dataModel = loadModel("hrm", "sms");
+    ModelDefinition dataModel = loadModel("business/hrm", "business/sms");
     String expr =
         "@onboard_new_employee({employee}) \n" +
         "|&| existing = {employee}#(name = employee_name, national_id = national_id) \n" +
@@ -86,7 +86,7 @@ public class HumanResourceManagementSpec extends SpecBase {
    */
   @Test
   public void test_hrm_offboard_employee() throws Exception {
-    ModelDefinition dataModel = loadModel("hrm", "sms");
+    ModelDefinition dataModel = loadModel("business/hrm", "business/sms");
     String expr =
         "@offboard_employee({employee: id}) \n" +
         "|:| emp = {employee}#(id = employee_id)!'员工不存在' \n" +
@@ -108,7 +108,7 @@ public class HumanResourceManagementSpec extends SpecBase {
 
   @Test
   public void test_hrm_smart_punch() throws Exception {
-    ModelDefinition dataModel = loadModel("hrm", "sms");
+    ModelDefinition dataModel = loadModel("business/hrm", "business/sms");
     String expr =
         "@clock_out({employee: employee_id}) \n" +
         "|:| emp = {employee}#(id = employee_id)!'员工不存在'" +
@@ -131,7 +131,7 @@ public class HumanResourceManagementSpec extends SpecBase {
 
   @Test
   public void test_hrm_adjust_salary() throws Exception {
-    ModelDefinition dataModel = loadModel("hrm", "sms");
+    ModelDefinition dataModel = loadModel("business/hrm", "business/sms");
     String expr =
         "@adjust_salary({employee_salary: employee_id, amount!, change_reason, effective_start_date}) \n" +
         "|:| emp = {employee}#(id = employee_id)!'员工不存在' \n" +
@@ -150,7 +150,7 @@ public class HumanResourceManagementSpec extends SpecBase {
 
   @Test
   public void test_hrm_transfer_job() throws Exception {
-    ModelDefinition dataModel = loadModel("hrm", "sms");
+    ModelDefinition dataModel = loadModel("business/hrm", "business/sms");
     String expr =
         "@transfer_job({job_history: employee_id!, effective_start_date!, change_reason}, {department: department_id!}, {designation: designation_id!}) \n" +
         "|:| emp = {employee}#(id = employee_id)!'员工不存在' \n" +

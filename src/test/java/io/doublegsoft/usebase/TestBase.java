@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class SpecBase {
+public class TestBase {
 
   public static final String PROJ_NAME = "demo4j";
 
@@ -46,7 +46,7 @@ public class SpecBase {
     String content = "";
     for (String proj : projs) {
       InputStream input = null;
-      input = SpecBase.class.getResourceAsStream("/modelbase/" + proj + ".modelbase");
+      input = TestBase.class.getResourceAsStream("/modelbase/" + proj + ".modelbase");
       if (input == null) {
         input = new FileInputStream(proj);
       }
@@ -181,6 +181,9 @@ public class SpecBase {
 
   protected String loadUsebaseExpression(String usebasePath) throws Exception {
     try {
+      if (!usebasePath.endsWith(".usebase")) {
+        usebasePath += ".usebase";
+      }
       byte[] bytes = Files.readAllBytes(new File("src/test/resources/usebase/" + usebasePath).toPath());
       return new String(bytes, StandardCharsets.UTF_8);
     } catch (IOException ignored) {

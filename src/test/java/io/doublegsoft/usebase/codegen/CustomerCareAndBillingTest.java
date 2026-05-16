@@ -4,7 +4,7 @@ import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.*;
-import io.doublegsoft.usebase.SpecBase;
+import io.doublegsoft.usebase.TestBase;
 import io.doublegsoft.usebase.Usebase;
 import io.doublegsoft.usebase.ir.AssociationBuilder;
 import io.doublegsoft.usebase.association.AssociationChain;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-public class CustomerCareAndBillingSpec extends SpecBase {
+public class CustomerCareAndBillingTest extends TestBase {
 
   private static final String OUTPUT = "out/usebase/cc&b.modelbase";
 
@@ -36,7 +36,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("cc&b");
+    ModelDefinition dataModel = loadModel("business/cc&b");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     ObjectDefinition customer = dataModel.findObjectByName("customer");
@@ -67,7 +67,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
 
   @Test
   public void test_get_bill() throws Exception {
-    ModelDefinition dataModel = loadModel("cc&b");
+    ModelDefinition dataModel = loadModel("business/cc&b");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@get_bill({bill: bill_id}):" +
@@ -117,7 +117,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
 
   @Test
   public void test_ft_list() throws Exception {
-    ModelDefinition dataModel = loadModel("cc&b");
+    ModelDefinition dataModel = loadModel("business/cc&b");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@find_ft({bill: bill_id}):" +
@@ -145,7 +145,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
 
   @Test
   public void test_get_account_by_premise() throws Exception {
-    ModelDefinition dataModel = loadModel("cc&b");
+    ModelDefinition dataModel = loadModel("business/cc&b");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@get_account_by_premise({premise: premise_id}):" +
@@ -165,7 +165,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
 
   @Test
   public void test_get_account_by_bill_segment() throws Exception {
-    ModelDefinition dataModel = loadModel("cc&b");
+    ModelDefinition dataModel = loadModel("business/cc&b");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@get_account_by_bill_segment({bill_segment: id}):" +
@@ -185,7 +185,7 @@ public class CustomerCareAndBillingSpec extends SpecBase {
 
   @Test
   public void test_generate_bill() throws Exception {
-    ModelDefinition dataModel = loadModel("cc&b");
+    ModelDefinition dataModel = loadModel("business/cc&b");
     String expr =
         "@generate_bill({account: account_id!}):{bill}\n" +
         "|&| account = {account}#(account_id)!'账户没有找到'\n" +

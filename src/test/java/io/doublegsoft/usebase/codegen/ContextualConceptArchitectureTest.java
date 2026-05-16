@@ -1,16 +1,14 @@
 package io.doublegsoft.usebase.codegen;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
-import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
-import io.doublegsoft.usebase.SpecBase;
-import io.doublegsoft.usebase.Usebase;
+import io.doublegsoft.usebase.TestBase;
 import org.junit.Test;
 
-public class ContextualConceptArchitectureSpec extends SpecBase {
+public class ContextualConceptArchitectureTest extends TestBase {
 
   @Test
   public void test_cca_datamodel() throws Exception {
-    ModelDefinition dataModel = loadModel("cca");
+    ModelDefinition dataModel = loadModel("business/cca");
     ModelDefinition apiModel = new ModelDefinition();
 //    String expr = "";
 //    UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);

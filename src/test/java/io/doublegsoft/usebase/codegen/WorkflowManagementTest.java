@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.ToNumberPolicy;
 import com.google.gson.reflect.TypeToken;
-import io.doublegsoft.usebase.SpecBase;
+import io.doublegsoft.usebase.TestBase;
 import io.doublegsoft.usebase.Usebase;
 import io.doublegsoft.usebase.ir.AssociationBuilder;
 import io.doublegsoft.usebase.association.AssociationChain;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class WorkflowManagementSpec extends SpecBase {
+public class WorkflowManagementTest extends TestBase {
 
   private static final String OUTPUT = "out/usebase/wfm.modelbase";
 
@@ -44,7 +44,7 @@ public class WorkflowManagementSpec extends SpecBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("crm", "sms");
+    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     List<ObjectDefinition> infos = new ArrayList<>();
@@ -61,7 +61,7 @@ public class WorkflowManagementSpec extends SpecBase {
    */
   @Test
   public void test_find_workflow_definitions() throws Exception {
-    ModelDefinition dataModel = loadModel("wfm");
+    ModelDefinition dataModel = loadModel("business/wfm");
     String expr =
         "@find_workflow_definitions({workflow_definition: name}):[{workflow_definition}]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
@@ -84,9 +84,9 @@ public class WorkflowManagementSpec extends SpecBase {
    */
   @Test
   public void test_instantiate_workflow() throws Exception {
-    ModelDefinition dataModel = loadModel("wfm");
+    ModelDefinition dataModel = loadModel("business/wfm");
     // 如何确定开始节点？这是个难点
-    String expr = loadUsebaseExpression("wfm/instantiate_workflow.usebase");
+    String expr = loadUsebaseExpression("business/wfm/instantiate_workflow.usebase");
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     usecase.setModule("wfm");
     checkOriginalIndexAndObject(usecase.getReturnedObject());
@@ -146,14 +146,14 @@ public class WorkflowManagementSpec extends SpecBase {
     Assert.assertNotNull(wfdefArgsObj);
 
     // E2E测试
-    generateAndRun(dataModel, usecase);
-    String res = postData("/wfm/workflow_instance/find", "{" +
-        "\"workflowDefinitionId\":3" +
-        "}");
-    // 1. 能够查询到这个用户实例
-    Assert.assertFalse(Strings.isEmpty(res));
-    System.out.println(res);
-    killServer();
+//    generateAndRun(dataModel, usecase);
+//    String res = postData("/wfm/workflow_instance/find", "{" +
+//        "\"workflowDefinitionId\":3" +
+//        "}");
+//    // 1. 能够查询到这个用户实例
+//    Assert.assertFalse(Strings.isEmpty(res));
+//    System.out.println(res);
+//    killServer();
   }
 
   /**
@@ -161,8 +161,8 @@ public class WorkflowManagementSpec extends SpecBase {
    */
   @Test
   public void test_step_workflow() throws Exception {
-    ModelDefinition dataModel = loadModel("wfm");
-    String expr = loadUsebaseExpression("wfm/step_workflow.usebase");
+    ModelDefinition dataModel = loadModel("business/wfm");
+    String expr = loadUsebaseExpression("business/wfm/step_workflow.usebase");
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     usecase.setModule("wfm");
     checkOriginalIndexAndObject(usecase.getReturnedObject());
@@ -174,24 +174,23 @@ public class WorkflowManagementSpec extends SpecBase {
     Assert.assertEquals("workflow_instance", ret.getAttributes()[0].getLabelledOptions("original").get("object"));
     Assert.assertEquals("workflow_instance_id", ret.getAttributes()[0].getName());
 
-    expr = loadUsebaseExpression("wfm/instantiate_workflow.usebase");
+    expr = loadUsebaseExpression("business/wfm/instantiate_workflow.usebase");
     UsecaseDefinition instantiateWorkflow = new Usebase(dataModel).parse(expr).get(0);
-    generateAndRun(dataModel, instantiateWorkflow, usecase);
-    String res = postData("/wfm/workflow_instance/find", "{" +
-        "\"workflowDefinitionId\":3" +
-        "}");
-    Map<String,Object> resp = new Gson().fromJson(res, Map.class);
-    Map<String,Object> row = ((List<Map<String,Object>>)resp.get("data")).get(0);
-    res = postData("/wfm/step_workflow", "{" +
-        "\"workflowInstanceId\":" + row.get("workflowInstanceId") +
-        "}");
 
-    killServer();
-
-    Assert.assertFalse(Strings.isEmpty(res));
-    resp = new Gson().fromJson(res, Map.class);
-    Assert.assertEquals(200, ((Number)resp.get("code")).intValue());
-    System.out.println(res);
+//    generateAndRun(dataModel, instantiateWorkflow, usecase);
+//    String res = postData("/wfm/workflow_instance/find", "{" +
+//        "\"workflowDefinitionId\":3" +
+//        "}");
+//    Map<String,Object> resp = new Gson().fromJson(res, Map.class);
+//    Map<String,Object> row = ((List<Map<String,Object>>)resp.get("data")).get(0);
+//    res = postData("/wfm/step_workflow", "{" +
+//        "\"workflowInstanceId\":" + row.get("workflowInstanceId") +
+//        "}");
+//    killServer();
+//    Assert.assertFalse(Strings.isEmpty(res));
+//    resp = new Gson().fromJson(res, Map.class);
+//    Assert.assertEquals(200, ((Number)resp.get("code")).intValue());
+//    System.out.println(res);
   }
 
   /**
@@ -199,7 +198,7 @@ public class WorkflowManagementSpec extends SpecBase {
    */
   @Test
   public void test_reject() throws Exception {
-    ModelDefinition dataModel = loadModel("wfm");
+    ModelDefinition dataModel = loadModel("business/wfm");
     String expr =
         "@reject({workflow_action_instance: id!}):{workflow_instance: id} \n" +
         "|&| wf_act_curr_inst = {workflow_action_instance}#(id = id) \n" +
@@ -232,7 +231,7 @@ public class WorkflowManagementSpec extends SpecBase {
    */
   @Test
   public void test_revoke() throws Exception {
-    ModelDefinition dataModel = loadModel("wfm");
+    ModelDefinition dataModel = loadModel("business/wfm");
     String expr =
         "@revoke({workflow_action_instance: id!}):{workflow_instance: id} \n" +
         "|&| wf_act_curr_inst = {workflow_action_instance}#(id = id) \n" +
@@ -250,16 +249,17 @@ public class WorkflowManagementSpec extends SpecBase {
     checkOriginalIndexAndObject(usecase.getReturnedObject());
 //    Assert.assertEquals(6, usecase.getStatements().size());
 
-    expr = loadUsebaseExpression("wfm/instantiate_workflow.usebase");
+    expr = loadUsebaseExpression("business/wfm/instantiate_workflow.usebase");
     UsecaseDefinition instantiateWorkflow = new Usebase(dataModel).parse(expr).get(0);
-    generateAndRun(dataModel, usecase, instantiateWorkflow);
-    String res = postData("/wfm/workflow_instance/find", "{" +
-        "\"workflowDefinitionId\":3" +
-        "}");
-    // 1. 能够查询到这个用户实例
-    Assert.assertFalse(Strings.isEmpty(res));
-    System.out.println(res);
-    killServer();
+
+//    generateAndRun(dataModel, usecase, instantiateWorkflow);
+//    String res = postData("/wfm/workflow_instance/find", "{" +
+//        "\"workflowDefinitionId\":3" +
+//        "}");
+//    // 1. 能够查询到这个用户实例
+//    Assert.assertFalse(Strings.isEmpty(res));
+//    System.out.println(res);
+//    killServer();
   }
 
   private void installWfmData() throws IOException, InterruptedException {

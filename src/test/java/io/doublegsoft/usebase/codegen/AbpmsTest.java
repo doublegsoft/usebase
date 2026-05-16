@@ -5,7 +5,7 @@ import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metamodel.dataset.JoinPredicateDefinition;
 import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
-import io.doublegsoft.usebase.SpecBase;
+import io.doublegsoft.usebase.TestBase;
 import io.doublegsoft.usebase.Usebase;
 import io.doublegsoft.usebase.ir.AggregateBuilder;
 import io.doublegsoft.usebase.aggregate.AggregateRelationshipChain;
@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class AbpmsSpec extends SpecBase {
+public class AbpmsTest extends TestBase {
 
   @Test
   public void test_get_bill_aggregate() throws Exception {

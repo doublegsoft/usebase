@@ -1,12 +1,11 @@
 package io.doublegsoft.usebase.grammar;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
-import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.AssignmentDefinition;
 import com.doublegsoft.jcommons.metamodel.CalcExprDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import com.doublegsoft.jcommons.metamodel.ValueDefinition;
-import io.doublegsoft.usebase.SpecBase;
+import io.doublegsoft.usebase.TestBase;
 import io.doublegsoft.usebase.Usebase;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,7 +13,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class CalcExprTest extends SpecBase {
+public class CalcExprTest extends TestBase {
 
   @Test
   public void test() throws Exception {

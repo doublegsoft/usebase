@@ -1,14 +1,14 @@
 package io.doublegsoft.usebase.codegen;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
-import io.doublegsoft.usebase.SpecBase;
+import io.doublegsoft.usebase.TestBase;
 import org.junit.Test;
 
-public class DataEntitlementManagementSpec extends SpecBase {
+public class DataEntitlementManagementTest extends TestBase {
 
   @Test
   public void test() throws Exception {
-    ModelDefinition dataModel = loadModel("dem");
+    ModelDefinition dataModel = loadModel("business/dem");
   }
 
 }

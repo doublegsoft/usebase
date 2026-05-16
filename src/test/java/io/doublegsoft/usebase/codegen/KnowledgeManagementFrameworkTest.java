@@ -23,7 +23,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KnowledgeManagementFrameworkSpec extends SpecBase {
+public class KnowledgeManagementFrameworkTest extends TestBase {
 
   private static final String OUTPUT = "out/usebase/kmf.modelbase";
 
@@ -37,7 +37,7 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
 
   @Before
   public void test_kmf_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("kmf");
+    ModelDefinition dataModel = loadModel("business/kmf");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     List<ObjectDefinition> infos = new ArrayList<>();
@@ -53,7 +53,7 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
    */
   @Test
   public void test_kmf_save_knowledge() throws Exception {
-    ModelDefinition dataModel = loadModel("kmf");
+    ModelDefinition dataModel = loadModel("business/kmf");
     String expr =
         "@save_knowledge({knowledge}):{knowledge: id}";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
@@ -79,7 +79,7 @@ public class KnowledgeManagementFrameworkSpec extends SpecBase {
    */
   @Test
   public void test_kmf_save_knowledge_entry() throws Exception {
-    ModelDefinition dataModel = loadModel("kmf");
+    ModelDefinition dataModel = loadModel("business/kmf");
     String expr =
         "@save_knowledge_entry({knowledge_entry: knowledge!, title!}):{knowledge_entry: id}";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);

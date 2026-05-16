@@ -44,9 +44,8 @@ public class CalcExprParser extends UsebaseParser {
         } else if (ctxValue.anybase_identifier() != null) {
           String text = ctxCalcVal.anybase_value().getText();
           if (text.contains(".")) {
-            String[] objAndAttr = text.split("\\.");
-            ObjectDefinition obj = dataModel.findObjectByName(objAndAttr[0].trim());
-            AttributeDefinition attr = obj.getAttribute(objAndAttr[1].trim());
+            String[] varAndAttr = text.split("\\.");
+            AttributeDefinition attr = usecase.getVariable(varAndAttr[0]).getAttribute(varAndAttr[1]);
             val.setAttributeValue(attr);
           } else {
             throw new IllegalArgumentException("没有层级的值“" + text + "”，无法获取对象中具体的属性");

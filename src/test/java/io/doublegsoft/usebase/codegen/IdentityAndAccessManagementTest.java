@@ -7,7 +7,7 @@ import com.doublegsoft.jcommons.metamodel.AssignmentDefinition;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
-import io.doublegsoft.usebase.SpecBase;
+import io.doublegsoft.usebase.TestBase;
 import io.doublegsoft.usebase.Usebase;
 import io.doublegsoft.usebase.ir.AggregateBuilder;
 import io.doublegsoft.usebase.aggregate.AggregateRelationshipChain;
@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IdentityAndAccessManagementSpec extends SpecBase {
+public class IdentityAndAccessManagementTest extends TestBase {
 
   private static final String OUTPUT = "out/usebase/iam.modelbase";
 
@@ -37,7 +37,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("crm", "sms");
+    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     List<ObjectDefinition> infos = new ArrayList<>();
@@ -53,7 +53,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    */
   @Test
   public void test_find_users() throws Exception {
-    ModelDefinition dataModel = loadModel("iam");
+    ModelDefinition dataModel = loadModel("business/iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@find_users({user: username, email, status}, {role: name}):[{user: user_id, username, email} <> :role_count%count[{user_role}]%]";
@@ -81,7 +81,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
 
   @Test
   public void test_get_user() throws Exception {
-    ModelDefinition dataModel = loadModel("iam");
+    ModelDefinition dataModel = loadModel("business/iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@get_user({user: user_id, (username, email)}):" +
@@ -121,7 +121,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
 
   @Test
   public void test_save_user() throws Exception {
-    ModelDefinition dataModel = loadModel("iam");
+    ModelDefinition dataModel = loadModel("business/iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@save_user({user} <> roles[user_role]#(user, role)):{user: id}";
@@ -154,7 +154,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    */
   @Test
   public void test_disable_user() throws Exception {
-    ModelDefinition dataModel = loadModel("iam");
+    ModelDefinition dataModel = loadModel("business/iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@disable_user({user: status = 'D', user_id!}):{user: id}\n" +
@@ -178,7 +178,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    */
   @Test
   public void test_enable_user() throws Exception {
-    ModelDefinition dataModel = loadModel("iam");
+    ModelDefinition dataModel = loadModel("business/iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@enable_user({user: status = 'E', user_id!}):{user: id}" +
@@ -209,7 +209,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    */
   @Test
   public void test_iam_login() throws Exception {
-    ModelDefinition dataModel = loadModel("iam");
+    ModelDefinition dataModel = loadModel("business/iam");
     String expr =
         "@login({user: username!}, password!, captcha!):{user} <> :token \n" +
         "|:| encrypted_password = @bcrypt(password) \n" +
@@ -257,7 +257,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    */
   @Test
   public void test_iam_logout() throws Exception {
-    ModelDefinition dataModel = loadModel("iam");
+    ModelDefinition dataModel = loadModel("business/iam");
     String expr =
         "@logout({user: user_id}) \n" +
         "|@| @remove_user_from_session(#session, user_id) \n";
@@ -288,7 +288,7 @@ public class IdentityAndAccessManagementSpec extends SpecBase {
    */
   @Test
   public void save_user_with_roles() throws Exception {
-    ModelDefinition dataModel = loadModel("sms", "iam");
+    ModelDefinition dataModel = loadModel("business/sms", "business/iam");
     String expr =
         "@save_user_with_roles({person}#(national_id!, person_name!) <person.id=user.id> {user} <user_role> [role]) \n" +
         "|?| @validate_national_id_and_name(national_id, person_name)!'身份证号和姓名不匹配' \n" +

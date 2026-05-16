@@ -2,13 +2,10 @@ package io.doublegsoft.usebase.codegen;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
-import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
-import io.doublegsoft.usebase.SpecBase;
+import io.doublegsoft.usebase.TestBase;
 import io.doublegsoft.usebase.Usebase;
 import io.doublegsoft.usebase.projection.ProjectionBuilder;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -17,7 +14,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomerRelationshipManagementSpec extends SpecBase {
+public class CustomerRelationshipManagementTest extends TestBase {
 
   private static final String OUTPUT = "out/usebase/crm.modelbase";
 
@@ -30,7 +27,7 @@ public class CustomerRelationshipManagementSpec extends SpecBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("crm", "sms");
+    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     List<ObjectDefinition> infos = new ArrayList<>();
@@ -43,7 +40,7 @@ public class CustomerRelationshipManagementSpec extends SpecBase {
 
   @Test
   public void test_crm_convert_sales_lead() throws Exception {
-    ModelDefinition dataModel = loadModel("crm", "sms");
+    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
     String expr = loadUsebaseExpression("crm/convert_sales_lead.usebase");
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
@@ -52,7 +49,7 @@ public class CustomerRelationshipManagementSpec extends SpecBase {
 
   @Test
   public void test_crm_log_sales_activity() throws Exception {
-    ModelDefinition dataModel = loadModel("crm", "sms");
+    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
     String expr = loadUsebaseExpression("crm/log_sales_activity.usebase");
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
@@ -61,7 +58,7 @@ public class CustomerRelationshipManagementSpec extends SpecBase {
 
   @Test
   public void test_crm_win_opportunity() throws Exception {
-    ModelDefinition dataModel = loadModel("crm", "sms");
+    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
     String expr = loadUsebaseExpression("crm/win_opportunity.usebase");
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);

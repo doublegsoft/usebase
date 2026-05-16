@@ -69,6 +69,7 @@ public class Usebase {
     for (io.doublegsoft.usebase.UsebaseParser.Usebase_usecaseContext ctxUsecase : ctxProgram.usebase_usecase()) {
       UsecaseDefinition usecase = createUsecase(ctxUsecase);
       usecase.setDataModel(dataModel);
+      usecase.setOriginalText(getOriginalText(ctxUsecase));
       retVal.add(usecase);
     }
     return retVal;
@@ -161,18 +162,23 @@ public class Usebase {
       ValueDefinition value = new ValueDefinition();
       valueParser.assemble(ctxComp.usebase_comparison_part(0).usebase_value(), value, usecase);
       retVal.setValue(value);
-      retVal.setComparand(ctxComp.usebase_comparison_part(0).comparand.getText());
+      String comparandExpr = ctxComp.usebase_comparison_part(0).comparand.getText();
       retVal.setComparator(ctxComp.usebase_comparison_part(0).usebase_comparator().getText());
       // 根据值，重新对操作书注册类型
-      if (!retVal.getComparand().contains(".")) {
-        registerVariable(usecase, retVal.getComparand(), value);
+      if (!comparandExpr.contains(".")) {
+        registerVariable(usecase, comparandExpr, value);
       }
+      retVal.setComparand(getVariable(usecase, comparandExpr, getOriginalText(ctxExpr.usebase_comparison())));
       for (int i = 1; i < ctxComp.usebase_comparison_part().size(); i++) {
         io.doublegsoft.usebase.UsebaseParser.Usebase_comparison_partContext ctxPart = ctxComp.usebase_comparison_part(i);
         String conj = ctxComp.usebase_comparison_conj(i - 1).getText();
         ComparisonDefinition conjCmp = new ComparisonDefinition();
         conjCmp.setComparator(ctxPart.usebase_comparator().getText());
-        conjCmp.setComparand(ctxPart.comparand.getText());
+        comparandExpr = ctxPart.comparand.getText();
+        if (!comparandExpr.contains(".")) {
+          registerVariable(usecase, comparandExpr, value);
+        }
+        retVal.setComparand(getVariable(usecase, comparandExpr, getOriginalText(ctxExpr.usebase_comparison())));
         ValueDefinition val = new ValueDefinition();
         valueParser.assemble(ctxPart.usebase_value(), val, usecase);
         conjCmp.setValue(val);
@@ -346,5 +352,25 @@ public class Usebase {
       retVal.setSaveObject(saveObj);
     }
     return retVal;
+  }
+
+  private VariableDefinition getVariable(UsecaseDefinition usecase, String expr, String originalText) {
+    if (!expr.contains(".")) {
+      return usecase.getVariable(expr);
+    } else {
+      String[] comparandParts = expr.split("\\.");
+      VariableDefinition var = usecase.getVariable(comparandParts[0]);
+      if (var == null) {
+        throw new IllegalArgumentException(originalText +
+            "\n  not found \"" + comparandParts[0] + "\" variable in this usecase.");
+      }
+      AttributeDefinition attr = var.getAttribute(comparandParts[1]);
+      if (attr == null) {
+        throw new IllegalArgumentException(originalText +
+            "\n  not found \"" + comparandParts[1] + "\" attribute in \"" + comparandParts[0] +
+            "\" of type \"" + var.getType().getName() + "\".");
+      }
+      return var;
+    }
   }
 }

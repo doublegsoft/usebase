@@ -3,7 +3,7 @@ package io.doublegsoft.usebase.project;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
-import io.doublegsoft.usebase.SpecBase;
+import io.doublegsoft.usebase.TestBase;
 import io.doublegsoft.usebase.Usebase;
 import io.doublegsoft.usebase.projection.ProjectionBuilder;
 import org.junit.Assert;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BillingAndRevenueSystemSpec extends SpecBase {
+public class BillingAndRevenueSystemTest extends TestBase {
 
   public static final String BNR_ROOT = "/Users/christian/export/local/works/doublegsoft.biz/stdbiz/05.Testing/BNR";
 

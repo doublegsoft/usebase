@@ -1,0 +1,195 @@
+@entity
+@persistence(name='tn_cca_cognasst')
+@name(label='资产', plural='first_objects')
+first_object<
+
+  @persistence(name='cognasstid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='cognasstnm')
+  @name(label='名称')
+  name!: string(200),
+
+  @persistence(name='cognassttyp')
+  @name(label='类型')
+  type!: enum[FL:文件,VD:视频,IM:图片,CD:代码,DC:文档,LN:链接],
+
+  @persistence(name='tit')
+  title: string(500),
+
+  @persistence(name='loc')
+  @name(label='文件地址')
+  location: string(1000),
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: string(2000),
+
+  @persistence(name='hs')
+  @name(label='checksum')
+  hash: string(128),
+
+  @persistence(name='sz')
+  @name(label='文件大小')
+  size: long,
+
+  @persistence(name='mime')
+  @name(label='媒体类型')
+  mime: string(200),
+
+  @persistence(name='dur')
+  @name(label='时长')
+  duration: long,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time: now
+>
+
+@entity
+@persistence(name='tn_cogntg')
+@name(label='标签', plural='second_objects')
+second_object<
+
+  @persistence(name='cogntgid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='cogntgnm')
+  @name(label='名称')
+  name!: string(200),
+
+  @persistence(name='descr')
+  description: string(1000),
+
+  @persistence(name='crttm')
+  created_time = now: datetime
+>
+
+@entity
+@persistence(name='tn_cca_cognent')
+@name(label='知识入口', plural='third_objects')
+third_object<
+
+  @persistence(name='cognentid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='cognentnm')
+  @name(label='名称')
+  name!: string(200),
+
+  @persistence(name='enttyp')
+  @name(label='类型')
+  type!: enum[OBJ:对象,SCN:场景,ERR:错误,CAP:容量],
+
+  @persistence(name='tit')
+  @name(label='标题')
+  title: string(500),
+
+  @persistence(name='amt')
+  @name(label='总额')
+  amount: number(12, 4),
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: string(2000),
+
+  @persistence(name='sts')
+  @name(label='状态')
+  status: enum[AC:活跃,AR:存档],
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time: now
+>
+
+@entity
+@persistence(name='tn_cca_cogncep')
+@name(label='概念', plural='fourth_objects')
+fourth_object<
+
+  @persistence(name='cogncepid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='cogncepnm')
+  @name(label='名称')
+  name!: string(200),
+
+  @persistence(name='tit')
+  @name(label='标题')
+  title!: string(500),
+
+  @persistence(name='defn')
+  @name(label='定义')
+  definition: string(3000),
+
+  @persistence(name='stab')
+  @name(label='认知程度')
+  stability!: enum[LW:个人理解,MD:工程共识,HG:长期认知],
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time: now
+>
+
+@entity
+@persistence(name='tn_cca_cogntop')
+@name(label='主题', plural='fifth_objects')
+fifth_object<
+
+  @persistence(name='cogntopid')
+  @name(label='主题标识')
+  id!!: long,
+
+  @persistence(name='cogntopnm')
+  @name(label='主题名称')
+  name!: string(200),
+
+  @persistence(name='tit')
+  @name(label='标题')
+  title!: string(500),
+
+  @persistence(name='smry')
+  @name(label='概要')
+  summary: string(3000),
+
+  @persistence(name='abstlvl')
+  @name(label='抽象层度')
+  abstraction_level!: enum[LW:技术实现,MD:系统模式,HG:方法认知],
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time: now
+>
+
+@name(label='congnition_aggregate', plural='aggregate_objects')
+aggregate_object<
+
+  @name(label='cognentid')
+  first_object: &first_object(id),
+
+  @name(label='cogncepid')
+  second_object: &second_object(id),
+  
+  @name(label='topic')
+  third_object: &third_object(id)
+>

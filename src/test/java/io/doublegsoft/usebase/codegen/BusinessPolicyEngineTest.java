@@ -1,14 +1,14 @@
 package io.doublegsoft.usebase.codegen;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
-import io.doublegsoft.usebase.SpecBase;
+import io.doublegsoft.usebase.TestBase;
 import org.junit.Test;
 
-public class BusinessPolicyEngineSpec extends SpecBase {
+public class BusinessPolicyEngineTest extends TestBase {
 
   @Test
   public void test() throws Exception {
-    ModelDefinition dataModel = loadModel("bpe");
+    ModelDefinition dataModel = loadModel("business/bpe");
   }
 
 }
