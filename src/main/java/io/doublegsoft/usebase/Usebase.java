@@ -212,14 +212,17 @@ public class Usebase {
       retVal.setOriginalText(getOriginalText(ctxAssign));
       return retVal;
     } else if (ctxExpr.item != null) {
+      String itemVarName = ctxExpr.item.getText();
+      String arrayVarName = ctxExpr.array.getText();
+      VariableDefinition arrayVar = usecase.getVariable(arrayVarName);
+      usecase.registerVariable(itemVarName, arrayVar.getComponentType());
+
       LoopDefinition retVal = new LoopDefinition();
       retVal.setOperator(ctx.usebase_operator().getText());
-      retVal.setItemVar(ctxExpr.item.getText());
-      retVal.setArrayVar(ctxExpr.array.getText());
-      VariableDefinition var = usecase.getVariable(ctxExpr.array.getText());
-      retVal.setComponentType((ObjectDefinition) var.getComponentType());
-      retVal.registerVariable(retVal.getItemVar(), var.getComponentType());
-      usecase.registerVariable(retVal.getItemVar(), var.getComponentType());
+      retVal.registerVariable(itemVarName, arrayVar.getComponentType() );
+      retVal.setItemVar(usecase.getVariable(itemVarName));
+      retVal.setArrayVar(arrayVar);
+      retVal.setComponentType((ObjectDefinition) arrayVar.getComponentType());
       retVal.setOriginalText(getOriginalText(ctxExpr));
       return retVal;
     } else if (ctx.usebase_operator().getText().endsWith(".|")) {
@@ -268,24 +271,6 @@ public class Usebase {
   }
 
   private VariableDefinition registerVariable(UsecaseDefinition usecase, String name, ValueDefinition value) {
-//    if (value.getObjectValue() != null) {
-//      String origObjName = value.getObjectValue().getLabelledOption("original", "object");
-//      ObjectDefinition obj = dataModel.findObjectByName(origObjName);
-//      usecase.registerVariable(name, obj);
-//    } else if (value.getArrayValue() != null) {
-//      String origObjName = value.getArrayValue().getLabelledOption("original", "object");
-//      ObjectDefinition componentObj = dataModel.findObjectByName(origObjName);
-//      usecase.registerVariable(name, componentObj, true);
-//    } else if (value.getString() != null) {
-//      usecase.registerVariable(name, new PrimitiveType("string"));
-//    } else if (value.getNumber() != null) {
-//      usecase.registerVariable(name, new PrimitiveType("number"));
-//    } else if (value.getBool() != null) {
-//      usecase.registerVariable(name, new PrimitiveType("bool"));
-//    } else {
-//      // TODO: GET TYPE FROM EXPRESSION
-//      usecase.registerVariable(name, new PrimitiveType("unknown"));
-//    }
     ObjectType type = guessVariableType(value);
     usecase.registerVariable(name, type);
     if (usecase.getParameterizedObject() != null) {
@@ -377,8 +362,10 @@ public class Usebase {
       String origObjName = value.getObjectValue().getLabelledOption("original", "object");
       return dataModel.findObjectByName(origObjName);
     } else if (value.getArrayValue() != null) {
+      CollectionType retVal = new CollectionType("");
       String origObjName = value.getArrayValue().getLabelledOption("original", "object");
-      return dataModel.findObjectByName(origObjName);
+      retVal.setComponentType(dataModel.findObjectByName(origObjName));
+      return retVal;
     } else if (value.getString() != null) {
       return new PrimitiveType("string");
     } else if (value.getNumber() != null) {

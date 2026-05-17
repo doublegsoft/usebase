@@ -1,0 +1,10 @@
+@if_and_calc_array({first_object: id!},
+                   {second_object: id!},
+                   {third_object: name!}):{aggregate_object}
+|&| first_object_inst = {first_object}#(id = first_object_id)
+|&| second_object_inst = {second_object}#(id = second_object_id)
+|&| third_object_insts = [{third_object}]#(id = third_object_name)
+|*| third_object_inst in third_object_insts
+|*|?| third_object_inst.amount > 10
+|*|?|=| total_amount = third_object_insts.amount * 100
+|.| {first_object_inst} <> {second_object_inst} <> [third_object_insts]

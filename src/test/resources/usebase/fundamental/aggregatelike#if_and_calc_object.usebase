@@ -1,9 +1,9 @@
-@if_and_calc({first_object: id!},
-             {second_object: id!},
-             {third_object: id!}):{aggregate_object}
+@if_and_calc_object({first_object: id!},
+                    {second_object: id!},
+                    {third_object: id!}):{aggregate_object}
 |&| first_object_inst = {first_object}#(id = first_object_id)
 |&| second_object_inst = {second_object}#(id = second_object_id)
-|&| third_object_inst = {third_object}#(id = third_object_id)
+|&| third_object_inst = [third_object]#(id = third_object_id)
 |?| third_object_inst.amount > 30
 |?|=| total_amount = third_object_inst.amount * 5
 |?| third_object_inst.amount > 20
