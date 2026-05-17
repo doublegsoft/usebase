@@ -48,7 +48,7 @@ public class AggregateLikeTest extends TestBase {
 
     LoopDefinition stmtLoop = (LoopDefinition) usecase.getStatements().get(3);
     ComparisonDefinition stmtIf = (ComparisonDefinition) stmtLoop.getStatements().get(0);
-
+    AssignmentDefinition stmtCalcExpr = (AssignmentDefinition) stmtIf.getStatements().get(0);
   }
 
 }
