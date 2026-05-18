@@ -48,7 +48,19 @@ public class AggregateLikeTest extends TestBase {
 
     LoopDefinition stmtLoop = (LoopDefinition) usecase.getStatements().get(3);
     ComparisonDefinition stmtIf = (ComparisonDefinition) stmtLoop.getStatements().get(0);
-    AssignmentDefinition stmtCalcExpr = (AssignmentDefinition) stmtIf.getStatements().get(0);
+    AssignmentDefinition stmtCalc = (AssignmentDefinition) stmtIf.getStatements().get(0);
+
+    Assert.assertTrue(stmtIf.isConditional());
+    Assert.assertEquals(">", stmtIf.getComparator());
+    Assert.assertEquals("amount", stmtIf.getComparand().getAttribute("amount").getName());
+    Assert.assertEquals("10", stmtIf.getValue().getNumber().toString());
+
+    Assert.assertEquals("total_amount", stmtCalc.getAssignee().getName());
+    Assert.assertEquals("number", stmtCalc.getAssignee().getType().getName());
+    CalcExprDefinition calcExpr = stmtCalc.getValue().getCalcExpr();
+    Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
+    Assert.assertEquals("*", calcExpr.getOperator());
+    Assert.assertEquals("100", calcExpr.getRightOperand().getValue().getNumber().toPlainString());
   }
 
 }
