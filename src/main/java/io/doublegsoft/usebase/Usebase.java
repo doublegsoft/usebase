@@ -203,7 +203,9 @@ public class Usebase {
       retVal.setValue(value);
       retVal.setAssignee(var);
       retVal.setAssignOp(ctxAssign.usebase_assignop().getText());
-      // 注册变量
+      if ((value.getObjectValue() != null || value.getArrayValue() != null) && (var.getType().isCustom() || var.getComponentType().isCustom())) {
+        retVal.setExceptional(true);
+      }
       if (ctx.usebase_remote() != null) {
         ValueDefinition remote = new ValueDefinition();
         valueParser.assemble(ctx.usebase_remote(), remote);

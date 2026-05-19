@@ -1,6 +1,7 @@
 package io.doublegsoft.usebase.fundamental;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
+import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metamodel.*;
 import com.doublegsoft.jcommons.utils.Strings;
 import io.doublegsoft.usebase.TestBase;
@@ -34,6 +35,16 @@ public class AggregateLikeTest extends TestBase {
     Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
     Assert.assertEquals("*", calcExpr.getOperator());
     Assert.assertEquals("5", calcExpr.getRightOperand().getValue().getNumber().toPlainString());
+
+    // 变量验证
+    VariableDefinition var = usecase.getVariable("first_object_inst");
+    Assert.assertEquals("first_object", var.getType().getName());
+    var = usecase.getVariable("second_object_inst");
+    Assert.assertEquals("second_object", var.getType().getName());
+    var = usecase.getVariable("third_object_inst");
+    Assert.assertEquals("third_object", var.getType().getName());
+    var = usecase.getVariable("total_amount");
+    Assert.assertEquals("number", var.getType().getName());
   }
 
   @Test
@@ -45,6 +56,9 @@ public class AggregateLikeTest extends TestBase {
     System.out.println(usecase.getOriginalText());
 
     Assert.assertEquals(5, usecase.getStatements().size());
+    Assert.assertTrue(usecase.getStatements().get(0).isExceptional());
+    Assert.assertTrue(usecase.getStatements().get(1).isExceptional());
+    Assert.assertTrue(usecase.getStatements().get(2).isExceptional());
 
     LoopDefinition stmtLoop = (LoopDefinition) usecase.getStatements().get(3);
     ComparisonDefinition stmtIf = (ComparisonDefinition) stmtLoop.getStatements().get(0);
@@ -61,6 +75,17 @@ public class AggregateLikeTest extends TestBase {
     Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
     Assert.assertEquals("*", calcExpr.getOperator());
     Assert.assertEquals("100", calcExpr.getRightOperand().getValue().getNumber().toPlainString());
+
+    // 变量验证
+    VariableDefinition var = usecase.getVariable("first_object_inst");
+    Assert.assertEquals("first_object", var.getType().getName());
+    var = usecase.getVariable("second_object_inst");
+    Assert.assertEquals("second_object", var.getType().getName());
+    var = usecase.getVariable("third_object_insts");
+    Assert.assertTrue(var.getType().isCollection());
+    Assert.assertEquals("third_object", ((CollectionType) var.getType()).getComponentType().getName());
+    var = usecase.getVariable("total_amount");
+    Assert.assertEquals("number", var.getType().getName());
   }
 
 }
