@@ -273,6 +273,10 @@ public class Usebase {
   }
 
   private VariableDefinition registerVariable(UsecaseDefinition usecase, String name, ValueDefinition value) {
+    VariableDefinition retVal = usecase.getVariable(name);
+    if (retVal != null && retVal.getType() != null) {
+      return retVal;
+    }
     ObjectType type = guessVariableType(value);
     usecase.registerVariable(name, type);
     if (usecase.getParameterizedObject() != null) {
