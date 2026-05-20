@@ -1,0 +1,7 @@
+@login(username, password='', captcha=''):{online_user}
+|=| password = @encrypt(password)
+|&| user = {user}#(name = username, encrypted_password = password)
+|=| ret = {online_user}&user
+|=| ret.token = ''
+|=| ret.login_time = now
+|.| ret
