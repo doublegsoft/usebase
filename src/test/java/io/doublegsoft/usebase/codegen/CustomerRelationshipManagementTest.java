@@ -41,28 +41,28 @@ public class CustomerRelationshipManagementTest extends TestBase {
   @Test
   public void test_crm_convert_sales_lead() throws Exception {
     ModelDefinition dataModel = loadModel("business/crm", "business/sms");
-    String expr = loadUsebaseExpression("crm/convert_sales_lead.usebase");
+    String expr = loadUsebaseExpression("business/crm/convert_sales_lead.usebase");
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
-    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
+//    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
   @Test
   public void test_crm_log_sales_activity() throws Exception {
     ModelDefinition dataModel = loadModel("business/crm", "business/sms");
-    String expr = loadUsebaseExpression("crm/log_sales_activity.usebase");
+    String expr = loadUsebaseExpression("business/crm/log_sales_activity.usebase");
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
-    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
+//    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
   @Test
   public void test_crm_win_opportunity() throws Exception {
     ModelDefinition dataModel = loadModel("business/crm", "business/sms");
-    String expr = loadUsebaseExpression("crm/win_opportunity.usebase");
+    String expr = loadUsebaseExpression("business/crm/win_opportunity.usebase");
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
-    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
+//    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
 }

@@ -145,7 +145,7 @@ public class HumanResourceManagementTest extends TestBase {
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
 
-    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
+//    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
   @Test
@@ -157,8 +157,8 @@ public class HumanResourceManagementTest extends TestBase {
         "|:| dept = {department}#(id = department_id) !'目标部门不存在' \n" +
         "|:| desg = {designation}#(id = designation_id) !'目标职位不存在' \n" +
         "|:| curr_job = {job_history}#(employee = employee_id, is_current = true) !'找不到员工当前任职信息' \n" +
-        "|?| curr_job.department_id == department_id !'调岗部门未发生变化，无需操作' \n" +
-        "|?| curr_job.designation_id == designation_id !'调岗职位未发生变化，无需操作' \n" +
+        "|?| curr_job.department == department_id !'调岗部门未发生变化，无需操作' \n" +
+        "|?| curr_job.designation == designation_id !'调岗职位未发生变化，无需操作' \n" +
         "|?| effective_start_date >= now !'调岗生效日期不能早于今天' \n" +
         "|:| future_job = {job_history}#(employee = employee_id, start_date > today) \n" +
         "|?| future_job == null !'该员工存在尚未生效的未来调岗计划，请先撤销' \n" +
@@ -167,7 +167,7 @@ public class HumanResourceManagementTest extends TestBase {
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
 
-    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
+//    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
 }

@@ -49,7 +49,7 @@ business_policy<
   last_modified_time: now,
 
   @name(label='节点列表', singular='node')
-  nodes: &business_policy_node(id)[]
+  actions: &business_policy_action(id)[]
 >
 
 @persistence(name='tn_bpe_bizpolcond')

@@ -123,7 +123,8 @@ public class AggregateLikeTest extends TestBase {
         "number", stmtInvo.getAssignee().getType().getName());
 
     Assert.assertEquals("get_amount_30", invo.getMethod());
-    Assert.assertEquals("third_object_inst", invo.getArguments().get(0));
+    Assert.assertEquals("third_object_inst", invo.getArguments().get(0).getName());
+    Assert.assertEquals("third_object", invo.getArguments().get(0).getType().getName());
 
     // 变量验证
     VariableDefinition var = usecase.getVariable("first_object_inst");

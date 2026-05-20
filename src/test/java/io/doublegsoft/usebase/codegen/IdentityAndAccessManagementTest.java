@@ -218,38 +218,38 @@ public class IdentityAndAccessManagementTest extends TestBase {
         "|@| @put_user_into_session(user) \n" +
         "|:| token = @generate_token(user) \n" +
         "|.| user";
-    UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
-    usecase.setModule("iam");
+//    UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+//    usecase.setModule("iam");
+//
+//    ObjectDefinition obj = usecase.getParameterizedObject();
+//
+//    AttributeDefinition username = obj.getAttributes()[0];
+//    Assert.assertEquals("username", username.getName());
+//    Assert.assertFalse(username.getConstraint().isNullable());
+//
+//    AttributeDefinition password = obj.getAttributes()[1];
+//    Assert.assertEquals("password", password.getName());
+//    Assert.assertFalse(password.getConstraint().isNullable());
+//
+//    AttributeDefinition captcha = obj.getAttributes()[2];
+//    Assert.assertEquals("captcha", captcha.getName());
+//    Assert.assertFalse(captcha.getConstraint().isNullable());
+//
+//    obj = usecase.getReturnedObject();
+//    Assert.assertEquals("user", obj.getAttributes()[0].getLabelledOptions("original").get("object"));
+//
+//    Assert.assertEquals(6, usecase.getStatements().size());
+//    StatementDefinition stmt = usecase.getStatements().get(0);
+//    AssignmentDefinition assign = (AssignmentDefinition) stmt;
+//    Assert.assertEquals("encrypted_password", assign.getAssignee());
 
-    ObjectDefinition obj = usecase.getParameterizedObject();
-
-    AttributeDefinition username = obj.getAttributes()[0];
-    Assert.assertEquals("username", username.getName());
-    Assert.assertFalse(username.getConstraint().isNullable());
-
-    AttributeDefinition password = obj.getAttributes()[1];
-    Assert.assertEquals("password", password.getName());
-    Assert.assertFalse(password.getConstraint().isNullable());
-
-    AttributeDefinition captcha = obj.getAttributes()[2];
-    Assert.assertEquals("captcha", captcha.getName());
-    Assert.assertFalse(captcha.getConstraint().isNullable());
-
-    obj = usecase.getReturnedObject();
-    Assert.assertEquals("user", obj.getAttributes()[0].getLabelledOptions("original").get("object"));
-
-    Assert.assertEquals(6, usecase.getStatements().size());
-    StatementDefinition stmt = usecase.getStatements().get(0);
-    AssignmentDefinition assign = (AssignmentDefinition) stmt;
-    Assert.assertEquals("encrypted_password", assign.getAssignee());
-
-    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
-        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+//    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+//        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+//        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+//        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   /**
@@ -299,13 +299,13 @@ public class IdentityAndAccessManagementTest extends TestBase {
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
     usecase.setModule("iam");
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
-        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+//    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+//        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+//        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+//        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
 }

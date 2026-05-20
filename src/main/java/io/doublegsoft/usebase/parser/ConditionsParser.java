@@ -104,9 +104,9 @@ public class ConditionsParser extends UsebaseParser {
     }
     for (AttributeDefinition attr : owner.getAttributes()) {
       int index = Integer.parseInt(attr.getLabelledOption("original", "index"));
-      if (index <= conditionsIndex) {
+      if (index < conditionsIndex) {
         previousGroupingAttributes.add(attr);
-      } else if (index == conditionsIndex + 1){
+      } else if (index == conditionsIndex){
         currentGroupingAttributes.add(attr);
       }
     }
@@ -133,7 +133,7 @@ public class ConditionsParser extends UsebaseParser {
       String rightObjectAlias = null;
       AttributeDefinition leftSideAttrInDataObj = null;
       AttributeDefinition rightSideAttrInDataObj = null;
-      if (rightSide != null && rightSide.contains("'")) {
+      if (rightSide != null && rightSide.contains("'") /* right-side是个常量*/) {
         leftSideAttrInDataObj = findLeftAttributeInDataModel(leftSide, owner, conditionsIndex);
       } else if (conjObj == null) {
         //******************************************//
@@ -224,8 +224,9 @@ public class ConditionsParser extends UsebaseParser {
           }
         }
         assemble(origObjName, conjunction, leftSideAttrInDataObj, rightSideAttrInDataObj, leftObjectAlias, rightObjectAlias, rightSide);
-      }
-      if (conditionsIndex == 0) {
+        attr.setLabelledOptions("conjunction", conjunction);
+      } // for (AttributeDefinition attr : currentGroupingAttributes)
+      if (conditionsIndex == 1) {
         for (AttributeDefinition attr : previousGroupingAttributes) {
           String origObjName = attr.getLabelledOption("original", "object");
           Map<String, String> conjunction = new HashMap<>();
@@ -237,7 +238,7 @@ public class ConditionsParser extends UsebaseParser {
           assemble(origObjName, conjunction, leftSideAttrInDataObj, rightSideAttrInDataObj,
               leftObjectAlias, rightObjectAlias, rightSide);
         }
-      }
+      } // if (conditionsIndex == 1)
     }
   }
 

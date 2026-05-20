@@ -4,10 +4,8 @@ import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
-import com.doublegsoft.jcommons.metamodel.CalcExprDefinition;
-import com.doublegsoft.jcommons.metamodel.InvocationDefinition;
-import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
-import com.doublegsoft.jcommons.metamodel.ValueDefinition;
+import com.doublegsoft.jcommons.metamodel.*;
+import io.doublegsoft.usebase.Usebase;
 
 import java.math.BigDecimal;
 
@@ -114,18 +112,9 @@ public class ValueParser extends UsebaseParser {
       assemble(ctx.anybase_value(), value);
     } else if (ctx.usebase_invoke() != null) {
       // 作为【值】的函数调用
-      io.doublegsoft.usebase.UsebaseParser.Usebase_invokeContext ctxInv = ctx.usebase_invoke();
       InvocationDefinition inv = new InvocationDefinition();
+      getInvocationParser().assemble(ctx.usebase_invoke(), inv, usecase);
       value.setInvocation(inv);
-      inv.setMethod(ctxInv.anybase_identifier().getText());
-      if (ctxInv.msg != null) {
-        inv.setError(ctxInv.msg.getText().substring(1, ctxInv.msg.getText().length() - 1));
-      }
-      for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext ctxArg : ctxInv.usebase_arguments().usebase_argument()) {
-        if (ctxArg.anybase_identifier() != null) {
-          inv.getArguments().add(ctxArg.anybase_identifier().getText());
-        }
-      }
     } else if (ctx.usebase_calculate() != null) {
       // TODO: 表达式计算
       io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctx.usebase_calculate();

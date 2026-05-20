@@ -24,7 +24,7 @@ import static io.doublegsoft.usebase.parser.UsebaseParser.getOriginalText;
 
 public class Usebase {
 
-  private final ModelDefinition dataModel;
+  private static ModelDefinition dataModel;
 
   private final AggregateParser aggregateParser;
 
@@ -40,6 +40,8 @@ public class Usebase {
 
   private final ValueParser valueParser;
 
+  private final InvocationParser invocationParser;
+
   public Usebase(ModelDefinition dataModel) {
     this.dataModel = dataModel;
     aggregateParser = new AggregateParser(dataModel);
@@ -49,6 +51,7 @@ public class Usebase {
     argumentsParser = new ArgumentsParser(dataModel);
     objectParser = new ObjectParser(dataModel);
     valueParser = new ValueParser(dataModel);
+    invocationParser = new InvocationParser(dataModel);
   }
 
   public List<UsecaseDefinition> parse(String expr) {
@@ -246,21 +249,8 @@ public class Usebase {
       StatementDefinition retVal = new StatementDefinition();
       retVal.setOperator(ctx.usebase_operator().getText());
       InvocationDefinition invocation = new InvocationDefinition();
-      String method = ctxInvoke.anybase_identifier().getText();
-      invocation.setMethod(method);
-      // 方法调用的参数，简单封装
-      if (ctxInvoke.usebase_arguments() != null) {
-        for (io.doublegsoft.usebase.UsebaseParser.Usebase_argumentContext ctxArg : ctxInvoke.usebase_arguments().usebase_argument()) {
-          if (ctxArg.anybase_identifier() != null) {
-            invocation.getArguments().add(ctxArg.anybase_identifier().getText());
-          }
-        }
-      }
-      if (ctxInvoke.msg != null) {
-        String msg = ctxInvoke.msg.getText();
-        msg = msg.substring(1, msg.length() - 1);
-        invocation.setError(msg);
-      }
+      invocationParser.assemble(ctxExpr.usebase_invoke(), invocation, usecase);
+
       retVal.setInvocation(invocation);
       retVal.setOriginalText(getOriginalText(ctxExpr));
       return retVal;
@@ -363,7 +353,7 @@ public class Usebase {
     }
   }
 
-  private ObjectType guessVariableType(ValueDefinition value) {
+  public static ObjectType guessVariableType(ValueDefinition value) {
     if (value.getObjectValue() != null) {
       String origObjName = value.getObjectValue().getLabelledOption("original", "object");
       return dataModel.findObjectByName(origObjName);

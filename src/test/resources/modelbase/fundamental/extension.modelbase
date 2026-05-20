@@ -1,0 +1,60 @@
+@persistence(name='tn_cca_cognasst')
+@name(label='用户', plural='users')
+user<
+
+  @persistence(name='cognasstid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='cognasstnm')
+  @name(label='名称')
+  name!: string(200),
+
+  @persistence(name='cognassttyp')
+  @name(label='类型')
+  type!: enum[FL:文件,VD:视频,IM:图片,CD:代码,DC:文档,LN:链接],
+
+  @persistence(name='tit')
+  encrypted_password: string(500),
+
+  @persistence(name='loc')
+  @name(label='文件地址')
+  location: string(1000),
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: string(2000),
+
+  @persistence(name='hs')
+  @name(label='checksum')
+  hash: string(128),
+
+  @persistence(name='sz')
+  @name(label='文件大小')
+  size: long,
+
+  @persistence(name='mime')
+  @name(label='媒体类型')
+  mime: string(200),
+
+  @persistence(name='dur')
+  @name(label='时长')
+  duration: long,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time: now
+>
+
+@extension(master='user')
+online_user<
+
+  token: string,
+
+  login_time: datetime
+
+>

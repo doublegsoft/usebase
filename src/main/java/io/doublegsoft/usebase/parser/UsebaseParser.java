@@ -29,6 +29,8 @@ public abstract class UsebaseParser {
 
   private SourceParser sourceParser;
 
+  private InvocationParser invocationParser;
+
   public UsebaseParser(ModelDefinition dataModel) {
     this.dataModel = dataModel;
   }
@@ -144,6 +146,13 @@ public abstract class UsebaseParser {
       sourceParser = new SourceParser(dataModel);
     }
     return sourceParser;
+  }
+
+  protected InvocationParser getInvocationParser() {
+    if (invocationParser == null) {
+      invocationParser = new InvocationParser(dataModel);
+    }
+    return invocationParser;
   }
 
   public static String getOriginalText(ParserRuleContext ctx) {

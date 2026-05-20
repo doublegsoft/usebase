@@ -101,13 +101,13 @@ public class WorkflowManagementTest extends TestBase {
 
     // 通过statement序号验证
     AssignmentDefinition assign = (AssignmentDefinition) usecase.getStatements().get(0);
-    Assert.assertEquals("被赋值的变量名为wfdef", "wfdef", assign.getAssignee());
+    Assert.assertEquals("被赋值的变量名为wfdef", "wfdef", assign.getAssignee().getName());
     ObjectDefinition objValue = assign.getValue().getObjectValue();
     Assert.assertEquals("被赋值的变量的实际对象是workflow_definition", "workflow_definition",
         objValue.getLabelledOption("original", "object"));
 
     assign = (AssignmentDefinition) usecase.getStatements().get(3);
-    Assert.assertEquals("被赋值的变量名为wfinst", "wfinst", assign.getAssignee());
+    Assert.assertEquals("被赋值的变量名为wfinst", "wfinst", assign.getAssignee().getName());
     ObjectDefinition wfinstObj = assign.getValue().getObjectValue();
     Assert.assertEquals("被赋值的变量的实际对象是workflow_instance", "workflow_instance",
         wfinstObj.getLabelledOption("original", "object"));
@@ -115,26 +115,26 @@ public class WorkflowManagementTest extends TestBase {
 
     // assign.value.arrayValue.attributes[0].value = wfactInsts.id
     assign = (AssignmentDefinition) usecase.getStatements().get(5);
-    Assert.assertEquals("被赋值的变量名为wfactconninsts", "wfactconninsts", assign.getAssignee());
+    Assert.assertEquals("被赋值的变量名为wfactconninsts", "wfactconninsts", assign.getAssignee().getName());
     ObjectDefinition wfactconninstsObj = assign.getValue().getArrayValue();
     Assert.assertEquals("被赋值的变量的实际对象是workflow_action_connection_instance", "workflow_action_connection_instance",
         wfactconninstsObj.getLabelledOption("original", "object"));
     Assert.assertEquals("被赋值的变量的实际数据来源来自wfactconns", "wfactconns", wfactconninstsObj.getLabelledOptions("original").get("source"));
 
     assign = (AssignmentDefinition) usecase.getStatements().get(1);
-    Assert.assertEquals("wfactconns", assign.getAssignee());
+    Assert.assertEquals("wfactconns", assign.getAssignee().getName());
     objValue = assign.getValue().getArrayValue();
     Assert.assertEquals("workflow_action_connection",
         objValue.getLabelledOption("original", "object"));
 
     assign = (AssignmentDefinition) usecase.getStatements().get(2);
-    Assert.assertEquals("wfacts", assign.getAssignee());
+    Assert.assertEquals("wfacts", assign.getAssignee().getName());
     objValue = assign.getValue().getArrayValue();
     Assert.assertEquals("workflow_action",
         objValue.getLabelledOption("original", "object"));
 
     assign = (AssignmentDefinition) usecase.getStatements().get(2);
-    Assert.assertEquals("wfacts", assign.getAssignee());
+    Assert.assertEquals("wfacts", assign.getAssignee().getName());
     objValue = assign.getValue().getArrayValue();
     Assert.assertEquals("workflow_action", objValue.getLabelledOption("original", "object"));
 
