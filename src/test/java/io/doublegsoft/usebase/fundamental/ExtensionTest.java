@@ -43,4 +43,12 @@ public class ExtensionTest extends TestBase {
     Assert.assertEquals("online_user", var.getType().getName());
   }
 
+  @Test
+  public void test_master_and_details() throws Exception {
+    ModelDefinition dataModel = loadModel("fundamental/extension");
+    String expr = loadUsebaseExpression("fundamental/extension#master_and_details");
+    UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
+    usecase.setModule("extension");
+    System.out.println(usecase.getOriginalText());
+  }
 }

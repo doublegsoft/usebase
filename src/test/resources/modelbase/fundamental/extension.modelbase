@@ -58,3 +58,109 @@ online_user<
   login_time: datetime
 
 >
+
+
+@persistence(name='article')
+@name(label='文章', plural='articles')
+article<
+
+  @persistence(name='cognasstid')
+  @name(label='标识')
+  id!!: long,
+
+  @persistence(name='cognasstnm')
+  @name(label='名称')
+  name!: string(200),
+
+  @persistence(name='cognassttyp')
+  @name(label='类型')
+  type!: enum[FL:文件,VD:视频,IM:图片,CD:代码,DC:文档,LN:链接],
+
+  @persistence(name='tit')
+  title: string(500),
+
+  @persistence(name='loc')
+  @name(label='文件地址')
+  location: string(1000),
+
+  @persistence(name='descr')
+  @name(label='描述')
+  description: string(2000),
+
+  @persistence(name='hs')
+  @name(label='checksum')
+  hash: string(128),
+
+  @persistence(name='sz')
+  @name(label='文件大小')
+  size: long,
+
+  @persistence(name='mime')
+  @name(label='媒体类型')
+  mime: string(200),
+
+  @persistence(name='dur')
+  @name(label='时长')
+  duration: long,
+
+  @persistence(name='crttm')
+  @name(label='创建时间')
+  created_time = now: datetime,
+
+  @persistence(name='updtm')
+  @name(label='更新时间')
+  updated_time: now
+>
+
+@persistence(name='article_engagement')
+@name(label='文章用户互动', plural='article_engagements')
+article_engagement<
+
+  @persistence(name='artid')
+  @name(label='文章')
+  article: &article(id),
+
+  @persistence(name='vwcnt')
+  @name(label='浏览次数')
+  view_count: int,
+
+  @persistence(name='fwcnt')
+  @name(label='转发次数')
+  forward_count: int,
+
+  @persistence(name='htcnt')
+  @name(label='转发次数')
+  heart_count: int
+
+>
+
+@persistence(name='positive_review')
+@name(label='文章用户互动', plural='positive_reviews')
+positive_review<
+
+  @persistence(name='pstvrvwid')
+  @name(label='好评')
+  id: id,
+
+  @persistence(name='cnt')
+  @name(label='好评次数')
+  count: int,
+
+  @persistence(name='refid')
+  @name(label='转发次数')
+  reference_id: long,
+
+  @persistence(name='reftyp')
+  @name(label='转发次数')
+  reference_type: string(100)
+
+>
+
+@name(label='文章', plural='article_extensions')
+@extension(master='article', details='article_engagement;positive_review(reference_id)')
+article_extension<
+
+  @name(label='占位')
+  placeholder: string(100)
+
+>
