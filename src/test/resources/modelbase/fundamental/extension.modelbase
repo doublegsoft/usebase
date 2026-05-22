@@ -160,7 +160,4 @@ positive_review<
 @extension(master='article', details='article_engagement;positive_review(reference_id)')
 article_extension<
 
-  @name(label='占位')
-  placeholder: string(100)
-
 >
