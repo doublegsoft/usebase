@@ -16,7 +16,7 @@ public class ValueParser extends UsebaseParser {
   }
 
   public void assemble(io.doublegsoft.usebase.UsebaseParser.Anybase_valueContext ctx,
-                       ValueDefinition value) {
+                       ValueDefinition value, UsecaseDefinition usecase) {
     if (ctx.anybase_string() != null) {
       String str = ctx.anybase_string().getText();
       value.setString(str.substring(1, str.length() - 1));
@@ -27,7 +27,24 @@ public class ValueParser extends UsebaseParser {
       } else if ("true".equals(str) || "false".equals(str)){
         value.setBool(str);
       } else {
-        value.setVariable(str);
+        if (str.contains(".")) {
+          String[] strs = str.split("\\.");
+          VariableDefinition var = usecase.getVariable(strs[0]);
+          if (var == null) {
+            ObjectDefinition obj = dataModel.findObjectByName(strs[0]);
+            AttributeDefinition attr = obj.getAttribute(strs[1]);
+            value.setAttributeValue(attr);
+          } else {
+            value.setVariable(var);
+          }
+        } else {
+          VariableDefinition var = usecase.getVariable(str);
+          if (var == null) {
+            var = new VariableDefinition();
+            var.setName(str);
+          }
+          value.setVariable(var);
+        }
       }
     } else if (ctx.anybase_number() != null) {
       value.setNumber(new BigDecimal(ctx.anybase_number().getText()));
@@ -106,10 +123,27 @@ public class ValueParser extends UsebaseParser {
       } else if ("null".equals(str)) {
         value.setKeyword(str);
       } else {
-        value.setVariable(ctx.anybase_identifier().getText());
+        if (str.contains(".")) {
+          String[] strs = str.split("\\.");
+          VariableDefinition var = usecase.getVariable(strs[0]);
+          if (var == null) {
+            ObjectDefinition obj = dataModel.findObjectByName(strs[0]);
+            AttributeDefinition attr = obj.getAttribute(strs[1]);
+            value.setAttributeValue(attr);
+          } else {
+            value.setVariable(var);
+          }
+        } else {
+          VariableDefinition var = usecase.getVariable(str);
+          if (var == null) {
+            var = new VariableDefinition();
+            var.setName(str);
+          }
+          value.setVariable(var);
+        }
       }
     } else if (ctx.anybase_value() != null) {
-      assemble(ctx.anybase_value(), value);
+      assemble(ctx.anybase_value(), value, usecase);
     } else if (ctx.usebase_invoke() != null) {
       // 作为【值】的函数调用
       InvocationDefinition inv = new InvocationDefinition();

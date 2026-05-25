@@ -32,7 +32,7 @@ public class InvocationParser extends UsebaseParser {
           } else {
             VariableDefinition var = new VariableDefinition();
             ValueDefinition argVal = new ValueDefinition();
-            getValueParser().assemble(ctxArg.anybase_value(), argVal);
+            getValueParser().assemble(ctxArg.anybase_value(), argVal, usecase);
             var.setName(ctxArg.anybase_identifier().getText());
             var.setType(Usebase.guessVariableType(argVal));
             invocation.getArguments().add(var);

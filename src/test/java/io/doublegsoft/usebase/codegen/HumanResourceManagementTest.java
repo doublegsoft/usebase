@@ -72,7 +72,7 @@ public class HumanResourceManagementTest extends TestBase {
     Assert.assertEquals("employee", paramObj.getLabelledOptions("original").get("object"));
     StatementDefinition stmtSave = usecase.getStatements().get(0);
 
-    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
+//    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
   /**
@@ -126,7 +126,7 @@ public class HumanResourceManagementTest extends TestBase {
     Assert.assertEquals(1, paramObj.getAttributes().length);
     Assert.assertEquals("employee_id", paramObj.getAttributes()[0].getName());
 
-    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
+//    printSourcesForUsecase(usecase, dataModel, OUTPUT, OUTPUT_DIR);
   }
 
   @Test

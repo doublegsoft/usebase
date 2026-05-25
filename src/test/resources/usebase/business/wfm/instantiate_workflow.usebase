@@ -11,9 +11,9 @@
      name = wfacts.name}]&wfacts
 |:| wfactconninsts = [{
       workflow_action_connection_instance: workflow_instance = wfinst.id,
-      current_action_instance = curr.id,
-      previous_action_instance = prev.id,
-      next_action_instance = next.id
+      current_action_instance = wfacts.curr_id,
+      previous_action_instance = wfacts.prev_id,
+      next_action_instance = wfacts.next_id
     }]&wfactconns <current_action = workflow_action> wfactInsts#curr
                   <previous_action = workflow_action> wfactInsts#prev
                   <next_action = workflow_action> wfactInsts#next

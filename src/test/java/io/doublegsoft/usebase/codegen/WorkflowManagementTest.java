@@ -217,13 +217,13 @@ public class WorkflowManagementTest extends TestBase {
     checkOriginalIndexAndObject(usecase.getReturnedObject());
 //    Assert.assertEquals(7, usecase.getStatements().size());
 
-    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
-        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
-        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
-    printJavaCodeForUsecase(TEMPLATE_SERVICE,
-        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
+//    printModelbaseExtensionByUsecase(OUTPUT, usecase, dataModel);
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE_HELPER,
+//        usecase, dataModel, OUTPUT_DIR + "/helper/" + toPascalCase(usecase.getName()) + "Helper.java");
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE_IMPL,
+//        usecase, dataModel, OUTPUT_DIR + "/impl/" + toPascalCase(usecase.getName()) + "ServiceImpl.java");
+//    printJavaCodeForUsecase(TEMPLATE_SERVICE,
+//        usecase, dataModel, OUTPUT_DIR + "/" + toPascalCase(usecase.getName()) + "Service.java");
   }
 
   /**
