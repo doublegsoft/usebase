@@ -6,7 +6,7 @@ import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metabean.type.DomainType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
-import com.doublegsoft.jcommons.metamodel.CalcExprDefinition;
+import com.doublegsoft.jcommons.metamodel.CalculationDefinition;
 import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import com.doublegsoft.jcommons.utils.Inflector;
@@ -123,7 +123,7 @@ public class AggregateParser extends UsebaseParser {
         io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctxData.usebase_derivative().usebase_calculate();
         if (ctxCalc != null) {
           if (ctxCalc.usebase_calc_expr() != null) {
-            CalcExprDefinition calcExpr = new CalcExprDefinition();
+            CalculationDefinition calcExpr = new CalculationDefinition();
             // TODO
             getCalcExprParser().assemble(ctxCalc.usebase_calc_expr(), calcExpr, usecase);
           } else if (ctxCalc.name != null && "count".equals(ctxCalc.name.getText())) {

@@ -3,7 +3,7 @@ package io.doublegsoft.usebase.parser;
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metamodel.CalcExprDefinition;
+import com.doublegsoft.jcommons.metamodel.CalculationDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import com.doublegsoft.jcommons.metamodel.ValueDefinition;
 
@@ -16,11 +16,11 @@ public class CalcExprParser extends UsebaseParser {
   }
 
   public void assemble(io.doublegsoft.usebase.UsebaseParser.Usebase_calc_exprContext ctx,
-                       CalcExprDefinition calcExpr, UsecaseDefinition usecase) {
+                       CalculationDefinition calcExpr, UsecaseDefinition usecase) {
     if (ctx.operator != null) {
-      CalcExprDefinition left = new CalcExprDefinition();
+      CalculationDefinition left = new CalculationDefinition();
       assemble(ctx.left, left, usecase);
-      CalcExprDefinition right = new CalcExprDefinition();
+      CalculationDefinition right = new CalculationDefinition();
       assemble(ctx.right, right, usecase);
       calcExpr.setLeftOperand(left);
       calcExpr.setRightOperand(right);

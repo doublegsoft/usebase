@@ -369,7 +369,7 @@ public class Usebase {
     } else if (value.getBool() != null) {
       return new PrimitiveType("bool");
     } else if (value.getCalcExpr() != null) {
-      CalcExprDefinition calcExpr = value.getCalcExpr();
+      CalculationDefinition calcExpr = value.getCalcExpr();
       ObjectType retVal = null;
       if (calcExpr.getLeftOperand() != null) {
         retVal = guessVariableType(calcExpr.getLeftOperand().getValue());

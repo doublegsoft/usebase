@@ -35,7 +35,7 @@ public class AggregateLikeTest extends TestBase {
     Assert.assertFalse(stmtCalc.isExceptional());
     Assert.assertEquals("total_amount", stmtCalc.getAssignee().getName());
     Assert.assertEquals("number", stmtCalc.getAssignee().getType().getName());
-    CalcExprDefinition calcExpr = stmtCalc.getValue().getCalcExpr();
+    CalculationDefinition calcExpr = stmtCalc.getValue().getCalcExpr();
     Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
     Assert.assertEquals("*", calcExpr.getOperator());
     Assert.assertEquals("5", calcExpr.getRightOperand().getValue().getNumber().toPlainString());
@@ -76,7 +76,7 @@ public class AggregateLikeTest extends TestBase {
     Assert.assertFalse(stmtCalc.isExceptional());
     Assert.assertEquals("total_amount", stmtCalc.getAssignee().getName());
     Assert.assertEquals("number", stmtCalc.getAssignee().getType().getName());
-    CalcExprDefinition calcExpr = stmtCalc.getValue().getCalcExpr();
+    CalculationDefinition calcExpr = stmtCalc.getValue().getCalcExpr();
     Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
     Assert.assertEquals("*", calcExpr.getOperator());
     Assert.assertEquals("100", calcExpr.getRightOperand().getValue().getNumber().toPlainString());
