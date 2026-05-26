@@ -13,6 +13,7 @@ import com.doublegsoft.jcommons.metabean.type.*;
 import com.doublegsoft.jcommons.metamodel.*;
 import com.doublegsoft.jcommons.utils.Inflector;
 import com.doublegsoft.jcommons.utils.Strings;
+import io.doublegsoft.exprbase.Exprbase;
 import io.doublegsoft.usebase.parser.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -42,8 +43,11 @@ public class Usebase {
 
   private final InvocationParser invocationParser;
 
+  private final Exprbase exprbase;
+
   public Usebase(ModelDefinition dataModel) {
-    this.dataModel = dataModel;
+    Usebase.dataModel = dataModel;
+    exprbase = new Exprbase(dataModel);
     aggregateParser = new AggregateParser(dataModel);
     arrayParser = new ArrayParser(dataModel);
     conditionsParser = new ConditionsParser(dataModel);
@@ -152,37 +156,43 @@ public class Usebase {
     io.doublegsoft.usebase.UsebaseParser.Usebase_expressionContext ctxExpr = ctx.usebase_expression();
     if (ctxExpr.usebase_comparison() != null) {
       io.doublegsoft.usebase.UsebaseParser.Usebase_comparisonContext ctxComp = ctxExpr.usebase_comparison();
-      ComparisonDefinition retVal = new ComparisonDefinition();
+//      ComparisonDefinition retVal = new ComparisonDefinition();
+//      retVal.setOperator(ctx.usebase_operator().getText());
+//      ValueDefinition value = new ValueDefinition();
+
+      String comparisonExpr = getOriginalText(ctxComp.exprbase_cmp_expr());
+      ComparisonDefinition retVal = exprbase.parseComparison(comparisonExpr);
       retVal.setOperator(ctx.usebase_operator().getText());
-      ValueDefinition value = new ValueDefinition();
-      valueParser.assemble(ctxComp.usebase_comparison_part(0).usebase_value(), value, usecase);
-      retVal.setValue(value);
-      String comparandExpr = ctxComp.usebase_comparison_part(0).comparand.getText();
-      retVal.setComparator(ctxComp.usebase_comparison_part(0).usebase_comparator().getText());
-      // 根据值，重新对操作书注册类型
-      if (!comparandExpr.contains(".")) {
-        registerVariable(usecase, comparandExpr, value);
-      }
-      retVal.setComparand(getVariable(usecase, comparandExpr, getOriginalText(ctxExpr.usebase_comparison())));
-      for (int i = 1; i < ctxComp.usebase_comparison_part().size(); i++) {
-        io.doublegsoft.usebase.UsebaseParser.Usebase_comparison_partContext ctxPart = ctxComp.usebase_comparison_part(i);
-        String conj = ctxComp.usebase_comparison_conj(i - 1).getText();
-        ComparisonDefinition conjCmp = new ComparisonDefinition();
-        conjCmp.setComparator(ctxPart.usebase_comparator().getText());
-        comparandExpr = ctxPart.comparand.getText();
-        if (!comparandExpr.contains(".")) {
-          registerVariable(usecase, comparandExpr, value);
-        }
-        retVal.setComparand(getVariable(usecase, comparandExpr, getOriginalText(ctxExpr.usebase_comparison())));
-        ValueDefinition val = new ValueDefinition();
-        valueParser.assemble(ctxPart.usebase_value(), val, usecase);
-        conjCmp.setValue(val);
-        if ("and".equals(conj)) {
-          retVal.getAndComparisons().add(conjCmp);
-        } else if ("or".equals(conj)){
-          retVal.getOrComparisons().add(conjCmp);
-        }
-      }
+
+      String varname = retVal.getComparand().getName();
+//      valueParser.assemble(ctxComp.usebase_comparison_part(0).usebase_value(), value, usecase);
+//      retVal.setValue(value);
+//      String comparandExpr = ctxComp.usebase_comparison_part(0).comparand.getText();
+//      retVal.setComparator(ctxComp.usebase_comparison_part(0).usebase_comparator().getText());
+//      // 根据值，重新对操作书注册类型
+//      if (!comparandExpr.contains(".")) {
+//        registerVariable(usecase, comparandExpr, value);
+//      }
+//      retVal.setComparand(getVariable(usecase, comparandExpr, getOriginalText(ctxExpr.usebase_comparison())));
+//      for (int i = 1; i < ctxComp.usebase_comparison_part().size(); i++) {
+//        io.doublegsoft.usebase.UsebaseParser.Usebase_comparison_partContext ctxPart = ctxComp.usebase_comparison_part(i);
+//        String conj = ctxComp.usebase_comparison_conj(i - 1).getText();
+//        ComparisonDefinition conjCmp = new ComparisonDefinition();
+//        conjCmp.setComparator(ctxPart.usebase_comparator().getText());
+//        comparandExpr = ctxPart.comparand.getText();
+//        if (!comparandExpr.contains(".")) {
+//          registerVariable(usecase, comparandExpr, value);
+//        }
+//        retVal.setComparand(getVariable(usecase, comparandExpr, getOriginalText(ctxExpr.usebase_comparison())));
+//        ValueDefinition val = new ValueDefinition();
+//        valueParser.assemble(ctxPart.usebase_value(), val, usecase);
+//        conjCmp.setValue(val);
+//        if ("and".equals(conj)) {
+//          retVal.getAndComparisons().add(conjCmp);
+//        } else if ("or".equals(conj)){
+//          retVal.getOrComparisons().add(conjCmp);
+//        }
+//      }
       retVal.setOriginalText(getOriginalText(ctxComp));
       if (ctxComp.msg != null) {
         String err = ctxComp.msg.getText();
@@ -205,7 +215,7 @@ public class Usebase {
       VariableDefinition var = registerVariable(usecase, ctxAssign.variable.getText(), value);
       retVal.setValue(value);
       retVal.setAssignee(var);
-      retVal.setAssignOp(ctxAssign.usebase_assignop().getText());
+      retVal.setAssignOp(ctxAssign.exprbase_assignop().getText());
       if ((value.getObjectValue() != null || value.getArrayValue() != null) && (var.getType().isCustom() || var.getComponentType().isCustom())) {
         retVal.setExceptional(true);
       }

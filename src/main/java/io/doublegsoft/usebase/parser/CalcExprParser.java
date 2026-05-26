@@ -15,7 +15,7 @@ public class CalcExprParser extends UsebaseParser {
     super(dataModel);
   }
 
-  public void assemble(io.doublegsoft.usebase.UsebaseParser.Usebase_calc_exprContext ctx,
+  public void assemble(io.doublegsoft.usebase.UsebaseParser.Exprbase_calc_exprContext ctx,
                        CalculationDefinition calcExpr, UsecaseDefinition usecase) {
     if (ctx.operator != null) {
       CalculationDefinition left = new CalculationDefinition();
@@ -24,15 +24,15 @@ public class CalcExprParser extends UsebaseParser {
       assemble(ctx.right, right, usecase);
       calcExpr.setLeftOperand(left);
       calcExpr.setRightOperand(right);
-    } else if (ctx.usebase_calc_value() != null) {
-      io.doublegsoft.usebase.UsebaseParser.Usebase_calc_valueContext ctxCalcVal = ctx.usebase_calc_value();
-      if (ctxCalcVal.usebase_object() != null) {
-        ValueDefinition val = new ValueDefinition();
-        ObjectDefinition objVal = new ObjectDefinition(getOriginalText(ctxCalcVal.usebase_object()),
-            usecase.getContextModel());
-        getObjectParser().assemble(ctxCalcVal.usebase_object(), objVal, usecase);
-        val.setObjectValue(objVal);
-        calcExpr.setValue(val);
+    } else if (ctx.exprbase_calc_value() != null) {
+      io.doublegsoft.usebase.UsebaseParser.Exprbase_calc_valueContext ctxCalcVal = ctx.exprbase_calc_value();
+      if (false/*ctxCalcVal.usebase_object() != null*/) {
+//        ValueDefinition val = new ValueDefinition();
+//        ObjectDefinition objVal = new ObjectDefinition(getOriginalText(ctxCalcVal.usebase_object()),
+//            usecase.getContextModel());
+//        getObjectParser().assemble(ctxCalcVal.usebase_object(), objVal, usecase);
+//        val.setObjectValue(objVal);
+//        calcExpr.setValue(val);
       } else if (ctxCalcVal.anybase_value() != null) {
         io.doublegsoft.usebase.UsebaseParser.Anybase_valueContext ctxValue = ctxCalcVal.anybase_value();
         ValueDefinition val = new ValueDefinition();
@@ -52,10 +52,11 @@ public class CalcExprParser extends UsebaseParser {
           }
         }
         calcExpr.setValue(val);
-      } else if (ctx.usebase_calc_expr().size() == 1) {
-        // FIXME: IS IT CLEAR?
-        assemble(ctx.usebase_calc_expr(0), calcExpr, usecase);
       }
+//      else if (ctx.exprbase_calc_value().size() == 1) {
+//        // FIXME: IS IT CLEAR?
+//        assemble(ctx.exprbase_calc_value(0), calcExpr, usecase);
+//      }
     }
     if (ctx.operator != null) {
       calcExpr.setOperator(ctx.operator.getText());

@@ -111,6 +111,11 @@
       <artifactId>typebase</artifactId>
       <version>7.0</version>
     </dependency>
+    <dependency>
+      <groupId>io.doublegsoft.exprbase</groupId>
+      <artifactId>exprbase</artifactId>
+      <version>1.0</version>
+    </dependency>
 
     <dependency>
       <groupId>com.doublegsoft.jcommons</groupId>
@@ -127,12 +132,6 @@
       <groupId>com.doublegsoft.jcommons</groupId>
       <artifactId>jcommons-programming</artifactId>
       <version>3.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>io.doublegsoft.typebase</groupId>
-          <artifactId>typebase</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.antlr</groupId>
@@ -140,14 +139,9 @@
       <version>4.9.3</version>
     </dependency>
     <dependency>
-      <groupId>org.freemarker</groupId>
-      <artifactId>freemarker</artifactId>
-      <version>2.3.28</version>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>

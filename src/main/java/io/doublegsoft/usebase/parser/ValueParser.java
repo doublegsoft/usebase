@@ -155,9 +155,9 @@ public class ValueParser extends UsebaseParser {
       if (ctxCalc.name != null /* 聚合函数 */) {
 
       }
-    } else if (ctx.usebase_calc_expr() != null) {
+    } else if (ctx.exprbase_calc_expr() != null) {
       CalculationDefinition calcExpr = new CalculationDefinition();
-      getCalcExprParser().assemble(ctx.usebase_calc_expr(), calcExpr, usecase);
+      getCalcExprParser().assemble(ctx.exprbase_calc_expr(), calcExpr, usecase);
       value.setCalcExpr(calcExpr);
     }
     value.setOriginalText(getOriginalText(ctx));
