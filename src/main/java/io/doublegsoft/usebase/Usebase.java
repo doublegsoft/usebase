@@ -157,7 +157,7 @@ public class Usebase {
     if (ctxExpr.usebase_comparison() != null) {
       io.doublegsoft.usebase.UsebaseParser.Usebase_comparisonContext ctxComp = ctxExpr.usebase_comparison();
       String comparisonExpr = getOriginalText(ctxComp.exprbase_cmp_expr());
-      ComparisonDefinition retVal = exprbase.parseComparison(comparisonExpr);
+      ComparisonDefinition retVal = exprbase.parseComparison(comparisonExpr, usecase);
       retVal.setOperator(ctx.usebase_operator().getText());
       retVal.setOriginalText(getOriginalText(ctxComp));
       if (ctxComp.msg != null) {

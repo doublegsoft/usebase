@@ -29,14 +29,14 @@ public class AggregateLikeTest extends TestBase {
 
     Assert.assertTrue(stmtIf.isConditional());
     Assert.assertEquals(">", stmtIf.getComparator());
-//    Assert.assertEquals("amount", stmtIf.getComparand().getAttribute("amount").getName());
+    Assert.assertEquals("amount", stmtIf.getComparand().getAttribute("amount").getName());
     Assert.assertEquals("30", stmtIf.getValue().getNumber().toString());
 
     Assert.assertFalse(stmtCalc.isExceptional());
     Assert.assertEquals("total_amount", stmtCalc.getAssignee().getName());
     Assert.assertEquals("number", stmtCalc.getAssignee().getType().getName());
     CalculationDefinition calcExpr = stmtCalc.getValue().getCalcExpr();
-//    Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
+    Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
     Assert.assertEquals("*", calcExpr.getOperator());
     Assert.assertEquals("5", calcExpr.getRightOperand().getValue().getNumber().toPlainString());
 
@@ -70,14 +70,14 @@ public class AggregateLikeTest extends TestBase {
 
     Assert.assertTrue(stmtIf.isConditional());
     Assert.assertEquals(">", stmtIf.getComparator());
-//    Assert.assertEquals("amount", stmtIf.getComparand().getAttribute("amount").getName());
+    Assert.assertEquals("amount", stmtIf.getComparand().getAttribute("amount").getName());
     Assert.assertEquals("10", stmtIf.getValue().getNumber().toString());
 
     Assert.assertFalse(stmtCalc.isExceptional());
     Assert.assertEquals("total_amount", stmtCalc.getAssignee().getName());
     Assert.assertEquals("number", stmtCalc.getAssignee().getType().getName());
     CalculationDefinition calcExpr = stmtCalc.getValue().getCalcExpr();
-//    Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
+    Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
     Assert.assertEquals("*", calcExpr.getOperator());
     Assert.assertEquals("100", calcExpr.getRightOperand().getValue().getNumber().toPlainString());
 
@@ -111,7 +111,7 @@ public class AggregateLikeTest extends TestBase {
 
     Assert.assertTrue(stmtIf.isConditional());
     Assert.assertEquals(">", stmtIf.getComparator());
-//    Assert.assertEquals("amount", stmtIf.getComparand().getAttribute("amount").getName());
+    Assert.assertEquals("amount", stmtIf.getComparand().getAttribute("amount").getName());
     Assert.assertEquals("30", stmtIf.getValue().getNumber().toString());
 
     Assert.assertFalse(stmtInvo.isExceptional());

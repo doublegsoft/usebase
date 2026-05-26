@@ -123,7 +123,8 @@ public class AggregateParser extends UsebaseParser {
         io.doublegsoft.usebase.UsebaseParser.Usebase_calculateContext ctxCalc = ctxData.usebase_derivative().usebase_calculate();
         if (ctxCalc != null) {
           if (ctxCalc.exprbase_calc_expr() != null) {
-            CalculationDefinition calcExpr = getExprbase().parseCalculation(getOriginalText(ctxCalc.exprbase_calc_expr()));
+            CalculationDefinition calcExpr = getExprbase().parseCalculation(
+                getOriginalText(ctxCalc.exprbase_calc_expr()), usecase);
             // TODO
 //            getCalcExprParser().assemble(ctxCalc.exprbase_calc_expr(), calcExpr, usecase);
           } else if (ctxCalc.name != null && "count".equals(ctxCalc.name.getText())) {
