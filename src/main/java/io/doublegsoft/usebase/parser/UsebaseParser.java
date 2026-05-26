@@ -4,6 +4,7 @@ import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
+import io.doublegsoft.exprbase.Exprbase;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 
@@ -21,8 +22,6 @@ public abstract class UsebaseParser {
 
   private AttributesParser attributesParser;
 
-  private CalcExprParser calcExprParser;
-
   private ObjectParser objectParser;
 
   private ValueParser valueParser;
@@ -30,6 +29,8 @@ public abstract class UsebaseParser {
   private SourceParser sourceParser;
 
   private InvocationParser invocationParser;
+
+  private Exprbase exprbase;
 
   public UsebaseParser(ModelDefinition dataModel) {
     this.dataModel = dataModel;
@@ -120,13 +121,6 @@ public abstract class UsebaseParser {
     return attributesParser;
   }
 
-  protected CalcExprParser getCalcExprParser() {
-    if (calcExprParser == null) {
-      calcExprParser = new CalcExprParser(dataModel);
-    }
-    return calcExprParser;
-  }
-
   protected ObjectParser getObjectParser() {
     if (objectParser == null) {
       objectParser = new ObjectParser(dataModel);
@@ -153,6 +147,13 @@ public abstract class UsebaseParser {
       invocationParser = new InvocationParser(dataModel);
     }
     return invocationParser;
+  }
+
+  protected Exprbase getExprbase() {
+    if (exprbase == null) {
+      exprbase = new Exprbase(dataModel);
+    }
+    return exprbase;
   }
 
   public static String getOriginalText(ParserRuleContext ctx) {

@@ -156,8 +156,7 @@ public class ValueParser extends UsebaseParser {
 
       }
     } else if (ctx.exprbase_calc_expr() != null) {
-      CalculationDefinition calcExpr = new CalculationDefinition();
-      getCalcExprParser().assemble(ctx.exprbase_calc_expr(), calcExpr, usecase);
+      CalculationDefinition calcExpr = getExprbase().parseCalculation(getOriginalText(ctx.exprbase_calc_expr()));
       value.setCalcExpr(calcExpr);
     }
     value.setOriginalText(getOriginalText(ctx));
