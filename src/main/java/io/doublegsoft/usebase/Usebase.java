@@ -136,7 +136,7 @@ public class Usebase {
     }
     if (ctx.usebase_remote() != null) {
       ValueDefinition remote = new ValueDefinition();
-       valueParser.assemble(ctx.usebase_remote(), remote);
+      valueParser.assemble(ctx.usebase_remote(), remote);
       retVal.setRemote(remote);
     }
 
