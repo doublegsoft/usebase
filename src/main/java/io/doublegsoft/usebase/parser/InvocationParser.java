@@ -6,7 +6,6 @@ import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import com.doublegsoft.jcommons.metamodel.ValueDefinition;
 import com.doublegsoft.jcommons.metamodel.VariableDefinition;
 import io.doublegsoft.usebase.Usebase;
-import org.antlr.v4.runtime.TokenStream;
 
 public class InvocationParser extends UsebaseParser {
 

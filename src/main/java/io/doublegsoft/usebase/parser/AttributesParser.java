@@ -3,15 +3,11 @@ package io.doublegsoft.usebase.parser;
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import com.doublegsoft.jcommons.metamodel.ValueDefinition;
 import com.doublegsoft.jcommons.metamodel.ValuedAttributeDefinition;
 import com.doublegsoft.jcommons.utils.Strings;
 import io.doublegsoft.usebase.modelbase.ModelbaseHelper;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class AttributesParser extends UsebaseParser {
 

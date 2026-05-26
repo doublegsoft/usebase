@@ -3,7 +3,6 @@ package io.doublegsoft.usebase.parser;
 import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.exprbase.Exprbase;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
