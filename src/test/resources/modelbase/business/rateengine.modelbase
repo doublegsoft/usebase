@@ -1,0 +1,424 @@
+@persistence(name='cfg_rate_code')
+@name(label='费率代码', plural='cfg_rate_codes')
+cfg_rate_code<
+
+  @persistence(name='rate_code')
+  @name(label='费率代码')
+  id!!: string(50),
+
+  @persistence(name='rate_sel_mode_ind')
+  @name(label='费率选择模式')
+  rate_sel_mode_ind: enum[S:按开始日期, E:按结束日期, P:按比例分摊],
+
+  @persistence(name='svc_cls_code')
+  @name(label='服务类别')
+  svc_cls_code: string(100),
+
+  @persistence(name='allow_est_sw')
+  @name(label='允许预估')
+  allow_est_sw: enum[Y:是, N:否],
+
+  @persistence(name='rate_code_desc')
+  @name(label='描述(英文)')
+  rate_code_desc: string(500),
+
+  @persistence(name='rate_code_desc_tc')
+  @name(label='描述(繁体中文)')
+  rate_code_desc_tc: string(500),
+
+  @persistence(name='rate_code_desc_sc')
+  @name(label='描述(简体中文)')
+  rate_code_desc_sc: string(500),
+
+  @persistence(name='obs_sw')
+  @name(label='作废')
+  obs_sw: enum[Y:是, N:否],
+
+  @persistence(name='allow_backdate_sw')
+  @name(label='允许回溯')
+  allow_backdate_sw: enum[Y:是, N:否]
+>
+
+@persistence(name='cfg_svc_type_rate_code')
+@name(label='服务类型费率关联', plural='cfg_svc_type_rate_codes')
+cfg_svc_type_rate_code<
+
+  @persistence(name='svc_type_code')
+  @name(label='服务类型')
+  svc_type_code!!: string(100),
+
+  @persistence(name='rate_code')
+  @name(label='费率代码')
+  rate_code!: &cfg_rate_code(id),
+
+  @persistence(name='dflt_sw')
+  @name(label='默认费率')
+  dflt_sw: enum[Y:是, N:否],
+
+  @persistence(name='usage_ind')
+  @name(label='使用标识')
+  usage_ind: string(50),
+
+  @persistence(name='obs_sw')
+  @name(label='作废')
+  obs_sw: enum[Y:是, N:否]
+>
+
+@persistence(name='cfg_rate')
+@name(label='费率头', plural='cfg_rates')
+cfg_rate<
+
+  @persistence(name='rate_id')
+  @name(label='费率ID')
+  id!!: string(50),
+
+  @persistence(name='rate_code')
+  @name(label='费率代码')
+  rate_code!: &cfg_rate_code(id),
+
+  @persistence(name='eff_date')
+  @name(label='生效日期')
+  eff_date!: datetime,
+
+  @persistence(name='desc_on_bill')
+  @name(label='账单描述(英文)')
+  desc_on_bill: string(500),
+
+  @persistence(name='desc_on_bill_tc')
+  @name(label='账单描述(繁体中文)')
+  desc_on_bill_tc: string(500),
+
+  @persistence(name='desc_on_bill_sc')
+  @name(label='账单描述(简体中文)')
+  desc_on_bill_sc: string(500),
+
+  @persistence(name='tier_ind')
+  @name(label='阶梯计价')
+  tier_ind: enum[Y:是, N:否],
+
+  @persistence(name='bill_qty_code_for_tier_bdry')
+  @name(label='阶梯边界量代码')
+  bill_qty_code_for_tier_bdry: string(100),
+
+  @persistence(name='obs_sw')
+  @name(label='作废')
+  obs_sw: enum[Y:是, N:否]
+>
+
+@persistence(name='cfg_rate_dtl')
+@name(label='费率明细', plural='cfg_rate_dtls')
+cfg_rate_dtl<
+
+  @persistence(name='rate_dtl_id')
+  @name(label='费率明细ID')
+  id!!: string(50),
+
+  @persistence(name='rate_id')
+  @name(label='费率头')
+  rate_id!: &cfg_rate(id),
+
+  @persistence(name='rate_dtl_seq')
+  @name(label='计算顺序')
+  rate_dtl_seq!: long,
+
+  @persistence(name='dist_code')
+  @name(label='GL科目分发代码')
+  dist_code: string(50),
+
+  @persistence(name='bill_param_code')
+  @name(label='账单参数代码')
+  bill_param_code: string(100),
+
+  @persistence(name='print_cond')
+  @name(label='打印条件')
+  print_cond: enum[GT0:大于0, GTE0:大于等于0],
+
+  @persistence(name='attr_type_code')
+  @name(label='属性类型代码')
+  attr_type_code: string(100),
+
+  @persistence(name='attr_val')
+  @name(label='属性值')
+  attr_val: string(500),
+
+  @persistence(name='crit_desc')
+  @name(label='条件描述')
+  crit_desc: string(1000),
+
+  @persistence(name='special_ind')
+  @name(label='特殊标识')
+  special_ind: string(50),
+
+  @persistence(name='rate_dtl_type_ind')
+  @name(label='计费类型')
+  rate_dtl_type_ind!: enum[
+    Q:基础量,
+    QRSD0:标准舍入0位, QRSD1:标准舍入1位, QRSD2:标准舍入2位, QRSD3:标准舍入3位,
+    QRUD0:向上舍入0位, QRUD1:向上舍入1位, QRUD2:向上舍入2位, QRUD3:向上舍入3位,
+    QRDD0:向下舍入0位, QRDD1:向下舍入1位, QRDD2:向下舍入2位, QRDD3:向下舍入3位,
+    QA:引用单价, QM:引用减去,
+    F:固定金额,
+    S:汇总, A:应用百分比
+  ],
+
+  @persistence(name='ref_rate_dtl_desc')
+  @name(label='引用描述')
+  ref_rate_dtl_desc: string(500),
+
+  @persistence(name='bill_qty_code_for_calc')
+  @name(label='计算用量代码')
+  bill_qty_code_for_calc: string(100),
+
+  @persistence(name='bill_qty_code_for_bitem')
+  @name(label='账单行用量代码')
+  bill_qty_code_for_bitem: string(100),
+
+  @persistence(name='tier_step_start')
+  @name(label='阶梯起始值')
+  tier_step_start: number(38,10),
+
+  @persistence(name='tier_step_end')
+  @name(label='阶梯终止值')
+  tier_step_end: number(38,10),
+
+  @persistence(name='chg_rate_val')
+  @name(label='单价/费率值')
+  chg_rate_val: number(38,10),
+
+  @persistence(name='rate_dtl_desc_on_bill')
+  @name(label='账单行描述(英文)')
+  rate_dtl_desc_on_bill: string(1000),
+
+  @persistence(name='rate_dtl_desc_on_bill_tc')
+  @name(label='账单行描述(繁体中文)')
+  rate_dtl_desc_on_bill_tc: string(1000),
+
+  @persistence(name='rate_dtl_desc_on_bill_sc')
+  @name(label='账单行描述(简体中文)')
+  rate_dtl_desc_on_bill_sc: string(1000),
+
+  @persistence(name='rate_dtl_desc')
+  @name(label='内部描述(英文)')
+  rate_dtl_desc: string(500),
+
+  @persistence(name='rate_dtl_desc_tc')
+  @name(label='内部描述(繁体中文)')
+  rate_dtl_desc_tc: string(500),
+
+  @persistence(name='rate_dtl_desc_sc')
+  @name(label='内部描述(简体中文)')
+  rate_dtl_desc_sc: string(500),
+
+  @persistence(name='min_chg_rate_val')
+  @name(label='最低收费金额')
+  min_chg_rate_val: number(38,10),
+
+  @persistence(name='last_revision_date')
+  @name(label='最后修订日期')
+  last_revision_date: datetime,
+
+  @persistence(name='create_bitem_calc_bd_cond')
+  @name(label='账单行创建条件')
+  create_bitem_calc_bd_cond: enum[GT_0:大于0, GTE_0:大于等于0, ANY:任意, NTBC:不创建],
+
+  @persistence(name='org_rate_dtl_id')
+  @name(label='原始费率明细ID')
+  org_rate_dtl_id: string(50),
+
+  @persistence(name='contract_value_code')
+  @name(label='合同价值代码')
+  contract_value_code: string(100),
+
+  @persistence(name='obs_sw')
+  @name(label='作废')
+  obs_sw: enum[Y:是, N:否]
+>
+
+@persistence(name='cfg_rate_dtl_crit')
+@name(label='费率条件', plural='cfg_rate_dtl_crits')
+cfg_rate_dtl_crit<
+
+  @persistence(name='rate_dtl_crit_id')
+  @name(label='条件ID')
+  id: string(50),
+
+  @persistence(name='rate_dtl_id')
+  @name(label='费率明细')
+  rate_dtl_id!: &cfg_rate_dtl(id),
+
+  @persistence(name='seq')
+  @name(label='条件顺序')
+  seq!: long,
+
+  @persistence(name='bill_qty_code')
+  @name(label='计费量代码')
+  bill_qty_code: string(100),
+
+  @persistence(name='attr_type_code')
+  @name(label='属性类型代码')
+  attr_type_code: string(100),
+
+  @persistence(name='attr_type_entity')
+  @name(label='属性实体')
+  attr_type_entity: enum[
+    PERSON:人员,
+    ACCOUNT:账户,
+    SVC_DTL:服务明细,
+    PREMISE:场所,
+    METER:电表,
+    CFG_METER_TYPE:电表类型,
+    NA:外部传入
+  ],
+
+  @persistence(name='crit_operator_ind')
+  @name(label='比较运算符')
+  crit_operator_ind: enum[EQ:等于, NE:不等于, GT:大于, GTE:大于等于, LT:小于, LTE:小于等于],
+
+  @persistence(name='crit_val')
+  @name(label='条件值')
+  crit_val: string(500),
+
+  @persistence(name='cont_if_true')
+  @name(label='条件为真继续')
+  cont_if_true: enum[Y:继续下一条件, N:直接返回true],
+
+  @persistence(name='cont_if_false')
+  @name(label='条件为假继续')
+  cont_if_false: enum[Y:继续下一条件, N:直接返回false],
+
+  @persistence(name='obs_sw')
+  @name(label='作废')
+  obs_sw: enum[Y:是, N:否]
+>
+
+@persistence(name='cfg_rate_dtl_ref')
+@name(label='费率引用', plural='cfg_rate_dtl_refs')
+cfg_rate_dtl_ref<
+
+  @persistence(name='rate_dtl_ref_id')
+  @name(label='引用ID')
+  id: string(50),
+
+  @persistence(name='rate_dtl_id')
+  @name(label='引用方')
+  rate_dtl_id!: &cfg_rate_dtl(id),
+
+  @persistence(name='ref_rate_dtl_seq')
+  @name(label='被引用序号')
+  ref_rate_dtl_seq!: long,
+
+  @persistence(name='obs_sw')
+  @name(label='作废')
+  obs_sw: enum[Y:是, N:否]
+>
+
+@persistence(name='cfg_rate_dtl_elig')
+@name(label='费率资格', plural='cfg_rate_dtl_eligs')
+cfg_rate_dtl_elig<
+
+  @persistence(name='rate_dtl_elig_id')
+  @name(label='资格ID')
+  id: string(50),
+
+  @persistence(name='rate_dtl_id')
+  @name(label='费率明细')
+  rate_dtl_id!: &cfg_rate_dtl(id),
+
+  @persistence(name='seq')
+  @name(label='顺序')
+  seq!: long,
+
+  @persistence(name='bill_qty_code')
+  @name(label='计费量代码')
+  bill_qty_code: string(100),
+
+  @persistence(name='crit_operator_ind')
+  @name(label='比较运算符')
+  crit_operator_ind: enum[EQ:等于, NE:不等于, GT:大于, GTE:大于等于, LT:小于, LTE:小于等于],
+
+  @persistence(name='crit_true_ind')
+  @name(label='条件为真行为')
+  crit_true_ind: string(50),
+
+  @persistence(name='crit_false_ind')
+  @name(label='条件为假行为')
+  crit_false_ind: string(50),
+
+  @persistence(name='crit_insufficient_data_ind')
+  @name(label='数据不足行为')
+  crit_insufficient_data_ind: string(50)
+>
+
+@persistence(name='cfg_rate_sch')
+@name(label='费率计划', plural='cfg_rate_schs')
+cfg_rate_sch<
+
+  @persistence(name='rate_sch_code')
+  @name(label='计划代码')
+  id!!: string(50),
+
+  @persistence(name='rate_sch_desc')
+  @name(label='描述(英文)')
+  rate_sch_desc: string(500),
+
+  @persistence(name='rate_sch_desc_tc')
+  @name(label='描述(繁体中文)')
+  rate_sch_desc_tc: string(500),
+
+  @persistence(name='rate_sch_desc_sc')
+  @name(label='描述(简体中文)')
+  rate_sch_desc_sc: string(500),
+
+  @persistence(name='svc_cls_code')
+  @name(label='服务类别')
+  svc_cls_code: string(100),
+
+  @persistence(name='freq_code')
+  @name(label='频率代码')
+  freq_code: string(100),
+
+  @persistence(name='allow_est_sw')
+  @name(label='允许预估')
+  allow_est_sw: enum[Y:是, N:否],
+
+  @persistence(name='no_pro_ref_ind')
+  @name(label='禁止按比例引用')
+  no_pro_ref_ind: string(50),
+
+  @persistence(name='allow_pro_sw')
+  @name(label='允许按比例')
+  allow_pro_sw: enum[Y:是, N:否],
+
+  @persistence(name='obs_sw')
+  @name(label='作废')
+  obs_sw: enum[Y:是, N:否]
+>
+
+@persistence(name='cfg_tes_rate_matrix')
+@name(label='TES费率矩阵', plural='cfg_tes_rate_matrices')
+cfg_tes_rate_matrix<
+
+  @persistence(name='tes_rate_matrix_id')
+  @name(label='矩阵ID')
+  id: string(50),
+
+  @persistence(name='cod_stld_step')
+  @name(label='已结算量阶梯')
+  cod_stld_step: string(100),
+
+  @persistence(name='cod_tot_minus_stld_step')
+  @name(label='剩余量阶梯')
+  cod_tot_minus_stld_step: string(100),
+
+  @persistence(name='cod_rate_val')
+  @name(label='费率值')
+  cod_rate_val: string(100),
+
+  @persistence(name='eff_date')
+  @name(label='生效日期')
+  eff_date!: datetime,
+
+  @persistence(name='obs_sw')
+  @name(label='作废')
+  obs_sw: enum[Y:是, N:否]
+>
