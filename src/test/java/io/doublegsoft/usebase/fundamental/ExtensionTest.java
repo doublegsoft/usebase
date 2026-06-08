@@ -32,15 +32,21 @@ public class ExtensionTest extends TestBase {
     Assert.assertEquals("user", stmtFind.getAssignee().getName());
     Assert.assertEquals("user", stmtFind.getAssignee().getType().getName());
 
+    ObjectDefinition objVal = stmtCopy.getValue().getObjectValue();
+    Assert.assertNotNull(objVal);
+    Assert.assertEquals("|=| ret = {online_user}&user 数据源头变量是user",
+        "user", objVal.getLabelledOption("original", "source"));
     Assert.assertEquals("ret", stmtCopy.getAssignee().getName());
     Assert.assertEquals("online_user", stmtCopy.getAssignee().getType().getName());
 
-    ObjectDefinition objVal = stmtCopy.getValue().getObjectValue();
-    Assert.assertNotNull(objVal);
-    Assert.assertEquals("user", objVal.getLabelledOption("original", "source"));
+    String varname = objVal.getLabelledOption("original", "source");
+    VariableDefinition varUser = usecase.getVariable(varname);
+    Assert.assertNotNull(varUser);
+
     // 变量验证
     VariableDefinition var = usecase.getVariable("ret");
-    Assert.assertEquals("online_user", var.getType().getName());
+    Assert.assertEquals("返回值类型是online_user",
+        "online_user", var.getType().getName());
   }
 
   @Test
