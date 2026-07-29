@@ -8,7 +8,7 @@ public class BusinessPolicyEngineTest extends TestBase {
 
   @Test
   public void test() throws Exception {
-    ModelDefinition dataModel = loadModel("business/bpe");
+    ModelDefinition dataModel = loadDataModel("business/bpe");
   }
 
 }

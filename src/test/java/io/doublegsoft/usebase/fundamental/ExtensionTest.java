@@ -12,7 +12,7 @@ public class ExtensionTest extends TestBase {
 
   @Test
   public void test_only_master() throws Exception {
-    ModelDefinition dataModel = loadModel("fundamental/extension");
+    ModelDefinition dataModel = loadDataModel("fundamental/extension");
     String expr = loadUsebaseExpression("fundamental/extension#only_master");
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     usecase.setModule("extension");
@@ -51,7 +51,7 @@ public class ExtensionTest extends TestBase {
 
   @Test
   public void test_master_and_details() throws Exception {
-    ModelDefinition dataModel = loadModel("fundamental/extension");
+    ModelDefinition dataModel = loadDataModel("fundamental/extension");
     String expr = loadUsebaseExpression("fundamental/extension#master_and_details");
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     usecase.setModule("extension");

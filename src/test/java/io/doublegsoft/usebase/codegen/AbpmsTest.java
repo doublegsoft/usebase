@@ -24,7 +24,7 @@ public class AbpmsTest extends TestBase {
 
   @Test
   public void test_get_bill_aggregate() throws Exception {
-    ModelDefinition dataModel = loadModel("business/abpms");
+    ModelDefinition dataModel = loadDataModel("business/abpms");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@get_bill_aggregate({bill: bill_id}):" +
@@ -44,7 +44,7 @@ public class AbpmsTest extends TestBase {
 
   @Test
   public void test_find_bitems() throws Exception {
-    ModelDefinition dataModel = loadModel("business/abpms");
+    ModelDefinition dataModel = loadDataModel("business/abpms");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@find_bitems({bill: bill_id}):[" +
@@ -83,7 +83,7 @@ public class AbpmsTest extends TestBase {
 
   @Test
   public void test_find_fin_trans() throws Exception {
-    ModelDefinition dataModel = loadModel("business/abpms");
+    ModelDefinition dataModel = loadDataModel("business/abpms");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@find_fin_trans({bill: bill_id}):[" +

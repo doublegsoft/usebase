@@ -8,7 +8,7 @@ public class DataEntitlementManagementTest extends TestBase {
 
   @Test
   public void test() throws Exception {
-    ModelDefinition dataModel = loadModel("business/dem");
+    ModelDefinition dataModel = loadDataModel("business/dem");
   }
 
 }

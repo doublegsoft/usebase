@@ -42,7 +42,7 @@ public class TestBase {
 
   public static final String TEMPLATE_CONTROLLER = TEMPLATE_MVC_ROOT + "/mvc/$usecase$Controller.java.ftl";
 
-  protected ModelDefinition loadModel(String... projs) throws Exception {
+  protected ModelDefinition loadDataModel(String... projs) throws Exception {
     String content = "";
     for (String proj : projs) {
       InputStream input = null;

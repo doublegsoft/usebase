@@ -8,7 +8,7 @@ public class AutomatedAdministrationManagementTest extends TestBase {
 
   @Test
   public void test_save_knowledge() throws Exception {
-    ModelDefinition dataModel = loadModel("business/aam");
+    ModelDefinition dataModel = loadDataModel("business/aam");
   }
 
 }

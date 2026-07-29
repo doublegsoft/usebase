@@ -28,7 +28,7 @@ public class BillingAndRevenueSystemTest extends TestBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel(BNR_ROOT + "/doc/bnr.modelbase");
+    ModelDefinition dataModel = loadDataModel(BNR_ROOT + "/doc/bnr.modelbase");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     List<ObjectDefinition> infos = new ArrayList<>();
@@ -41,7 +41,7 @@ public class BillingAndRevenueSystemTest extends TestBase {
 
   @Test
   public void test_bnr() throws Exception {
-    ModelDefinition dataModel = loadModel(BNR_ROOT + "/doc/bnr.modelbase");
+    ModelDefinition dataModel = loadDataModel(BNR_ROOT + "/doc/bnr.modelbase");
     String usebaseExpr = loadUsebaseExpression(BNR_ROOT + "/doc/bnr.usebase");
     List<UsecaseDefinition> usecases = new Usebase(dataModel).parse(usebaseExpr);
     Assert.assertFalse(usecases.isEmpty());

@@ -4,7 +4,6 @@ import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.AssignmentDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
-import com.doublegsoft.jcommons.utils.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.ToNumberPolicy;
@@ -44,7 +43,7 @@ public class WorkflowManagementTest extends TestBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
+    ModelDefinition dataModel = loadDataModel("business/crm", "business/sms");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     List<ObjectDefinition> infos = new ArrayList<>();
@@ -61,7 +60,7 @@ public class WorkflowManagementTest extends TestBase {
    */
   @Test
   public void test_find_workflow_definitions() throws Exception {
-    ModelDefinition dataModel = loadModel("business/wfm");
+    ModelDefinition dataModel = loadDataModel("business/wfm");
     String expr =
         "@find_workflow_definitions({workflow_definition: name}):[{workflow_definition}]";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
@@ -84,7 +83,7 @@ public class WorkflowManagementTest extends TestBase {
    */
   @Test
   public void test_instantiate_workflow() throws Exception {
-    ModelDefinition dataModel = loadModel("business/wfm");
+    ModelDefinition dataModel = loadDataModel("business/wfm");
     // 如何确定开始节点？这是个难点
     String expr = loadUsebaseExpression("business/wfm/instantiate_workflow.usebase");
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
@@ -161,7 +160,7 @@ public class WorkflowManagementTest extends TestBase {
    */
   @Test
   public void test_step_workflow() throws Exception {
-    ModelDefinition dataModel = loadModel("business/wfm");
+    ModelDefinition dataModel = loadDataModel("business/wfm");
     String expr = loadUsebaseExpression("business/wfm/step_workflow.usebase");
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     usecase.setModule("wfm");
@@ -198,7 +197,7 @@ public class WorkflowManagementTest extends TestBase {
    */
   @Test
   public void test_reject() throws Exception {
-    ModelDefinition dataModel = loadModel("business/wfm");
+    ModelDefinition dataModel = loadDataModel("business/wfm");
     String expr =
         "@reject({workflow_action_instance: id!}):{workflow_instance: id} \n" +
         "|&| wf_act_curr_inst = {workflow_action_instance}#(id = id) \n" +
@@ -231,7 +230,7 @@ public class WorkflowManagementTest extends TestBase {
    */
   @Test
   public void test_revoke() throws Exception {
-    ModelDefinition dataModel = loadModel("business/wfm");
+    ModelDefinition dataModel = loadDataModel("business/wfm");
     String expr =
         "@revoke({workflow_action_instance: id!}):{workflow_instance: id} \n" +
         "|&| wf_act_curr_inst = {workflow_action_instance}#(id = id) \n" +

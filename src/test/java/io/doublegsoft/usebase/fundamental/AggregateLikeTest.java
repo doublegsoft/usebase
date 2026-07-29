@@ -3,7 +3,6 @@ package io.doublegsoft.usebase.fundamental;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metamodel.*;
-import com.doublegsoft.jcommons.utils.Strings;
 import io.doublegsoft.usebase.TestBase;
 import io.doublegsoft.usebase.Usebase;
 import org.junit.Assert;
@@ -13,7 +12,7 @@ public class AggregateLikeTest extends TestBase {
 
   @Test
   public void test_if_and_calc_object() throws Exception {
-    ModelDefinition dataModel = loadModel("fundamental/aggregatelike");
+    ModelDefinition dataModel = loadDataModel("fundamental/aggregatelike");
     String expr = loadUsebaseExpression("fundamental/aggregatelike#if_and_calc_object");
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     usecase.setModule("aggregatelike");
@@ -53,7 +52,7 @@ public class AggregateLikeTest extends TestBase {
 
   @Test
   public void test_if_and_calc_array() throws Exception {
-    ModelDefinition dataModel = loadModel("fundamental/aggregatelike");
+    ModelDefinition dataModel = loadDataModel("fundamental/aggregatelike");
     String expr = loadUsebaseExpression("fundamental/aggregatelike#if_and_calc_array");
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     usecase.setModule("aggregatelike");
@@ -95,7 +94,7 @@ public class AggregateLikeTest extends TestBase {
 
   @Test
   public void test_if_and_invocation() throws Exception {
-    ModelDefinition dataModel = loadModel("fundamental/aggregatelike");
+    ModelDefinition dataModel = loadDataModel("fundamental/aggregatelike");
     String expr = loadUsebaseExpression("fundamental/aggregatelike#if_and_invocation");
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
     usecase.setModule("aggregatelike");

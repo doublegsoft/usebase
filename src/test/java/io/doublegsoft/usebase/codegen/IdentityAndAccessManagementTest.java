@@ -1,11 +1,8 @@
 package io.doublegsoft.usebase.codegen;
 
-import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metamodel.AssignmentDefinition;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
-import com.doublegsoft.jcommons.metamodel.StatementDefinition;
 import com.doublegsoft.jcommons.metamodel.UsecaseDefinition;
 import io.doublegsoft.usebase.TestBase;
 import io.doublegsoft.usebase.Usebase;
@@ -37,7 +34,7 @@ public class IdentityAndAccessManagementTest extends TestBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
+    ModelDefinition dataModel = loadDataModel("business/crm", "business/sms");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     List<ObjectDefinition> infos = new ArrayList<>();
@@ -53,7 +50,7 @@ public class IdentityAndAccessManagementTest extends TestBase {
    */
   @Test
   public void test_find_users() throws Exception {
-    ModelDefinition dataModel = loadModel("business/iam");
+    ModelDefinition dataModel = loadDataModel("business/iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@find_users({user: username, email, status}, {role: name}):[{user: user_id, username, email} <> :role_count%count[{user_role}]%]";
@@ -81,7 +78,7 @@ public class IdentityAndAccessManagementTest extends TestBase {
 
   @Test
   public void test_get_user() throws Exception {
-    ModelDefinition dataModel = loadModel("business/iam");
+    ModelDefinition dataModel = loadDataModel("business/iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@get_user({user: user_id, (username, email)}):" +
@@ -121,7 +118,7 @@ public class IdentityAndAccessManagementTest extends TestBase {
 
   @Test
   public void test_save_user() throws Exception {
-    ModelDefinition dataModel = loadModel("business/iam");
+    ModelDefinition dataModel = loadDataModel("business/iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@save_user({user} <> roles[user_role]#(user, role)):{user: id}";
@@ -154,7 +151,7 @@ public class IdentityAndAccessManagementTest extends TestBase {
    */
   @Test
   public void test_disable_user() throws Exception {
-    ModelDefinition dataModel = loadModel("business/iam");
+    ModelDefinition dataModel = loadDataModel("business/iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@disable_user({user: status = 'D', user_id!}):{user: id}\n" +
@@ -178,7 +175,7 @@ public class IdentityAndAccessManagementTest extends TestBase {
    */
   @Test
   public void test_enable_user() throws Exception {
-    ModelDefinition dataModel = loadModel("business/iam");
+    ModelDefinition dataModel = loadDataModel("business/iam");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@enable_user({user: status = 'E', user_id!}):{user: id}" +
@@ -209,7 +206,7 @@ public class IdentityAndAccessManagementTest extends TestBase {
    */
   @Test
   public void test_iam_login() throws Exception {
-    ModelDefinition dataModel = loadModel("business/iam");
+    ModelDefinition dataModel = loadDataModel("business/iam");
     String expr =
         "@login({user: username!}, password!, captcha!):{user} <> :token \n" +
         "|:| encrypted_password = @bcrypt(password) \n" +
@@ -257,7 +254,7 @@ public class IdentityAndAccessManagementTest extends TestBase {
    */
   @Test
   public void test_iam_logout() throws Exception {
-    ModelDefinition dataModel = loadModel("business/iam");
+    ModelDefinition dataModel = loadDataModel("business/iam");
     String expr =
         "@logout({user: user_id}) \n" +
         "|@| @remove_user_from_session(#session, user_id) \n";
@@ -288,7 +285,7 @@ public class IdentityAndAccessManagementTest extends TestBase {
    */
   @Test
   public void save_user_with_roles() throws Exception {
-    ModelDefinition dataModel = loadModel("business/sms", "business/iam");
+    ModelDefinition dataModel = loadDataModel("business/sms", "business/iam");
     String expr =
         "@save_user_with_roles({person}#(national_id!, person_name!) <person.id=user.id> {user} <user_role> [role]) \n" +
         "|?| @validate_national_id_and_name(national_id, person_name)!'身份证号和姓名不匹配' \n" +

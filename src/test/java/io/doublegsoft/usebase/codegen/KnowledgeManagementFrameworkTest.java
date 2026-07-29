@@ -37,7 +37,7 @@ public class KnowledgeManagementFrameworkTest extends TestBase {
 
   @Before
   public void test_kmf_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("business/kmf");
+    ModelDefinition dataModel = loadDataModel("business/kmf");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     List<ObjectDefinition> infos = new ArrayList<>();
@@ -53,7 +53,7 @@ public class KnowledgeManagementFrameworkTest extends TestBase {
    */
   @Test
   public void test_kmf_save_knowledge() throws Exception {
-    ModelDefinition dataModel = loadModel("business/kmf");
+    ModelDefinition dataModel = loadDataModel("business/kmf");
     String expr =
         "@save_knowledge({knowledge}):{knowledge: id}";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);
@@ -79,7 +79,7 @@ public class KnowledgeManagementFrameworkTest extends TestBase {
    */
   @Test
   public void test_kmf_save_knowledge_entry() throws Exception {
-    ModelDefinition dataModel = loadModel("business/kmf");
+    ModelDefinition dataModel = loadDataModel("business/kmf");
     String expr =
         "@save_knowledge_entry({knowledge_entry: knowledge!, title!}):{knowledge_entry: id}";
     UsecaseDefinition usecase = new Usebase(dataModel).parse(expr).get(0);

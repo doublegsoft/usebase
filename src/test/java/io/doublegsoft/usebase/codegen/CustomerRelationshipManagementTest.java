@@ -27,7 +27,7 @@ public class CustomerRelationshipManagementTest extends TestBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
+    ModelDefinition dataModel = loadDataModel("business/crm", "business/sms");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     List<ObjectDefinition> infos = new ArrayList<>();
@@ -40,7 +40,7 @@ public class CustomerRelationshipManagementTest extends TestBase {
 
   @Test
   public void test_crm_convert_sales_lead() throws Exception {
-    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
+    ModelDefinition dataModel = loadDataModel("business/crm", "business/sms");
     String expr = loadUsebaseExpression("business/crm/convert_sales_lead.usebase");
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
@@ -49,7 +49,7 @@ public class CustomerRelationshipManagementTest extends TestBase {
 
   @Test
   public void test_crm_log_sales_activity() throws Exception {
-    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
+    ModelDefinition dataModel = loadDataModel("business/crm", "business/sms");
     String expr = loadUsebaseExpression("business/crm/log_sales_activity.usebase");
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
@@ -58,7 +58,7 @@ public class CustomerRelationshipManagementTest extends TestBase {
 
   @Test
   public void test_crm_win_opportunity() throws Exception {
-    ModelDefinition dataModel = loadModel("business/crm", "business/sms");
+    ModelDefinition dataModel = loadDataModel("business/crm", "business/sms");
     String expr = loadUsebaseExpression("business/crm/win_opportunity.usebase");
     Usebase usebase = new Usebase(dataModel);
     UsecaseDefinition usecase = usebase.parse(expr).get(0);

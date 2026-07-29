@@ -1,6 +1,5 @@
 package io.doublegsoft.usebase.codegen;
 
-import com.doublegsoft.jcommons.metabean.AttributeDefinition;
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.*;
@@ -36,7 +35,7 @@ public class CustomerCareAndBillingTest extends TestBase {
 
   @Before
   public void test_gen_infos() throws Exception {
-    ModelDefinition dataModel = loadModel("business/cc&b");
+    ModelDefinition dataModel = loadDataModel("business/cc&b");
     ProjectionBuilder projBuilder = new ProjectionBuilder(dataModel);
 
     ObjectDefinition customer = dataModel.findObjectByName("customer");
@@ -67,7 +66,7 @@ public class CustomerCareAndBillingTest extends TestBase {
 
   @Test
   public void test_get_bill() throws Exception {
-    ModelDefinition dataModel = loadModel("business/cc&b");
+    ModelDefinition dataModel = loadDataModel("business/cc&b");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@get_bill({bill: bill_id}):" +
@@ -117,7 +116,7 @@ public class CustomerCareAndBillingTest extends TestBase {
 
   @Test
   public void test_ft_list() throws Exception {
-    ModelDefinition dataModel = loadModel("business/cc&b");
+    ModelDefinition dataModel = loadDataModel("business/cc&b");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@find_ft({bill: bill_id}):" +
@@ -145,7 +144,7 @@ public class CustomerCareAndBillingTest extends TestBase {
 
   @Test
   public void test_get_account_by_premise() throws Exception {
-    ModelDefinition dataModel = loadModel("business/cc&b");
+    ModelDefinition dataModel = loadDataModel("business/cc&b");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@get_account_by_premise({premise: premise_id}):" +
@@ -165,7 +164,7 @@ public class CustomerCareAndBillingTest extends TestBase {
 
   @Test
   public void test_get_account_by_bill_segment() throws Exception {
-    ModelDefinition dataModel = loadModel("business/cc&b");
+    ModelDefinition dataModel = loadDataModel("business/cc&b");
     ModelDefinition apiModel = new ModelDefinition();
     String expr =
         "@get_account_by_bill_segment({bill_segment: id}):" +
@@ -185,7 +184,7 @@ public class CustomerCareAndBillingTest extends TestBase {
 
   @Test
   public void test_generate_bill() throws Exception {
-    ModelDefinition dataModel = loadModel("business/cc&b");
+    ModelDefinition dataModel = loadDataModel("business/cc&b");
     String expr =
         "@generate_bill({account: account_id!}):{bill}\n" +
         "|&| account = {account}#(account_id)!'账户没有找到'\n" +

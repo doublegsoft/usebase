@@ -12,7 +12,7 @@ public class CalcExprTest extends TestBase {
 
   @Test
   public void test() throws Exception {
-    ModelDefinition dataModel = loadModel("business/cc&b");
+    ModelDefinition dataModel = loadDataModel("business/cc&b");
     String expr =
         "@generate_bill({account: account_id!}):{bill}\n" +
         "|:| amount = % {meter_read: usage}#(service_agreement.rate_type, status = 'E') * " +
