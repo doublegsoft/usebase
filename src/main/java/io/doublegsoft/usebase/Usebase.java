@@ -182,7 +182,8 @@ public class Usebase {
       retVal.setValue(value);
       retVal.setAssignee(var);
       retVal.setAssignOp(ctxAssign.exprbase_assignop().getText());
-      if ((value.getObjectValue() != null || value.getArrayValue() != null) && (var.getType().isCustom() || var.getComponentType().isCustom())) {
+      if ((value.getObjectValue() != null || value.getArrayValue() != null) &&
+          (var.getType() != null && (var.getType().isCustom() || var.getComponentType().isCustom()))) {
         retVal.setExceptional(true);
       }
       if (ctx.usebase_remote() != null) {
