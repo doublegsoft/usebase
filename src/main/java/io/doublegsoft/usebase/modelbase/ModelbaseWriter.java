@@ -14,6 +14,7 @@ import com.doublegsoft.jcommons.metabean.ObjectDefinition;
 import com.doublegsoft.jcommons.metabean.type.*;
 import com.doublegsoft.jcommons.metamodel.ParameterizedObjectDefinition;
 import com.doublegsoft.jcommons.metamodel.ReturnedObjectDefinition;
+import com.doublegsoft.jcommons.utils.Strings;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -35,10 +36,9 @@ public class ModelbaseWriter {
     for (AttributeDefinition attr : obj.getAttributes()) {
       if (attr.isLabelled("original")) {
         String origObjName = attr.getLabelledOption("original", "object");
-        String origAttrName = attr.getLabelledOption("original", "attribute");
-        AttributeDefinition origAttr = dataModel.findAttributeByNames(origObjName, origAttrName);
+        ObjectDefinition dataObj = dataModel.findObjectByName(origObjName);
         writer.write("@name(label='");
-        writer.write(origAttr.getParent().getLabelledOption("name", "label") + "为主体请求对象");
+        writer.write(dataObj.getLabelledOption("name", "label") + "为主体请求对象");
         writer.write("')\n");
         break;
       }
