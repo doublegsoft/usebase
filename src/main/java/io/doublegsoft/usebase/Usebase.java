@@ -216,6 +216,15 @@ public class Usebase {
         for (io.doublegsoft.usebase.UsebaseParser.Anybase_identifierContext ctxId : ctxExpr.anybase_identifier()) {
           retVal.addVariable(ctxId.getText());
         }
+      } else if (ctxExpr.usebase_aggregate() != null) {
+        io.doublegsoft.usebase.UsebaseParser.Usebase_aggregateContext ctxAgg = ctxExpr.usebase_aggregate();
+        for (io.doublegsoft.usebase.UsebaseParser.Usebase_dataContext ctxData : ctxAgg.usebase_data()) {
+          if (ctxData.usebase_object() != null) {
+            retVal.addVariable(ctxData.usebase_object().name.getText());
+          } else if (ctxData.usebase_array() != null) {
+            retVal.addVariable(ctxData.usebase_array().name.getText());
+          }
+        }
       }
       return retVal;
     } else if (ctx.usebase_operator().getText().endsWith("+|") || ctx.usebase_operator().getText().endsWith("=|")) {
