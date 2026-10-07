@@ -84,44 +84,6 @@ public class ValueParser extends UsebaseParser {
         value.setObjectValue(aggregate);
       }
       return;
-    } else if (ctx.anybase_string() != null) {
-      String str = ctx.anybase_string().getText();
-      value.setString(str.substring(1, str.length() - 1));
-    } else if (ctx.anybase_identifier() != null) {
-      String str = ctx.anybase_identifier().getText();
-      if ("now".equals(str)) {
-        value.setKeyword(str);
-      } else if ("null".equals(str)) {
-        value.setKeyword(str);
-      } else {
-        if (str.contains(".")) {
-          String[] strs = str.split("\\.");
-          VariableDefinition var = usecase.getVariable(strs[0]);
-          if (var == null) {
-            ObjectDefinition obj = dataModel.findObjectByName(strs[0]);
-            AttributeDefinition attr = obj.getAttribute(strs[1]);
-            value.setAttributeValue(attr);
-          } else {
-            value.setVariable(var);
-            ObjectDefinition obj = null;
-            if (var.getType().isCollection()) {
-              CollectionType collType = (CollectionType) var.getType();
-              obj = dataModel.findObjectByName(collType.getComponentType().getName());
-            } else {
-              obj = dataModel.findObjectByName(var.getType().getName());
-            }
-            AttributeDefinition attr = obj.getAttribute(strs[1]);
-            value.setAttributeValue(attr);
-          }
-        } else {
-          VariableDefinition var = usecase.getVariable(str);
-          if (var == null) {
-            var = new VariableDefinition();
-            var.setName(str);
-          }
-          value.setVariable(var);
-        }
-      }
     } else if (ctx.anybase_value() != null) {
       assemble(ctx.anybase_value(), value, usecase);
     } else if (ctx.usebase_invoke() != null) {
