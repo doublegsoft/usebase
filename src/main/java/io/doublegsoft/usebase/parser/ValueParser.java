@@ -103,6 +103,15 @@ public class ValueParser extends UsebaseParser {
             value.setAttributeValue(attr);
           } else {
             value.setVariable(var);
+            ObjectDefinition obj = null;
+            if (var.getType().isCollection()) {
+              CollectionType collType = (CollectionType) var.getType();
+              obj = dataModel.findObjectByName(collType.getComponentType().getName());
+            } else {
+              obj = dataModel.findObjectByName(var.getType().getName());
+            }
+            AttributeDefinition attr = obj.getAttribute(strs[1]);
+            value.setAttributeValue(attr);
           }
         } else {
           VariableDefinition var = usecase.getVariable(str);

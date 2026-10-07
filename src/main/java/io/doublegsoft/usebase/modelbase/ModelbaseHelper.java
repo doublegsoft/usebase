@@ -131,10 +131,6 @@ public final class ModelbaseHelper {
   }
 
   public static AttributeDefinition cloneAttribute(String alias, AttributeDefinition original, ObjectDefinition owner) {
-//    AttributeDefinition retVal = owner.getModel().findAttributeByNames(owner.getName(), original.getName());
-//    if (retVal != null) {
-//      return retVal;
-//    }
     AttributeDefinition retVal = new ValuedAttributeDefinition(alias, owner);
     retVal.setUnit(original.getUnit());
     retVal.setAlias(original.getAlias());
@@ -257,10 +253,13 @@ public final class ModelbaseHelper {
   }
 
   public static PrimitiveType getPrimitiveType(AttributeDefinition attr) {
+    if (attr == null) {
+      return new PrimitiveType("string");
+    }
     if (attr.isIdentifiable()) {
       if (attr.getType().isCustom()) {
         // FIXME: HARD-CODED LONG
-        return new PrimitiveType("Long");
+        return new PrimitiveType("long");
       } else {
         return (PrimitiveType) attr.getType();
       }
