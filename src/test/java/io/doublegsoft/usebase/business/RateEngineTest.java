@@ -9,7 +9,6 @@ public class RateEngineTest extends TestBase {
   @Test
   public void test_only_master() throws Exception {
     ModelDefinition dataModel = loadDataModel("business/rateengine");
-
     System.out.println(dataModel.getObjects().length);
   }
 }

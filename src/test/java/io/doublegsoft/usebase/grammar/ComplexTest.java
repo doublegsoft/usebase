@@ -6,12 +6,21 @@
 */
 package io.doublegsoft.usebase.grammar;
 
+import com.doublegsoft.jcommons.metabean.ModelDefinition;
+import com.doublegsoft.jcommons.metabean.ObjectDefinition;
+import com.doublegsoft.jcommons.metabean.type.CollectionType;
+import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
+import com.doublegsoft.jcommons.metamodel.*;
+import com.doublegsoft.jcommons.metamodel.query.ConditionDefinition;
 import io.doublegsoft.usebase.*;
+import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-public class ComplexTest {
+public class ComplexTest extends TestBase {
 
   /**
    * 奖励某支球队的队员。
@@ -32,37 +41,32 @@ public class ComplexTest {
         "  |*|?| player.age >= 20 \n" +
         "  |*|?|:| player.rating += 5\n" +
         "  |*|=| player{player} ";
-//    Usebase usebase = new Usebase();
-//    UsebaseUsecase usecase = usebase.parse(expr).get(0);
-//    Assert.assertEquals("reward", usecase.getName());
-//    Assert.assertEquals("team_id", usecase.getArguments().get(0).getName());
-//    printStatements(usecase.getStatements());
-//    Assert.assertEquals(2, usecase.getStatements().size());
-//    Assert.assertEquals(3, usecase.getStatements().get(1).getStatements().size());
-//    Assert.assertEquals(1, usecase.getStatements().get(1).getStatements().get(0).getStatements().size());
-//    Assert.assertEquals(1, usecase.getStatements().get(1).getStatements().get(1).getStatements().size());
-//
-//    UsebaseAssignment stmt1 = (UsebaseAssignment) usecase.getStatements().get(0);
-//    UsebaseAggregate value = (UsebaseAggregate)stmt1.getValue();
-////    Assert.assertEquals("player", value.getArrayValue().getName());
-//    Assert.assertEquals(1, value.getArrays().get(0).getFilterArguments().size());
-//    Assert.assertEquals("team_id", value.getArrays().get(0).getFilterArguments().get(0).getName());
-//    UsebaseLoop stmt2 = (UsebaseLoop) usecase.getStatements().get(1);
-//    Assert.assertEquals("player", stmt2.getItemVar());
-//    Assert.assertEquals("players", stmt2.getArrayVar());
-//    UsebaseComparison stmt3 = (UsebaseComparison) stmt2.getStatements().get(0);
-//    Assert.assertEquals("player.age", stmt3.getComparand());
-//    Assert.assertEquals("<", stmt3.getComparator());
-//    Assert.assertEquals(new BigDecimal("20"), stmt3.getValue().getNumber());
-//
-//    UsebaseAssignment stmt4 = (UsebaseAssignment) stmt3.getStatements().get(0);
-//    Assert.assertEquals("player.rating", stmt4.getAssignee());
-//    Assert.assertEquals("+=", stmt4.getAssignOp());
-//    Assert.assertEquals(new BigDecimal("10"), stmt4.getValue().getNumber());
-//
-//    UsebaseUpdate stmt7 = (UsebaseUpdate) stmt2.getStatements().get(2);
-//    Assert.assertEquals("player", stmt7.getVariable());
-//    Assert.assertEquals("player", stmt7.getTypeName());
+    Usebase usebase = new Usebase(build_data_model_01());
+    UsecaseDefinition usecase = usebase.parse(expr).get(0);
+    Assert.assertEquals("reward", usecase.getName());
+    ParameterizedObjectDefinition params = usecase.getParameterizedObject();
+    Assert.assertEquals("team_id", params.getAttributes()[0].getName());
+    Assert.assertEquals(2, usecase.getStatements().size());
+
+    AssignmentDefinition assign = (AssignmentDefinition) usecase.getStatements().get(0);
+    VariableDefinition assignee = assign.getAssignee();
+    Assert.assertEquals("players", assignee.getName());
+    Assert.assertTrue(assignee.getType().isCollection());
+
+    LoopDefinition loop = (LoopDefinition) usecase.getStatements().get(1);
+    Assert.assertEquals(3, loop.getStatements().size());
+    Assert.assertEquals("player", loop.getItemVar().getName());
+    Assert.assertEquals("players", loop.getArrayVar().getName());
+    Assert.assertEquals("player", loop.getItemVar().getType().getName());
+
+    ComparisonDefinition firstIfInLoop = (ComparisonDefinition) loop.getStatements().get(0);
+    Assert.assertEquals(1, firstIfInLoop.getStatements().size());
+    Assert.assertEquals("age", firstIfInLoop.getComparand().getAttribute().getName());
+
+    assign = (AssignmentDefinition) firstIfInLoop.getStatements().get(0);
+    Assert.assertEquals("rating", assign.getAssignee().getAttribute().getName());
+    Assert.assertEquals("+=", assign.getAssignOp());
+    Assert.assertEquals(new BigDecimal("10"), assign.getValue().getNumber());
   }
 
   /**
@@ -79,58 +83,66 @@ public class ComplexTest {
         "  |&| patient = {patient}#(patient_id) \n" +
         "  |?| patient.type == '普通百姓' and amount > 5000  \n" +
         "  |?|:| amount *= 0.6 \n";
-//    Usebase usebase = new Usebase();
-//    UsebaseUsecase usecase = usebase.parse(expr).get(0);
-//    Assert.assertEquals("reimburse", usecase.getName());
-//    Assert.assertEquals("patient_id", usecase.getArguments().get(0).getName());
-//    Assert.assertEquals("amount", usecase.getArguments().get(1).getName());
-//
-//    UsebaseComparison stmt2 = (UsebaseComparison) usecase.getStatements().get(1);
-//    Assert.assertEquals("patient.type", stmt2.getComparand());
-//    Assert.assertEquals("==", stmt2.getComparator());
-//    Assert.assertEquals("普通百姓", stmt2.getValue().getString());
-//    Assert.assertEquals("amount", stmt2.getAndComparisons().get(0).getComparand());
-//    Assert.assertEquals(">", stmt2.getAndComparisons().get(0).getComparator());
-//    Assert.assertEquals(new BigDecimal("5000"), stmt2.getAndComparisons().get(0).getValue().getNumber());
-//
-//    UsebaseAssignment stmt3 = (UsebaseAssignment) stmt2.getStatements().get(0);
-//    Assert.assertEquals("amount", stmt3.getAssignee());
-//    Assert.assertEquals("*=", stmt3.getAssignOp());
-//    Assert.assertEquals(new BigDecimal("0.6"), stmt3.getValue().getNumber());
-//    printStatements(usecase.getStatements());
+    Usebase usebase = new Usebase(build_data_model_02());
+    UsecaseDefinition usecase = usebase.parse(expr).get(0);
+    Assert.assertEquals("reimburse", usecase.getName());
+    ParameterizedObjectDefinition params = usecase.getParameterizedObject();
+    Assert.assertEquals("patient_id", params.getAttributes()[0].getName());
+    Assert.assertEquals("amount", params.getAttributes()[1].getName());
+    Assert.assertEquals(2, usecase.getStatements().size());
+
+    ComparisonDefinition cmp = (ComparisonDefinition) usecase.getStatements().get(1);
+    Assert.assertEquals("type", cmp.getAndComparisons().get(0).getComparand().getAttribute().getName());
+    Assert.assertEquals("==", cmp.getAndComparisons().get(0).getComparator());
+    Assert.assertEquals("普通百姓", cmp.getAndComparisons().get(0).getValue().getString());
+    Assert.assertEquals("amount", cmp.getAndComparisons().get(1).getComparand().getName());
+    Assert.assertEquals(">", cmp.getAndComparisons().get(1).getComparator());
+    Assert.assertEquals(new BigDecimal("5000"), cmp.getAndComparisons().get(1).getValue().getNumber());
+
+    AssignmentDefinition assign = (AssignmentDefinition) cmp.getStatements().get(0);
+    Assert.assertEquals("amount", assign.getAssignee().getName());
+    Assert.assertEquals("*=", assign.getAssignOp());
+    Assert.assertEquals(new BigDecimal("0.6"), assign.getValue().getNumber());
   }
 
-  /**
-   * 定制化产品订单到收款全流程。
-   */
-  @Test
-  public void test_03() throws Exception {
-    String expr =
-        "@input(prod_spec)\n" +
-        "  |+| order = prod_spec \n" +
-        "  |+| wbs = prod_spec  \n";
-//    Usebase usebase = new Usebase();
-//    UsebaseUsecase usecase = usebase.parse(expr).get(0);
+  private ModelDefinition build_data_model_01() {
+    ModelDefinition retVal = new ModelDefinition();
+
+    ObjectDefinition teamObj = createPersistentObject(retVal, "team");
+    createIdentifiableAttribute(teamObj, "id", new PrimitiveType("long"));
+    createAttributeWithPrimitiveType(teamObj, "name", new PrimitiveType("string"));
+
+    ObjectDefinition playerObj = createPersistentObject(retVal, "player");
+    createIdentifiableAttribute(playerObj, "id", new PrimitiveType("long"));
+    createAttributeWithPrimitiveType(playerObj, "name", new PrimitiveType("string"));
+    createAttributeWithPrimitiveType(playerObj, "age", new PrimitiveType("int"));
+    createAttributeWithPrimitiveType(playerObj, "rating", new PrimitiveType("decimal"));
+
+    ObjectDefinition teamPlayerObj = createPersistentObject(retVal, "team_player");
+    createIdentifiableAttribute(teamPlayerObj, "id", new PrimitiveType("long"));
+    createAttributeWithCustomType(teamPlayerObj, "team", teamObj);
+    createAttributeWithCustomType(teamPlayerObj, "player", playerObj);
+
+    return retVal;
   }
 
-  /**
-   * 盲僧Q技能
-   * <p>
-   */
-  @Test
-  public void test_extra_01() throws Exception {
-    String expr =
-        "@reimburse(leeSin, others, timestamp, skill):{reimburse}\n" +
-            "  |:| q_skill = leeSin.q \n" +
-            "  |*| other in others \n" +
-            "  |*|?| q_skill.pos ~= other.pos \n" +
-            "  |*|?|:| other.status = 'F' \n" +
-            "  |*|?|:| other.time = now \n";
-//    Usebase usebase = new Usebase();
-//    UsebaseUsecase usecase = usebase.parse(expr).get(0);
-//    printStatements(usecase.getStatements());
-//    String dot = new DotBuilder().build(usecase.getName(), 1, usecase.getStatements()).toString();
-//    System.out.println(dot);
+  private ModelDefinition build_data_model_02() {
+    ModelDefinition retVal = new ModelDefinition();
+
+    // 1. 患者定义 (patient)
+    ObjectDefinition patientObj = createPersistentObject(retVal, "patient");
+    createIdentifiableAttribute(patientObj, "id", new PrimitiveType("long"));
+    createAttributeWithPrimitiveType(patientObj, "name", new PrimitiveType("string"));
+    // 对应: patient.type == '普通百姓'
+    createAttributeWithPrimitiveType(patientObj, "type", new PrimitiveType("string"));
+
+    // 2. 报销单/报销结果定义 (reimburse) - 对应返回值 :{reimburse}
+    ObjectDefinition reimburseObj = createPersistentObject(retVal, "reimburse");
+    createIdentifiableAttribute(reimburseObj, "id", new PrimitiveType("long"));
+    createAttributeWithCustomType(reimburseObj, "patient", patientObj);
+    createAttributeWithPrimitiveType(reimburseObj, "amount", new PrimitiveType("decimal"));
+
+    return retVal;
   }
 
 }

@@ -94,7 +94,8 @@ public class Usebase {
         retVal.registerVariable(obj.getName(), obj);
       }
       for (AttributeDefinition paramObjAttr : paramObj.getAttributes()) {
-        retVal.registerVariable(paramObjAttr.getName(), paramObjAttr.getType());
+//        retVal.registerVariable(paramObjAttr.getName(), paramObjAttr.getType());
+        retVal.registerVariable(paramObjAttr.getName(), guessVariableType(paramObjAttr.getName()));
       }
     }
     if (ctx.usebase_return() != null) {
@@ -178,9 +179,15 @@ public class Usebase {
       retVal.setOperator(fullOperator);
       ValueDefinition value = new ValueDefinition();
       valueParser.assemble(ctxAssign.usebase_value(), "#" + ctxAssign.variable.getText(), value, usecase);
-      VariableDefinition var = registerVariable(usecase, ctxAssign.variable.getText(), value);
+      String varName = ctxAssign.variable.getText();
+      VariableDefinition var = registerVariable(usecase, varName, value);
       retVal.setValue(value);
       retVal.setAssignee(var);
+      if (varName.contains(".")) {
+        String attrname = varName.split("\\.")[1];
+        AttributeDefinition attr = dataModel.findAttributeByNames(var.getType().getName(), attrname);
+        var.setAttribute(attr);
+      }
       retVal.setAssignOp(ctxAssign.exprbase_assignop().getText());
       if ((value.getObjectValue() != null || value.getArrayValue() != null) &&
           (var.getType() != null && (var.getType().isCustom() || var.getComponentType().isCustom()))) {
@@ -197,14 +204,34 @@ public class Usebase {
       String itemVarName = ctxExpr.item.getText();
       String arrayVarName = ctxExpr.array.getText();
       VariableDefinition arrayVar = usecase.getVariable(arrayVarName);
-      usecase.registerVariable(itemVarName, arrayVar.getComponentType());
 
       LoopDefinition retVal = new LoopDefinition();
       retVal.setOperator(ctx.usebase_operator().getText());
-      retVal.registerVariable(itemVarName, arrayVar.getComponentType() );
+      if (arrayVar.getComponentType() instanceof ObjectDefinition) {
+        retVal.registerVariable(itemVarName, arrayVar.getComponentType());
+        usecase.registerVariable(itemVarName, arrayVar.getComponentType());
+      } else {
+        CollectionType collType = (CollectionType) arrayVar.getType();
+        // 可以根据容器元素类型来反推给集合变量
+        ObjectDefinition compType = (ObjectDefinition) guessVariableType(itemVarName);
+        if (compType != null) {
+          collType.setComponentType(compType);
+        }
+        retVal.registerVariable(itemVarName, compType);
+        usecase.registerVariable(itemVarName, compType);
+      }
       retVal.setItemVar(usecase.getVariable(itemVarName));
       retVal.setArrayVar(arrayVar);
-      retVal.setComponentType((ObjectDefinition) arrayVar.getComponentType());
+      if (arrayVar.getComponentType() instanceof ObjectDefinition) {
+        retVal.setComponentType((ObjectDefinition) arrayVar.getComponentType());
+      } else {
+        ObjectDefinition compType = (ObjectDefinition) guessVariableType(itemVarName);
+        if (compType != null) {
+          retVal.setComponentType(compType);
+          CollectionType collType = (CollectionType) arrayVar.getType();
+          collType.setComponentType(compType);
+        }
+      }
       retVal.setOriginalText(getOriginalText(ctxExpr));
       return retVal;
     } else if (ctx.usebase_operator().getText().endsWith(".|")) {
@@ -258,7 +285,14 @@ public class Usebase {
       return retVal;
     }
     ObjectType type = guessVariableType(value);
-    usecase.registerVariable(name, type);
+    if (type == null) {
+      type = guessVariableType(name);
+    }
+    boolean array = false;
+    if (value.getObjectValue() != null) {
+      array = "true".equals(value.getObjectValue().getLabelledOption("original", "array"));
+    }
+    usecase.registerVariable(name, type, array);
     if (usecase.getParameterizedObject() != null) {
       for (AttributeDefinition attr : usecase.getParameterizedObject().getAttributes()) {
         if (attr.getName().equals(name)) {
@@ -379,6 +413,22 @@ public class Usebase {
       return retVal;
     }
     return null;
+  }
+
+  public static ObjectType guessVariableType(String varname) {
+    for (ObjectDefinition obj : dataModel.getObjects()) {
+      if (obj.getName().equals(varname)) {
+        return obj;
+      }
+      for (AttributeDefinition attr : obj.getAttributes()) {
+        if (attr.getName().equals(varname)) {
+          return attr.getType();
+        } else if ((obj.getName() + "_" + attr.getName()).equals(varname)) {
+          return attr.getType();
+        }
+      }
+    }
+    return new DomainType(varname);
   }
 
 }
