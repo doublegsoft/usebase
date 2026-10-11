@@ -6,20 +6,28 @@
 */
 package io.doublegsoft.usebase.grammar;
 
-import io.doublegsoft.usebase.dot.DotBuilder;
+import com.doublegsoft.jcommons.metamodel.StatementDefinition;
+import io.doublegsoft.usebase.UsebaseParser;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class SimpleTest {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
+public class SyntaxTest {
 
   private static io.doublegsoft.usebase.UsebaseParser parse(String expr) {
     CharStream input = CharStreams.fromString(expr);
     io.doublegsoft.usebase.UsebaseLexer lexer = new io.doublegsoft.usebase.UsebaseLexer(input);
     CommonTokenStream tokens = new CommonTokenStream(lexer);
-    return new io.doublegsoft.usebase.UsebaseParser(tokens);
+    io.doublegsoft.usebase.UsebaseParser retVal = new io.doublegsoft.usebase.UsebaseParser(tokens);
+    retVal.setErrorHandler(new BailErrorStrategy());
+    return retVal;
   }
 
   @Test
@@ -155,5 +163,119 @@ public class SimpleTest {
         "  |+| {audit_log: name = person_name, audit_time = now, modifier_id = 'SYS'}";
     io.doublegsoft.usebase.UsebaseParser parser = parse(expr);
     io.doublegsoft.usebase.UsebaseParser.Usebase_usecaseContext ctx = parser.usebase_usecase();
+  }
+
+  @Test
+  public void test_empty_if_in_loop() throws Exception {
+    String expr =
+        "@calculate_charge({charge_plan: id!}):{calculated_charge}\n" +
+        "|&| plan = {charge_plan}#(id = id)\n" +
+        "|&| rules = [charge_rule]#(plan = id)\n" +
+        "|*| rule in rules\n" +
+        "|*|?| rule.match_expression == 'exec' \n" +
+        "|:| calc_chg = {calculated_charge: charge_plan_id = plan.id}&plan\n" +
+        "|:| calc_chg.due_amount = 100 * 100 / 30\n" +
+        "|.| calc_chg";
+    io.doublegsoft.usebase.UsebaseParser parser = parse(expr);
+    io.doublegsoft.usebase.UsebaseParser.Usebase_usecaseContext ctx = parser.usebase_usecase();
+    Assert.assertEquals(7, ctx.usebase_statement().size());
+
+    List<StatementDefinition> stmts = createStatements(ctx);
+    Assert.assertEquals(6, stmts.size());
+    Assert.assertEquals(1, stmts.get(2).getStatements().size());
+  }
+
+  @Test
+  public void test_not_empty_if_in_loop() throws Exception {
+    String expr =
+        "@calculate_charge({charge_plan: id!}):{calculated_charge}\n" +
+        "|&| plan = {charge_plan}#(id = id)\n" +
+        "|&| rules = [charge_rule]#(plan = id)\n" +
+        "|*| rule in rules\n" +
+        "|*|?| rule.match_expression == 'exec' \n" +
+        "|*|?|:| rule.id = 100 \n" +
+        "|:| calc_chg = {calculated_charge: charge_plan_id = plan.id}&plan\n" +
+        "|:| calc_chg.due_amount = 100 * 100 / 30\n" +
+        "|.| calc_chg";
+    io.doublegsoft.usebase.UsebaseParser parser = parse(expr);
+    io.doublegsoft.usebase.UsebaseParser.Usebase_usecaseContext ctx = parser.usebase_usecase();
+    Assert.assertEquals(8, ctx.usebase_statement().size());
+
+    List<StatementDefinition> stmts = createStatements(ctx);
+    Assert.assertEquals(6, stmts.size());
+    Assert.assertEquals(1, stmts.get(2).getStatements().size());
+  }
+
+  @Test
+  public void test_empty_loop() throws Exception {
+    String expr =
+        "@calculate_charge({charge_plan: id!}):{calculated_charge}\n" +
+        "|&| plan = {charge_plan}#(id = id)\n" +
+        "|&| rules = [charge_rule]#(plan = id)\n" +
+        "|*| rule in rules\n" +
+        "|:| calc_chg = {calculated_charge: charge_plan_id = plan.id}&plan\n" +
+        "|:| calc_chg.due_amount = 100 * 100 / 30\n" +
+        "|.| calc_chg";
+    io.doublegsoft.usebase.UsebaseParser parser = parse(expr);
+    io.doublegsoft.usebase.UsebaseParser.Usebase_usecaseContext ctx = parser.usebase_usecase();
+    Assert.assertEquals(6, ctx.usebase_statement().size());
+
+    List<StatementDefinition> stmts = createStatements(ctx);
+    Assert.assertEquals(6, stmts.size());
+    Assert.assertEquals(0, stmts.get(2).getStatements().size());
+  }
+
+  @Test
+  public void test_empty_if() throws Exception {
+    String expr =
+        "@calculate_charge({charge_plan: id!}):{calculated_charge}\n" +
+        "|&| plan = {charge_plan}#(id = id)\n" +
+        "|&| rules = [charge_rule]#(plan = id)\n" +
+        "|?| plan.id > 100 \n" +
+        "|:| calc_chg = {calculated_charge: charge_plan_id = plan.id}&plan\n" +
+        "|:| calc_chg.due_amount = 100 * 100 / 30\n" +
+        "|.| calc_chg";
+    io.doublegsoft.usebase.UsebaseParser parser = parse(expr);
+    io.doublegsoft.usebase.UsebaseParser.Usebase_usecaseContext ctx = parser.usebase_usecase();
+    Assert.assertEquals(6, ctx.usebase_statement().size());
+
+    List<StatementDefinition> stmts = createStatements(ctx);
+    Assert.assertEquals(6, stmts.size());
+    Assert.assertEquals(0, stmts.get(2).getStatements().size());
+  }
+
+  private static List<StatementDefinition> createStatements(UsebaseParser.Usebase_usecaseContext ctx) {
+    List<StatementDefinition> all = new ArrayList<>();
+    Stack<List<StatementDefinition>> stack = new Stack<>();
+    stack.push(all);
+    List<StatementDefinition> stmts = all;
+    StatementDefinition prev = null;
+    for (io.doublegsoft.usebase.UsebaseParser.Usebase_statementContext ctxStmt : ctx.usebase_statement()) {
+      StatementDefinition stmt = new StatementDefinition();
+      stmt.setOperator(ctxStmt.usebase_operator().getText());
+      if (prev != null) {
+        if (stmt.getLevel() < prev.getLevel()) {
+          int times = prev.getLevel() - stmt.getLevel();
+          if (prev.isConditional() || prev.isLoop()) {
+            times++;
+          }
+          while (times > 0) {
+            stack.pop();
+            stmts = stack.peek();
+            times--;
+          }
+        } else if ((prev.isConditional() || prev.isLoop()) && stmt.getLevel() == prev.getLevel()) {
+          stack.pop();
+          stmts = stack.peek();
+        }
+      }
+      stmts.add(stmt);
+      if (stmt.isConditional() || stmt.isLoop()) {
+        stmts = stmt.getStatements();
+        stack.push(stmts);
+      }
+      prev = stmt;
+    }
+    return all;
   }
 }

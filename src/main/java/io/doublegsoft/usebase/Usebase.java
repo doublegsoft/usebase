@@ -118,12 +118,16 @@ public class Usebase {
       if (prev != null) {
         if (stmt.getLevel() < prev.getLevel()) {
           int times = prev.getLevel() - stmt.getLevel();
+          // 允许空的if和loop
+          if (prev.isConditional() || prev.isLoop()) {
+            times++;
+          }
           while (times > 0) {
             stack.pop();
             stmts = stack.peek();
             times--;
           }
-        } else if (prev.isConditional() && stmt.getLevel() == prev.getLevel()){
+        } else if ((prev.isConditional() || prev.isLoop()) && stmt.getLevel() == prev.getLevel()) {
           stack.pop();
           stmts = stack.peek();
         }
@@ -198,6 +202,10 @@ public class Usebase {
         valueParser.assemble(ctx.usebase_remote(), remote);
         retVal.setRemote(remote);
       }
+      // 如果存在invocation，处理返回值类型
+      if (value.getInvocation() != null) {
+        value.getInvocation().setReturnType(var.getType());
+      }
       retVal.setOriginalText(getOriginalText(ctxAssign));
       return retVal;
     } else if (ctxExpr.item != null) {
@@ -243,15 +251,6 @@ public class Usebase {
         for (io.doublegsoft.usebase.UsebaseParser.Anybase_identifierContext ctxId : ctxExpr.anybase_identifier()) {
           retVal.addVariable(ctxId.getText());
         }
-//      } else if (ctxExpr.usebase_aggregate() != null) {
-//        io.doublegsoft.usebase.UsebaseParser.Usebase_aggregateContext ctxAgg = ctxExpr.usebase_aggregate();
-//        for (io.doublegsoft.usebase.UsebaseParser.Usebase_dataContext ctxData : ctxAgg.usebase_data()) {
-//          if (ctxData.usebase_object() != null) {
-//            retVal.addVariable(ctxData.usebase_object().name.getText());
-//          } else if (ctxData.usebase_array() != null) {
-//            retVal.addVariable(ctxData.usebase_array().name.getText());
-//          }
-//        }
       } else if (ctxExpr.anybase_identifier().size() > 1) {
         for (io.doublegsoft.usebase.UsebaseParser.Anybase_identifierContext ctxId : ctxExpr.anybase_identifier()) {
           retVal.addVariable(ctxId.getText());

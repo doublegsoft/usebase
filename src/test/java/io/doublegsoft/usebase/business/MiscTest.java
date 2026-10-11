@@ -4,23 +4,19 @@
 ** ██─██─██▄▄▄▄─██─▄█▀██─▄─▀██─▀─██▄▄▄▄─██─▄█▀█
 ** ▀▀▄▄▄▄▀▀▄▄▄▄▄▀▄▄▄▄▄▀▄▄▄▄▀▀▄▄▀▄▄▀▄▄▄▄▄▀▄▄▄▄▄▀
 */
-package io.doublegsoft.usebase.grammar;
+package io.doublegsoft.usebase.business;
 
 import com.doublegsoft.jcommons.metabean.ModelDefinition;
 import com.doublegsoft.jcommons.metabean.ObjectDefinition;
-import com.doublegsoft.jcommons.metabean.type.CollectionType;
 import com.doublegsoft.jcommons.metabean.type.PrimitiveType;
 import com.doublegsoft.jcommons.metamodel.*;
-import com.doublegsoft.jcommons.metamodel.query.ConditionDefinition;
 import io.doublegsoft.usebase.*;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-public class ComplexTest extends TestBase {
+public class MiscTest extends TestBase {
 
   /**
    * 奖励某支球队的队员。
@@ -34,13 +30,13 @@ public class ComplexTest extends TestBase {
   public void test_01() throws Exception {
     String expr =
         "@reward(team_id)\n" +
-        "  |&| players = [{player} <team_player> {team}]#(team_id)\n" +
-        "  |*| player in players \n" +
-        "  |*|?| player.age < 20 \n" +
-        "  |*|?|:| player.rating += 10\n" +
-        "  |*|?| player.age >= 20 \n" +
-        "  |*|?|:| player.rating += 5\n" +
-        "  |*|=| player{player} ";
+        "|&| players = [{player} <team_player> {team}]#(team_id)\n" +
+        "|*| player in players \n" +
+        "|*|?| player.age < 20 \n" +
+        "|*|?|:| player.rating += 10\n" +
+        "|*|?| player.age >= 20 \n" +
+        "|*|?|:| player.rating += 5\n" +
+        "|*|=| player{player} ";
     Usebase usebase = new Usebase(build_data_model_01());
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
     Assert.assertEquals("reward", usecase.getName());
@@ -80,9 +76,9 @@ public class ComplexTest extends TestBase {
   public void test_02() throws Exception {
     String expr =
         "@reimburse(patient_id, amount):{reimburse}\n" +
-        "  |&| patient = {patient}#(patient_id) \n" +
-        "  |?| patient.type == '普通百姓' and amount > 5000  \n" +
-        "  |?|:| amount *= 0.6 \n";
+        "|&| patient = {patient}#(patient_id) \n" +
+        "|?| patient.type == '普通百姓' and amount > 5000  \n" +
+        "|?|:| amount *= 0.6 \n";
     Usebase usebase = new Usebase(build_data_model_02());
     UsecaseDefinition usecase = usebase.parse(expr).get(0);
     Assert.assertEquals("reimburse", usecase.getName());
@@ -129,18 +125,15 @@ public class ComplexTest extends TestBase {
   private ModelDefinition build_data_model_02() {
     ModelDefinition retVal = new ModelDefinition();
 
-    // 1. 患者定义 (patient)
     ObjectDefinition patientObj = createPersistentObject(retVal, "patient");
     createIdentifiableAttribute(patientObj, "id", new PrimitiveType("long"));
     createAttributeWithPrimitiveType(patientObj, "name", new PrimitiveType("string"));
-    // 对应: patient.type == '普通百姓'
     createAttributeWithPrimitiveType(patientObj, "type", new PrimitiveType("string"));
 
-    // 2. 报销单/报销结果定义 (reimburse) - 对应返回值 :{reimburse}
     ObjectDefinition reimburseObj = createPersistentObject(retVal, "reimburse");
     createIdentifiableAttribute(reimburseObj, "id", new PrimitiveType("long"));
     createAttributeWithCustomType(reimburseObj, "patient", patientObj);
-    createAttributeWithPrimitiveType(reimburseObj, "amount", new PrimitiveType("decimal"));
+    createAttributeWithPrimitiveType(reimburseObj, "amount", new PrimitiveType("number"));
 
     return retVal;
   }

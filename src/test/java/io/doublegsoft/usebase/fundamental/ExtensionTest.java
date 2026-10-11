@@ -27,7 +27,7 @@ public class ExtensionTest extends TestBase {
     AssignmentDefinition stmtCopy = (AssignmentDefinition) usecase.getStatements().get(2);
 
     Assert.assertEquals("password", stmtEncrypt.getAssignee().getName());
-    Assert.assertEquals("string", stmtEncrypt.getAssignee().getType().getName());
+    Assert.assertEquals("password", stmtEncrypt.getAssignee().getType().getName());
 
     Assert.assertEquals("user", stmtFind.getAssignee().getName());
     Assert.assertEquals("user", stmtFind.getAssignee().getType().getName());
