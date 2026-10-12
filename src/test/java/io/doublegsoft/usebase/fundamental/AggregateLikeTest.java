@@ -37,7 +37,7 @@ public class AggregateLikeTest extends TestBase {
     CalculationDefinition calcExpr = stmtCalc.getValue().getCalcExpr();
     Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
     Assert.assertEquals("*", calcExpr.getOperator());
-    Assert.assertEquals("5", calcExpr.getRightOperand().getValue().getNumber().toPlainString());
+    Assert.assertEquals("5", calcExpr.getRightOperand().getValue().getNumber().toString());
 
     // 变量验证
     VariableDefinition var = usecase.getVariable("first_object_inst");
@@ -78,7 +78,7 @@ public class AggregateLikeTest extends TestBase {
     CalculationDefinition calcExpr = stmtCalc.getValue().getCalcExpr();
     Assert.assertEquals("amount", calcExpr.getLeftOperand().getValue().getAttributeValue().getName());
     Assert.assertEquals("*", calcExpr.getOperator());
-    Assert.assertEquals("100", calcExpr.getRightOperand().getValue().getNumber().toPlainString());
+    Assert.assertEquals("100", calcExpr.getRightOperand().getValue().getNumber().toString());
 
     // 变量验证
     VariableDefinition var = usecase.getVariable("first_object_inst");
@@ -119,7 +119,7 @@ public class AggregateLikeTest extends TestBase {
     Assert.assertNotNull(invo);
 
     Assert.assertEquals("同一个变量，前面已经声明并且确定类型了",
-        "number", stmtInvo.getAssignee().getType().getName());
+        "integer", stmtInvo.getAssignee().getType().getName());
 
     Assert.assertEquals("get_amount_30", invo.getMethod());
     Assert.assertEquals("third_object_inst", invo.getArguments().get(0).getName());
@@ -133,7 +133,7 @@ public class AggregateLikeTest extends TestBase {
     var = usecase.getVariable("third_object_inst");
     Assert.assertEquals("third_object", var.getType().getName());
     var = usecase.getVariable("total_amount");
-    Assert.assertEquals("number", var.getType().getName());
+    Assert.assertEquals("integer", var.getType().getName());
   }
 
 }

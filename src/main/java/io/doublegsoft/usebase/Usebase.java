@@ -163,6 +163,11 @@ public class Usebase {
       io.doublegsoft.usebase.UsebaseParser.Usebase_comparisonContext ctxComp = ctxExpr.usebase_comparison();
       String comparisonExpr = getOriginalText(ctxComp.exprbase_cmp_expr());
       ComparisonDefinition retVal = exprbase.parseComparison(comparisonExpr, usecase);
+      if (retVal.getValue() != null && retVal.getValue().getVariable() != null) {
+        System.out.println(getOriginalText(ctxComp));
+        System.out.println(retVal.getComparand().getName());
+        System.out.println(retVal.getValue().getVariable().getName());
+      }
       retVal.setOperator(ctx.usebase_operator().getText());
       retVal.setOriginalText(getOriginalText(ctxComp));
       if (ctxComp.msg != null) {
@@ -191,6 +196,8 @@ public class Usebase {
         String attrname = varName.split("\\.")[1];
         AttributeDefinition attr = dataModel.findAttributeByNames(var.getType().getName(), attrname);
         var.setAttribute(attr);
+      } else if (value.getNumber() != null && !value.isBigDecimal()) {
+        var.setType(new PrimitiveType("integer"));
       }
       retVal.setAssignOp(ctxAssign.exprbase_assignop().getText());
       if ((value.getObjectValue() != null || value.getArrayValue() != null) &&

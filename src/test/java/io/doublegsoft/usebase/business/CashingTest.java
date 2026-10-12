@@ -20,7 +20,7 @@ public class CashingTest extends TestBase {
   public void test() throws Exception {
     String expr =
         "@generate_order({member: id!}, items[order_item]):{order}\n" +
-        "|:| total_amount = 0 \n" +
+        "|:| total_amount = 0.0 \n" +
         "|*| item in items \n" +
         "|*|:| total_amount += item.unit_price * item.quantity \n" +
         "|*|:| item.subtotal = item.unit_price * item.quantity \n" +
@@ -30,7 +30,7 @@ public class CashingTest extends TestBase {
     UsecaseDefinition usecase = new Usebase(build_data_model_cashier()).parse(expr).get(0);
     Assert.assertEquals(5, usecase.getStatements().size());
     AssignmentDefinition assign = (AssignmentDefinition) usecase.getStatements().get(0);
-    Assert.assertEquals(BigDecimal.ZERO, assign.getValue().getNumber());
+    Assert.assertEquals(new BigDecimal("0.0"), assign.getValue().getNumber());
 
     LoopDefinition loop = (LoopDefinition) usecase.getStatements().get(1);
     assign = (AssignmentDefinition) loop.getStatements().get(0);

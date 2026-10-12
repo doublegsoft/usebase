@@ -62,7 +62,7 @@ public class MiscTest extends TestBase {
     assign = (AssignmentDefinition) firstIfInLoop.getStatements().get(0);
     Assert.assertEquals("rating", assign.getAssignee().getAttribute().getName());
     Assert.assertEquals("+=", assign.getAssignOp());
-    Assert.assertEquals(new BigDecimal("10"), assign.getValue().getNumber());
+    Assert.assertEquals(Integer.valueOf("10"), assign.getValue().getNumber());
   }
 
   /**
