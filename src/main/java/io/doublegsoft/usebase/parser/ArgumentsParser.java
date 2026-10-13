@@ -59,7 +59,11 @@ public class ArgumentsParser extends UsebaseParser {
             text = text.substring(1, text.length() - 1);
             attrInOwner.setType(new PrimitiveType("string"));
           } else if (ctxArg.value.anybase_number() != null) {
-            attrInOwner.setType(new PrimitiveType("string"));
+            if (ctxArg.value.anybase_number().getText().contains(".")) {
+              attrInOwner.setType(new PrimitiveType("number"));
+            } else {
+              attrInOwner.setType(new PrimitiveType("integer"));
+            }
           } else if (ctxArg.value.anybase_identifier() != null) {
             attrInOwner.setType(new DomainType(text));
           } else {
